@@ -1,0 +1,986 @@
+// <future> -*- C++ -*-
+
+// Copyright (C) 2009 Free Software Foundation, Inc.
+//
+// This file is part of the GNU ISO C++ Library.  This library is free
+// software; you can redistribute it and/or modify it under the
+// terms of the GNU General Public License as published by the
+// Free Software Foundation; either version 3, or (at your option)
+// any later version.
+
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// Under Section 7 of GPL version 3, you are granted additional
+// permissions described in the GCC Runtime Library Exception, version
+// 3.1, as published by the Free Software Foundation.
+
+// You should have received a copy of the GNU General Public License and
+// a copy of the GCC Runtime Library Exception along with this program;
+// see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
+// <http://www.gnu.org/licenses/>.
+
+/** @file future
+ *  This is a Standard C++ Library header.
+ */
+
+#ifndef _GLIBCXX_FUTURE
+#define _GLIBCXX_FUTURE 1
+
+#pragma GCC system_header
+
+#ifndef __GXX_EXPERIMENTAL_CXX0X__
+# include <c++0x_warning.h>
+#else
+
+#include <functional>
+#include <memory>
+#include <mutex>
+#include <condition_variable>
+#include <system_error>
+#include <exception>
+#include <cstdatomic>
+
+namespace std
+{
+  /**
+   * @defgroup futures Futures
+   * @ingroup concurrency
+   *
+   * Classes for futures support.
+   * @{
+   */
+
+  /// Error code for futures
+  enum class future_errc
+  { broken_promise, future_already_retrieved, promise_already_satisfied };
+
+  // TODO: requires concepts
+  // concept_map ErrorCodeEnum<future_errc> { }
+  template<>
+    struct is_error_code_enum<future_errc> : public true_type { };
+
+  /// Points to a statically-allocated object derived from error_category.
+  extern const error_category* const future_category;
+
+  // TODO: requires constexpr
+  inline error_code make_error_code(future_errc __errc)
+  { return error_code(static_cast<int>(__errc), *future_category); }
+
+  // TODO: requires constexpr
+  inline error_condition make_error_condition(future_errc __errc)
+  { return error_condition(static_cast<int>(__errc), *future_category); }
+
+  /**
+   *  @brief Exception type thrown by futures.
+   *  @ingroup exceptions
+   */
+  class future_error : public logic_error
+  {
+    error_code 			_M_code;
+
+  public:
+    explicit future_error(future_errc __ec)
+    : logic_error("std::future_error"), _M_code(make_error_code(__ec))
+    { }
+
+    virtual ~future_error() throw();
+
+    virtual const char* 
+    what() const throw();
+
+    const error_code& 
+    code() const throw() { return _M_code; }
+  };
+
+  // Forward declarations.
+  template<typename _Res>
+    class unique_future;
+
+  template<typename _Res>
+    class shared_future;
+
+  template<typename> 
+    class packaged_task;
+
+  template<typename _Res>
+    class promise;
+
+#if defined(_GLIBCXX_HAS_GTHREADS) && defined(_GLIBCXX_USE_C99_STDINT_TR1) \
+  && defined(_GLIBCXX_ATOMIC_BUILTINS_4)
+
+  /// Base class and enclosing scope.
+  struct __future_base
+  {
+    /// Base class for results.
+    struct _Result_base
+    {
+      exception_ptr		_M_error;
+
+      _Result_base() = default;
+      _Result_base(const _Result_base&) = delete;
+      _Result_base& operator=(const _Result_base&) = delete;
+
+      // _M_destroy() allows derived classes to control deallocation,
+      // which will be needed when allocator support is added to promise.
+      // See http://gcc.gnu.org/ml/libstdc++/2009-06/msg00032.html
+      virtual void _M_destroy() = 0;
+
+      struct _Deleter
+      {
+	void operator()(_Result_base* __fr) const { __fr->_M_destroy(); }
+      };
+
+    protected:
+      ~_Result_base();
+    };
+
+    /// Result.
+    template<typename _Res>
+      struct _Result : _Result_base
+      {
+      private:
+	typedef alignment_of<_Res>				__a_of;
+	typedef aligned_storage<sizeof(_Res), __a_of::value>	__align_storage;
+	typedef typename __align_storage::type			__align_type;
+
+	__align_type		_M_storage;
+	bool 			_M_initialized;
+
+      public:
+	_Result() : _M_initialized() { }
+	
+	~_Result()
+	{
+	  if (_M_initialized)
+	    _M_value().~_Res();
+	}
+
+	// Return lvalue, future will add const or rvalue-reference
+	_Res& 
+	_M_value() { return *static_cast<_Res*>(_M_addr()); }
+
+	void
+	_M_set(const _Res& __res)
+	{
+	  ::new (_M_addr()) _Res(__res);
+	  _M_initialized = true;
+	}
+
+	void
+	_M_set(_Res&& __res)
+	{
+	  ::new (_M_addr()) _Res(_Move_result<_Res>::_S_move(__res));
+	  _M_initialized = true;
+	}
+
+      private:
+	void _M_destroy() { delete this; }
+
+	void* _M_addr() { return static_cast<void*>(&_M_storage); }
+    };
+
+
+    /// Workaround for CWG issue 664 and c++/34022
+    template<typename _Res, bool = is_scalar<_Res>::value>
+      struct _Move_result;
+
+     /// Specialization for scalar types returns rvalue not rvalue-reference.
+    template<typename _Res>
+      struct _Move_result<_Res, true>
+      {
+	typedef _Res __rval_type;
+	static _Res _S_move(_Res __res) { return __res; }
+      };
+    
+    /// Specialization for non-scalar types returns rvalue-reference.
+    template<typename _Res>
+      struct _Move_result<_Res, false>
+      {
+	typedef _Res&& __rval_type;
+	static _Res&& _S_move(_Res& __res) { return std::move(__res); }
+      };
+
+
+    // TODO: use template alias when available
+    /*
+      template<typename _Res>
+      using _Ptr = unique_ptr<_Res, _Result_base::_Deleter>;
+    */
+    /// A unique_ptr based on the instantiating type.
+    template<typename _Res>
+      struct _Ptr
+      {
+	typedef unique_ptr<_Res, _Result_base::_Deleter> type;
+      };
+
+
+    /// Shared state between a promise and one or more associated futures.
+    class _State
+    {
+      typedef _Ptr<_Result_base>::type _Ptr_type;
+
+      _Ptr_type			_M_result;
+      mutex               	_M_mutex;
+      condition_variable  	_M_cond;
+      atomic_flag         	_M_retrieved;
+
+    public:
+      _State() : _M_result(), _M_retrieved(ATOMIC_FLAG_INIT) { }
+
+      _State(const _State&) = delete;
+      _State& operator=(const _State&) = delete;
+
+      bool
+      is_ready()
+      { return _M_get() != 0; }
+
+      bool
+      has_exception()
+      {
+	_Result_base* const __res = _M_get();
+	return __res && !(__res->_M_error == 0);
+      }
+
+      bool
+      has_value()
+      {
+	_Result_base* const __res = _M_get();
+	return __res && (__res->_M_error == 0);
+      }
+
+      _Result_base&
+      wait()
+      {
+	unique_lock<mutex> __lock(_M_mutex);
+	if (!_M_ready())
+	  _M_cond.wait(__lock, std::bind(&_State::_M_ready, this));
+	return *_M_result;
+      }
+
+      template<typename _Rep, typename _Period>
+        bool
+        wait_for(const chrono::duration<_Rep, _Period>& __rel)
+        {
+	  unique_lock<mutex> __lock(_M_mutex);
+	  auto __bound = std::bind(&_State::_M_ready, this);
+	  return _M_ready() || _M_cond.wait_for(__lock, __rel, __bound);
+	}
+
+      template<typename _Clock, typename _Duration>
+        bool
+        wait_until(const chrono::time_point<_Clock, _Duration>& __abs)
+        {
+	  unique_lock<mutex> __lock(_M_mutex);
+	  auto __bound = std::bind(&_State::_M_ready, this);
+	  return _M_ready() || _M_cond.wait_until(__lock, __abs, __bound);
+	}
+
+      void
+      _M_set_result(_Ptr_type __res)
+      {
+	{
+	  lock_guard<mutex> __lock(_M_mutex);
+	  if (_M_ready())
+	    __throw_future_error(int(future_errc::promise_already_satisfied));
+	  _M_result.swap(__res);
+	}
+	_M_cond.notify_all();
+      }
+
+      void
+      _M_break_promise(_Ptr_type __res)
+      {
+	if (static_cast<bool>(__res))
+	  {
+	    future_errc __ec(future_errc::broken_promise); // XXX
+	    __res->_M_error = copy_exception(future_error(__ec));
+	    {
+	      lock_guard<mutex> __lock(_M_mutex);
+	      _M_result.swap(__res);
+	    }
+	    _M_cond.notify_all();
+	  }
+      }
+
+      // Called when this object is passed to a unique_future.
+      void
+      _M_set_retrieved_flag()
+      {
+	if (_M_retrieved.test_and_set())
+	  __throw_future_error(int(future_errc::future_already_retrieved));
+      }
+
+    private:
+      _Result_base*
+      _M_get()
+      {
+	lock_guard<mutex> __lock(_M_mutex);
+	return _M_result.get();
+      }
+
+      bool _M_ready() const { return static_cast<bool>(_M_result); }
+    };
+  };
+
+  inline __future_base::_Result_base::~_Result_base() = default;
+
+  /// Partial specialization for reference types.
+  template<typename _Res>
+    struct __future_base::_Result<_Res&> : __future_base::_Result_base
+    {
+      _Result() : _M_value_ptr() { }
+
+      _Res* 			_M_value_ptr;
+      
+    private:
+      void _M_destroy() { delete this; }
+    };
+
+  /// Explicit specialization for void.
+  template<>
+    struct __future_base::_Result<void> : __future_base::_Result_base
+    {
+    private:
+      void _M_destroy() { delete this; }
+    };
+
+
+  /// Common implementation for unique_future and shared_future.
+  template<typename _Res>
+    class __basic_future : public __future_base
+    {
+    protected:
+      typedef shared_ptr<_State>		__state_type;
+      typedef __future_base::_Result<_Res>&	__result_type;
+
+    private:
+      __state_type 		_M_state;
+
+    public:
+      // Disable copying.
+      __basic_future(const __basic_future&) = delete;
+      __basic_future& operator=(const __basic_future&) = delete;
+
+      // Functions to check state and wait for ready.
+      bool 
+      is_ready() const { return this->_M_state->is_ready(); }
+
+      bool 
+      has_exception() const { return this->_M_state->has_exception(); }
+
+      bool 
+      has_value() const { return this->_M_state->has_value(); }
+
+      void 
+      wait() const { this->_M_state->wait(); }
+
+      template<typename _Rep, typename _Period>
+        bool
+        wait_for(const chrono::duration<_Rep, _Period>& __rel) const
+        { return this->_M_state->wait_for(__rel); }
+
+      template<typename _Clock, typename _Duration>
+        bool
+        wait_until(const chrono::time_point<_Clock, _Duration>& __abs) const
+        { return this->_M_state->wait_until(__abs); }
+
+    protected:
+      /// Wait for the state to be ready and rethrow any stored exception
+      __result_type
+      _M_get_result()
+      {
+        _Result_base& __res = this->_M_state->wait();
+        if (!(__res._M_error == 0))
+          rethrow_exception(__res._M_error);
+        return static_cast<__result_type>(__res);
+      }
+
+      // Construction of a unique_future by promise::get_future()
+      explicit
+      __basic_future(const __state_type& __state) : _M_state(__state)
+      {
+        if (static_cast<bool>(this->_M_state))
+          this->_M_state->_M_set_retrieved_flag();
+        else
+          __throw_future_error(int(future_errc::future_already_retrieved));
+      }
+
+      // Copy construction from a shared_future
+      explicit
+      __basic_future(const shared_future<_Res>&);
+
+      // Move construction from a unique_future
+      explicit
+      __basic_future(unique_future<_Res>&&);
+    };
+
+
+  /// Primary template for unique_future.
+  template<typename _Res>
+    class unique_future : public __basic_future<_Res>
+    {
+      friend class promise<_Res>;
+
+      typedef __basic_future<_Res> _Base_type;
+      typedef typename _Base_type::__state_type __state_type;
+      typedef __future_base::_Move_result<_Res> _Mover;
+
+      explicit
+      unique_future(const __state_type& __state) : _Base_type(__state) { }
+
+    public:
+      /// Move constructor
+      unique_future(unique_future&& __uf) : _Base_type(std::move(__uf)) { }
+
+      // Disable copying
+      unique_future(const unique_future&) = delete;
+      unique_future& operator=(const unique_future&) = delete;
+
+      /// Retrieving the value
+      typename _Mover::__rval_type
+      get()
+      { return _Mover::_S_move(this->_M_get_result()._M_value()); }
+    };
+ 
+  /// Partial specialization for unique_future<R&>
+  template<typename _Res>
+    class unique_future<_Res&> : public __basic_future<_Res&>
+    {
+      friend class promise<_Res&>;
+
+      typedef __basic_future<_Res&> _Base_type;
+      typedef typename _Base_type::__state_type __state_type;
+
+      explicit
+      unique_future(const __state_type& __state) : _Base_type(__state) { }
+
+    public:
+      /// Move constructor
+      unique_future(unique_future&& __uf) : _Base_type(std::move(__uf)) { }
+
+      // Disable copying
+      unique_future(const unique_future&) = delete;
+      unique_future& operator=(const unique_future&) = delete;
+
+      /// Retrieving the value
+      _Res& 
+      get() { return *this->_M_get_result()._M_value_ptr; }
+    };
+
+  /// Explicit specialization for unique_future<void>
+  template<>
+    class unique_future<void> : public __basic_future<void>
+    {
+      friend class promise<void>;
+
+      typedef __basic_future<void> _Base_type;
+      typedef typename _Base_type::__state_type __state_type;
+
+      explicit
+      unique_future(const __state_type& __state) : _Base_type(__state) { }
+
+    public:
+      /// Move constructor
+      unique_future(unique_future&& __uf) : _Base_type(std::move(__uf)) { }
+
+      // Disable copying
+      unique_future(const unique_future&) = delete;
+      unique_future& operator=(const unique_future&) = delete;
+
+      /// Retrieving the value
+      void 
+      get() { this->_M_get_result(); }
+    };
+
+
+  /// Primary template for shared_future.
+  template<typename _Res>
+    class shared_future : public __basic_future<_Res>
+    {
+      typedef __basic_future<_Res> _Base_type;
+
+    public:
+      /// Copy constructor
+      shared_future(const shared_future& __sf) : _Base_type(__sf) { }
+
+      /// Construct from a unique_future rvalue
+      shared_future(unique_future<_Res>&& __uf)
+      : _Base_type(std::move(__uf))
+      { }
+
+      shared_future& operator=(const shared_future&) = delete;
+
+      /// Retrieving the value
+      const _Res&
+      get()
+      { 
+	typename _Base_type::__result_type __r = this->_M_get_result();
+	_Res& __rs(__r._M_value());
+	return __rs;
+      }
+    };
+ 
+  /// Partial specialization for shared_future<R&>
+  template<typename _Res>
+    class shared_future<_Res&> : public __basic_future<_Res&>
+    {
+      typedef __basic_future<_Res&>           _Base_type;
+
+    public:
+      /// Copy constructor
+      shared_future(const shared_future& __sf) : _Base_type(__sf) { }
+
+      /// Construct from a unique_future rvalue
+      shared_future(unique_future<_Res&>&& __uf)
+      : _Base_type(std::move(__uf))
+      { }
+
+      shared_future& operator=(const shared_future&) = delete;
+
+      /// Retrieving the value
+      _Res& 
+      get() { return *this->_M_get_result()._M_value_ptr; }
+    };
+
+  /// Explicit specialization for shared_future<void>
+  template<>
+    class shared_future<void> : public __basic_future<void>
+    {
+      typedef __basic_future<void> _Base_type;
+
+    public:
+      /// Copy constructor
+      shared_future(const shared_future& __sf) : _Base_type(__sf) { }
+
+      /// Construct from a unique_future rvalue
+      shared_future(unique_future<void>&& __uf)
+      : _Base_type(std::move(__uf))
+      { }
+
+      shared_future& operator=(const shared_future&) = delete;
+
+      // Retrieving the value
+      void 
+      get() { this->_M_get_result(); }
+    };
+
+  // Now we can define the protected __basic_future constructors.
+  template<typename _Res>
+    __basic_future<_Res>::__basic_future(const shared_future<_Res>& __sf)
+    : _M_state(__sf._M_state)
+    { }
+
+  template<typename _Res>
+    __basic_future<_Res>::__basic_future(unique_future<_Res>&& __uf)
+    : _M_state(std::move(__uf._M_state))
+    { }
+
+
+  /// Primary template for promise
+  template<typename _Res>
+    class promise
+    {
+      template<typename> friend class packaged_task;
+
+      typedef __future_base::_State 		_State;
+      typedef __future_base::_Move_result<_Res>	_Mover;
+      typedef __future_base::_Result<_Res>	result_type;
+      
+      shared_ptr<_State>                        _M_future;
+      typename __future_base::_Ptr<result_type>::type	_M_storage;
+
+    public:
+      promise()
+      : _M_future(std::make_shared<_State>()), _M_storage(new result_type())
+      { }
+
+      promise(promise&& __rhs)
+      : _M_future(std::move(__rhs._M_future)),
+      _M_storage(std::move(__rhs._M_storage))
+      { }
+
+      // TODO: requires allocator concepts
+      /*
+      template<typename _Allocator>
+        promise(allocator_arg_t, const _Allocator& __a);
+
+      template<typename _Allocator>
+        promise(allocator_arg_t, const _Allocator&, promise&& __rhs);
+       */
+
+      promise(const promise&) = delete;
+
+      ~promise()
+      {
+        if (static_cast<bool>(_M_future) && !_M_future.unique())
+          _M_future->_M_break_promise(std::move(_M_storage));
+      }
+
+      // Assignment
+      promise&
+      operator=(promise&& __rhs)
+      {
+        promise(std::move(__rhs)).swap(*this);
+        return *this;
+      }
+
+      promise& operator=(const promise&) = delete;
+
+      void
+      swap(promise& __rhs)
+      {
+        _M_future.swap(__rhs._M_future);
+        _M_storage.swap(__rhs._M_storage);
+      }
+
+      // Retrieving the result
+      unique_future<_Res>
+      get_future()
+      { return unique_future<_Res>(_M_future); }
+
+      // Setting the result
+      void
+      set_value(const _Res& __r)
+      {
+        if (!_M_satisfied())
+          _M_storage->_M_set(__r);
+        _M_future->_M_set_result(std::move(_M_storage));
+      }
+
+      void
+      set_value(_Res&& __r)
+      {
+        if (!_M_satisfied())
+          _M_storage->_M_set(_Mover::_S_move(__r));
+        _M_future->_M_set_result(std::move(_M_storage));
+      }
+
+      void
+      set_exception(exception_ptr __p)
+      {
+        if (!_M_satisfied())
+          _M_storage->_M_error = __p;
+        _M_future->_M_set_result(std::move(_M_storage));
+      }
+
+    private:
+      bool _M_satisfied() { return !static_cast<bool>(_M_storage); }
+    };
+
+  /// Partial specialization for promise<R&>
+  template<typename _Res>
+    class promise<_Res&>
+    {
+      template<typename> friend class packaged_task;
+      typedef __future_base::_State 		_State;
+ 
+      typedef __future_base::_Result<_Res&> result_type;
+
+      shared_ptr<_State>                        _M_future;
+      typename __future_base::_Ptr<result_type>::type  _M_storage;
+
+    public:
+      promise()
+      : _M_future(std::make_shared<_State>()), _M_storage(new result_type())
+      { }
+
+      promise(promise&& __rhs)
+      : _M_future(std::move(__rhs._M_future)), 
+	_M_storage(std::move(__rhs._M_storage))
+      { }
+
+      // TODO: requires allocator concepts
+      /*
+      template<typename _Allocator>
+        promise(allocator_arg_t, const _Allocator& __a);
+
+      template<typename _Allocator>
+        promise(allocator_arg_t, const _Allocator&, promise&& __rhs);
+       */
+
+      promise(const promise&) = delete;
+
+      ~promise()
+      {
+        if (static_cast<bool>(_M_future) && !_M_future.unique())
+          _M_future->_M_break_promise(std::move(_M_storage));
+      }
+
+      // Assignment
+      promise&
+      operator=(promise&& __rhs)
+      {
+        promise(std::move(__rhs)).swap(*this);
+        return *this;
+      }
+
+      promise& operator=(const promise&) = delete;
+
+      void
+      swap(promise& __rhs)
+      {
+        _M_future.swap(__rhs._M_future);
+        _M_storage.swap(__rhs._M_storage);
+      }
+
+      // Retrieving the result
+      unique_future<_Res&>
+      get_future()
+      { return unique_future<_Res&>(_M_future); }
+
+      // Setting the result
+      void
+      set_value(_Res& __r)
+      {
+        if (!_M_satisfied())
+          _M_storage->_M_value_ptr = &__r;
+        _M_future->_M_set_result(std::move(_M_storage));
+      }
+
+      void
+      set_exception(exception_ptr __p)
+      {
+        if (!_M_satisfied())
+          _M_storage->_M_error = __p;
+        _M_future->_M_set_result(std::move(_M_storage));
+      }
+
+    private:
+      bool _M_satisfied() { return !static_cast<bool>(_M_storage); }
+    };
+
+  /// Explicit specialization for promise<void>
+  template<>
+    class promise<void>
+    {
+      template<typename> friend class packaged_task;
+      typedef __future_base::_State 		_State;
+      typedef __future_base::_Result<void>	result_type;
+
+      shared_ptr<__future_base::_State>                 _M_future;
+      typename __future_base::_Ptr<result_type>::type   _M_storage;
+
+    public:
+      promise()
+      : _M_future(std::make_shared<_State>()),
+	_M_storage(new result_type())
+      { }
+
+      promise(promise&& __rhs)
+      : _M_future(std::move(__rhs._M_future)),
+      _M_storage(std::move(__rhs._M_storage))
+      { }
+
+      // TODO: requires allocator concepts
+      /*
+      template<typename _Allocator>
+        promise(allocator_arg_t, const _Allocator& __a);
+
+      template<typename _Allocator>
+        promise(allocator_arg_t, const _Allocator&, promise&& __rhs);
+       */
+
+      promise(const promise&) = delete;
+
+      ~promise()
+      {
+        if (static_cast<bool>(_M_future) && !_M_future.unique())
+          _M_future->_M_break_promise(std::move(_M_storage));
+      }
+
+      // Assignment
+      promise&
+      operator=(promise&& __rhs)
+      {
+        promise(std::move(__rhs)).swap(*this);
+        return *this;
+      }
+
+      promise& operator=(const promise&) = delete;
+
+      void
+      swap(promise& __rhs)
+      {
+        _M_future.swap(__rhs._M_future);
+        _M_storage.swap(__rhs._M_storage);
+      }
+
+      // Retrieving the result
+      unique_future<void>
+      get_future()
+      { return unique_future<void>(_M_future); }
+
+      // Setting the result
+      void
+      set_value()
+      {
+        _M_future->_M_set_result(std::move(_M_storage));
+      }
+
+      void
+      set_exception(exception_ptr __p)
+      {
+        if (!_M_satisfied())
+          _M_storage->_M_error = __p;
+        _M_future->_M_set_result(std::move(_M_storage));
+      }
+
+    private:
+      bool _M_satisfied() { return !static_cast<bool>(_M_storage); }
+    };
+
+  // TODO: requires allocator concepts
+  /*
+  template<typename _Res, class Alloc>
+    concept_map UsesAllocator<promise<_Res>, Alloc>
+    {
+      typedef Alloc allocator_type;
+    }
+   */
+  /// Primary template.
+  template<typename _Res, typename... _ArgTypes>
+    struct _Run_task
+    {
+      static void
+      _S_run(promise<_Res>& __p, function<_Res(_ArgTypes...)>& __f,
+	     _ArgTypes... __args)
+      {
+        __p.set_value(__f(std::forward<_ArgTypes>(__args)...));
+      }
+    };
+
+  /// Specialization used by packaged_task<void(...)>
+  template<typename... _ArgTypes>
+    struct _Run_task<void, _ArgTypes...>
+    {
+      static void
+      _S_run(promise<void>& __p, function<void(_ArgTypes...)>& __f,
+	     _ArgTypes... __args)
+      {
+        __f(std::forward<_ArgTypes>(__args)...);
+        __p.set_value();
+      }
+    };
+
+
+  /// packaged_task
+  template<typename _Res, typename... _ArgTypes>
+    class packaged_task<_Res(_ArgTypes...)>
+    {
+      function<_Res(_ArgTypes...)>   _M_task;
+      promise<_Res>                  _M_promise;
+
+    public:
+      typedef _Res result_type;
+
+      // Construction and destruction
+      packaged_task() { }
+
+      template<typename _Fn>
+        explicit
+        packaged_task(const _Fn& __fn) : _M_task(__fn) { }
+
+      template<typename _Fn>
+        explicit
+        packaged_task(_Fn&& __fn) : _M_task(std::move(__fn)) { }
+
+      explicit
+      packaged_task(_Res(*__fn)(_ArgTypes...)) : _M_task(__fn) { }
+
+      // TODO: requires allocator concepts
+      /*
+      template<typename _Fn, typename _Allocator>
+        explicit
+        packaged_task(allocator_arg_t __tag, const _Allocator& __a, _Fn __fn)
+        : _M_task(__tag, __a, __fn), _M_promise(__tag, __a)
+        { }
+
+      template<typename _Fn, typename _Allocator>
+        explicit
+        packaged_task(allocator_arg_t __tag, const _Allocator& __a, _Fn&& __fn)
+        : _M_task(__tag, __a, std::move(__fn)), _M_promise(__tag, __a)
+        { }
+       */
+
+      ~packaged_task() = default;
+
+      // No copy
+      packaged_task(packaged_task&) = delete;
+      packaged_task& operator=(packaged_task&) = delete;
+
+      // Move support
+      packaged_task(packaged_task&& __other)
+      { this->swap(__other); }
+
+      packaged_task& operator=(packaged_task&& __other)
+      {
+        packaged_task(std::move(__other)).swap(*this);
+        return *this;
+      }
+
+      void
+      swap(packaged_task& __other)
+      {
+        _M_task.swap(__other._M_task);
+        _M_promise.swap(__other._M_promise);
+      }
+
+      explicit operator bool() const { return static_cast<bool>(_M_task); }
+
+      // Result retrieval
+      unique_future<_Res>
+      get_future()
+      {
+        __try
+        {
+          return _M_promise.get_future();
+        }
+        __catch (const future_error& __e)
+        {
+#ifdef __EXCEPTIONS
+          if (__e.code() == future_errc::future_already_retrieved)
+	    throw std::bad_function_call();
+	  throw;
+#endif
+        }
+      }
+
+      // Execution
+      void
+      operator()(_ArgTypes... __args)
+      {
+        if (!static_cast<bool>(_M_task) || _M_promise._M_satisfied())
+	  {
+#ifdef __EXCEPTIONS
+	    throw std::bad_function_call();
+#else
+	    __builtin_abort();
+#endif
+	  }
+
+        __try
+        {
+          _Run_task<_Res, _ArgTypes...>::_S_run(_M_promise, _M_task,
+              std::forward<_ArgTypes>(__args)...);
+        }
+        __catch (...)
+        {
+          _M_promise.set_exception(current_exception());
+        }
+      }
+
+      void reset() { promise<_Res>().swap(_M_promise); }
+    };
+
+#endif // _GLIBCXX_HAS_GTHREADS && _GLIBCXX_USE_C99_STDINT_TR1
+       // && _GLIBCXX_ATOMIC_BUILTINS_4
+
+  // @} group futures
+}
+
+#endif // __GXX_EXPERIMENTAL_CXX0X__
+
+#endif // _GLIBCXX_FUTURE

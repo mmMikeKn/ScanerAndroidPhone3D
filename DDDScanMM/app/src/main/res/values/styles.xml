@@ -1,0 +1,19 @@
+<resources>
+
+    <style name="AppTheme" parent="android:Theme.Material.Light.NoActionBar.Fullscreen"/>
+    <style name="AddTheme" parent="android:Theme.Light">
+        <item name="android:windowBackground">@color/colorTheme_background</item>
+    </style>
+
+
+    <style name="MyButton" parent="android:style/Widget.Button">
+        <item name="android:background">@drawable/button_background</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:layout_marginTop">2dp</item>
+        <item name="android:layout_marginBottom">2dp</item>
+        <item name="android:layout_marginRight">3dp</item>
+        <item name="android:layout_marginLeft">3dp</item>
+    </style>
+
+
+</resources>

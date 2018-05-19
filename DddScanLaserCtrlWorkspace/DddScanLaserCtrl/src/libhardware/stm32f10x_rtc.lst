@@ -1,0 +1,837 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 4
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"stm32f10x_rtc.c"
+  23              	.Ltext0:
+  24              		.file 1 "stm32f10x_rtc.c"
+ 14897              		.align	1
+ 14898              		.global	RTC_ITConfig
+ 14899              		.thumb
+ 14900              		.thumb_func
+ 14902              	RTC_ITConfig:
+ 14903              	.LFB27:
+   0:stm32f10x_rtc.c **** /**
+   1:stm32f10x_rtc.c ****   ******************************************************************************
+   2:stm32f10x_rtc.c ****   * @file    stm32f10x_rtc.c
+   3:stm32f10x_rtc.c ****   * @author  MCD Application Team
+   4:stm32f10x_rtc.c ****   * @version V3.1.2
+   5:stm32f10x_rtc.c ****   * @date    09/28/2009
+   6:stm32f10x_rtc.c ****   * @brief   This file provides all the RTC firmware functions.
+   7:stm32f10x_rtc.c ****   ******************************************************************************
+   8:stm32f10x_rtc.c ****   * @copy
+   9:stm32f10x_rtc.c ****   *
+  10:stm32f10x_rtc.c ****   * THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
+  11:stm32f10x_rtc.c ****   * WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE
+  12:stm32f10x_rtc.c ****   * TIME. AS A RESULT, STMICROELECTRONICS SHALL NOT BE HELD LIABLE FOR ANY
+  13:stm32f10x_rtc.c ****   * DIRECT, INDIRECT OR CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY CLAIMS ARISING
+  14:stm32f10x_rtc.c ****   * FROM THE CONTENT OF SUCH FIRMWARE AND/OR THE USE MADE BY CUSTOMERS OF THE
+  15:stm32f10x_rtc.c ****   * CODING INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
+  16:stm32f10x_rtc.c ****   *
+  17:stm32f10x_rtc.c ****   * <h2><center>&copy; COPYRIGHT 2009 STMicroelectronics</center></h2>
+  18:stm32f10x_rtc.c ****   */ 
+  19:stm32f10x_rtc.c **** 
+  20:stm32f10x_rtc.c **** /* Includes ------------------------------------------------------------------*/
+  21:stm32f10x_rtc.c **** #include "stm32f10x_rtc.h"
+  22:stm32f10x_rtc.c **** 
+  23:stm32f10x_rtc.c **** /** @addtogroup STM32F10x_StdPeriph_Driver
+  24:stm32f10x_rtc.c ****   * @{
+  25:stm32f10x_rtc.c ****   */
+  26:stm32f10x_rtc.c **** 
+  27:stm32f10x_rtc.c **** /** @defgroup RTC 
+  28:stm32f10x_rtc.c ****   * @brief RTC driver modules
+  29:stm32f10x_rtc.c ****   * @{
+  30:stm32f10x_rtc.c ****   */
+  31:stm32f10x_rtc.c **** 
+  32:stm32f10x_rtc.c **** /** @defgroup RTC_Private_TypesDefinitions
+  33:stm32f10x_rtc.c ****   * @{
+  34:stm32f10x_rtc.c ****   */ 
+  35:stm32f10x_rtc.c **** /**
+  36:stm32f10x_rtc.c ****   * @}
+  37:stm32f10x_rtc.c ****   */
+  38:stm32f10x_rtc.c **** 
+  39:stm32f10x_rtc.c **** /** @defgroup RTC_Private_Defines
+  40:stm32f10x_rtc.c ****   * @{
+  41:stm32f10x_rtc.c ****   */
+  42:stm32f10x_rtc.c **** 
+  43:stm32f10x_rtc.c **** #define CRL_CNF_Set      ((uint16_t)0x0010)      /*!< Configuration Flag Enable Mask */
+  44:stm32f10x_rtc.c **** #define CRL_CNF_Reset    ((uint16_t)0xFFEF)      /*!< Configuration Flag Disable Mask */
+  45:stm32f10x_rtc.c **** #define RTC_LSB_Mask     ((uint32_t)0x0000FFFF)  /*!< RTC LSB Mask */
+  46:stm32f10x_rtc.c **** #define PRLH_MSB_Mask    ((uint32_t)0x000F0000)  /*!< RTC Prescaler MSB Mask */
+  47:stm32f10x_rtc.c **** 
+  48:stm32f10x_rtc.c **** /**
+  49:stm32f10x_rtc.c ****   * @}
+  50:stm32f10x_rtc.c ****   */
+  51:stm32f10x_rtc.c **** 
+  52:stm32f10x_rtc.c **** /** @defgroup RTC_Private_Macros
+  53:stm32f10x_rtc.c ****   * @{
+  54:stm32f10x_rtc.c ****   */
+  55:stm32f10x_rtc.c **** 
+  56:stm32f10x_rtc.c **** /**
+  57:stm32f10x_rtc.c ****   * @}
+  58:stm32f10x_rtc.c ****   */
+  59:stm32f10x_rtc.c **** 
+  60:stm32f10x_rtc.c **** /** @defgroup RTC_Private_Variables
+  61:stm32f10x_rtc.c ****   * @{
+  62:stm32f10x_rtc.c ****   */
+  63:stm32f10x_rtc.c **** 
+  64:stm32f10x_rtc.c **** /**
+  65:stm32f10x_rtc.c ****   * @}
+  66:stm32f10x_rtc.c ****   */
+  67:stm32f10x_rtc.c **** 
+  68:stm32f10x_rtc.c **** /** @defgroup RTC_Private_FunctionPrototypes
+  69:stm32f10x_rtc.c ****   * @{
+  70:stm32f10x_rtc.c ****   */
+  71:stm32f10x_rtc.c **** 
+  72:stm32f10x_rtc.c **** /**
+  73:stm32f10x_rtc.c ****   * @}
+  74:stm32f10x_rtc.c ****   */
+  75:stm32f10x_rtc.c **** 
+  76:stm32f10x_rtc.c **** /** @defgroup RTC_Private_Functions
+  77:stm32f10x_rtc.c ****   * @{
+  78:stm32f10x_rtc.c ****   */
+  79:stm32f10x_rtc.c **** 
+  80:stm32f10x_rtc.c **** /**
+  81:stm32f10x_rtc.c ****   * @brief  Enables or disables the specified RTC interrupts.
+  82:stm32f10x_rtc.c ****   * @param  RTC_IT: specifies the RTC interrupts sources to be enabled or disabled.
+  83:stm32f10x_rtc.c ****   *   This parameter can be any combination of the following values:
+  84:stm32f10x_rtc.c ****   *     @arg RTC_IT_OW: Overflow interrupt
+  85:stm32f10x_rtc.c ****   *     @arg RTC_IT_ALR: Alarm interrupt
+  86:stm32f10x_rtc.c ****   *     @arg RTC_IT_SEC: Second interrupt
+  87:stm32f10x_rtc.c ****   * @param  NewState: new state of the specified RTC interrupts.
+  88:stm32f10x_rtc.c ****   *   This parameter can be: ENABLE or DISABLE.
+  89:stm32f10x_rtc.c ****   * @retval None
+  90:stm32f10x_rtc.c ****   */
+  91:stm32f10x_rtc.c **** void RTC_ITConfig(uint16_t RTC_IT, FunctionalState NewState)
+  92:stm32f10x_rtc.c **** {
+ 14904              		.loc 1 93 0
+ 14905              		@ args = 0, pretend = 0, frame = 0
+ 14906              		@ frame_needed = 0, uses_anonymous_args = 0
+ 14907              		@ link register save eliminated.
+ 14908              	.LVL0:
+  93:stm32f10x_rtc.c ****   /* Check the parameters */
+  94:stm32f10x_rtc.c ****   assert_param(IS_RTC_IT(RTC_IT));  
+  95:stm32f10x_rtc.c ****   assert_param(IS_FUNCTIONAL_STATE(NewState));
+  96:stm32f10x_rtc.c ****   
+  97:stm32f10x_rtc.c ****   if (NewState != DISABLE)
+ 14909              		.loc 1 98 0
+ 14910 0000 21B1     		cbz	r1, .L2
+  98:stm32f10x_rtc.c ****   {
+  99:stm32f10x_rtc.c ****     RTC->CRH |= RTC_IT;
+ 14911              		.loc 1 100 0
+ 14912 0002 064B     		ldr	r3, .L6
+ 14913 0004 1988     		ldrh	r1, [r3, #0]
+ 14914              	.LVL1:
+ 14915 0006 8AB2     		uxth	r2, r1
+ 14916 0008 1043     		orrs	r0, r0, r2
+ 14917              	.LVL2:
+ 14918 000a 05E0     		b	.L4
+ 14919              	.LVL3:
+ 14920              	.L2:
+ 100:stm32f10x_rtc.c ****   }
+ 101:stm32f10x_rtc.c ****   else
+ 102:stm32f10x_rtc.c ****   {
+ 103:stm32f10x_rtc.c ****     RTC->CRH &= (uint16_t)~RTC_IT;
+ 14921              		.loc 1 104 0
+ 14922 000c 034B     		ldr	r3, .L6
+ 14923 000e 1A88     		ldrh	r2, [r3, #0]
+ 14924 0010 1FFA82FC 		uxth	ip, r2
+ 14925 0014 2CEA0000 		bic	r0, ip, r0
+ 14926              	.LVL4:
+ 14927              	.L4:
+ 14928 0018 1880     		strh	r0, [r3, #0]	@ movhi
+ 104:stm32f10x_rtc.c ****   }
+ 105:stm32f10x_rtc.c **** }
+ 14929              		.loc 1 106 0
+ 14930 001a 7047     		bx	lr
+ 14931              	.L7:
+ 14932              		.align	2
+ 14933              	.L6:
+ 14934 001c 00280040 		.word	1073752064
+ 14935              	.LFE27:
+ 14937              		.section	.text.RTC_EnterConfigMode,"ax",%progbits
+ 14938              		.align	1
+ 14939              		.global	RTC_EnterConfigMode
+ 14940              		.thumb
+ 14941              		.thumb_func
+ 14943              	RTC_EnterConfigMode:
+ 14944              	.LFB28:
+ 106:stm32f10x_rtc.c **** 
+ 107:stm32f10x_rtc.c **** /**
+ 108:stm32f10x_rtc.c ****   * @brief  Enters the RTC configuration mode.
+ 109:stm32f10x_rtc.c ****   * @param  None
+ 110:stm32f10x_rtc.c ****   * @retval None
+ 111:stm32f10x_rtc.c ****   */
+ 112:stm32f10x_rtc.c **** void RTC_EnterConfigMode(void)
+ 113:stm32f10x_rtc.c **** {
+ 14945              		.loc 1 114 0
+ 14946              		@ args = 0, pretend = 0, frame = 0
+ 14947              		@ frame_needed = 0, uses_anonymous_args = 0
+ 14948              		@ link register save eliminated.
+ 114:stm32f10x_rtc.c ****   /* Set the CNF flag to enter in the Configuration Mode */
+ 115:stm32f10x_rtc.c ****   RTC->CRL |= CRL_CNF_Set;
+ 14949              		.loc 1 116 0
+ 14950 0000 034B     		ldr	r3, .L9
+ 14951 0002 9988     		ldrh	r1, [r3, #4]
+ 14952 0004 88B2     		uxth	r0, r1
+ 14953 0006 40F01002 		orr	r2, r0, #16
+ 14954 000a 9A80     		strh	r2, [r3, #4]	@ movhi
+ 116:stm32f10x_rtc.c **** }
+ 14955              		.loc 1 117 0
+ 14956 000c 7047     		bx	lr
+ 14957              	.L10:
+ 14958 000e 00BF     		.align	2
+ 14959              	.L9:
+ 14960 0010 00280040 		.word	1073752064
+ 14961              	.LFE28:
+ 14963              		.section	.text.RTC_ExitConfigMode,"ax",%progbits
+ 14964              		.align	1
+ 14965              		.global	RTC_ExitConfigMode
+ 14966              		.thumb
+ 14967              		.thumb_func
+ 14969              	RTC_ExitConfigMode:
+ 14970              	.LFB29:
+ 117:stm32f10x_rtc.c **** 
+ 118:stm32f10x_rtc.c **** /**
+ 119:stm32f10x_rtc.c ****   * @brief  Exits from the RTC configuration mode.
+ 120:stm32f10x_rtc.c ****   * @param  None
+ 121:stm32f10x_rtc.c ****   * @retval None
+ 122:stm32f10x_rtc.c ****   */
+ 123:stm32f10x_rtc.c **** void RTC_ExitConfigMode(void)
+ 124:stm32f10x_rtc.c **** {
+ 14971              		.loc 1 125 0
+ 14972              		@ args = 0, pretend = 0, frame = 0
+ 14973              		@ frame_needed = 0, uses_anonymous_args = 0
+ 14974              		@ link register save eliminated.
+ 125:stm32f10x_rtc.c ****   /* Reset the CNF flag to exit from the Configuration Mode */
+ 126:stm32f10x_rtc.c ****   RTC->CRL &= CRL_CNF_Reset;
+ 14975              		.loc 1 127 0
+ 14976 0000 044A     		ldr	r2, .L12
+ 14977 0002 B2F804C0 		ldrh	ip, [r2, #4]
+ 14978 0006 2CF01001 		bic	r1, ip, #16
+ 14979 000a 0804     		lsls	r0, r1, #16
+ 14980 000c 030C     		lsrs	r3, r0, #16
+ 14981 000e 9380     		strh	r3, [r2, #4]	@ movhi
+ 127:stm32f10x_rtc.c **** }
+ 14982              		.loc 1 128 0
+ 14983 0010 7047     		bx	lr
+ 14984              	.L13:
+ 14985 0012 00BF     		.align	2
+ 14986              	.L12:
+ 14987 0014 00280040 		.word	1073752064
+ 14988              	.LFE29:
+ 14990              		.section	.text.RTC_GetCounter,"ax",%progbits
+ 14991              		.align	1
+ 14992              		.global	RTC_GetCounter
+ 14993              		.thumb
+ 14994              		.thumb_func
+ 14996              	RTC_GetCounter:
+ 14997              	.LFB30:
+ 128:stm32f10x_rtc.c **** 
+ 129:stm32f10x_rtc.c **** /**
+ 130:stm32f10x_rtc.c ****   * @brief  Gets the RTC counter value.
+ 131:stm32f10x_rtc.c ****   * @param  None
+ 132:stm32f10x_rtc.c ****   * @retval RTC counter value.
+ 133:stm32f10x_rtc.c ****   */
+ 134:stm32f10x_rtc.c **** uint32_t RTC_GetCounter(void)
+ 135:stm32f10x_rtc.c **** {
+ 14998              		.loc 1 136 0
+ 14999              		@ args = 0, pretend = 0, frame = 0
+ 15000              		@ frame_needed = 0, uses_anonymous_args = 0
+ 15001              		@ link register save eliminated.
+ 15002              	.LVL5:
+ 136:stm32f10x_rtc.c ****   uint16_t tmp = 0;
+ 137:stm32f10x_rtc.c ****   tmp = RTC->CNTL;
+ 15003              		.loc 1 138 0
+ 15004 0000 0349     		ldr	r1, .L15
+ 15005 0002 8A8B     		ldrh	r2, [r1, #28]
+ 138:stm32f10x_rtc.c ****   return (((uint32_t)RTC->CNTH << 16 ) | tmp) ;
+ 15006              		.loc 1 139 0
+ 15007 0004 0B8B     		ldrh	r3, [r1, #24]
+ 138:stm32f10x_rtc.c ****   return (((uint32_t)RTC->CNTH << 16 ) | tmp) ;
+ 15008              		.loc 1 138 0
+ 15009 0006 90B2     		uxth	r0, r2
+ 15010              	.LVL6:
+ 15011              		.loc 1 139 0
+ 15012 0008 40EA0340 		orr	r0, r0, r3, lsl #16
+ 15013              	.LVL7:
+ 139:stm32f10x_rtc.c **** }
+ 15014              		.loc 1 140 0
+ 15015 000c 7047     		bx	lr
+ 15016              	.L16:
+ 15017 000e 00BF     		.align	2
+ 15018              	.L15:
+ 15019 0010 00280040 		.word	1073752064
+ 15020              	.LFE30:
+ 15022              		.section	.text.RTC_SetCounter,"ax",%progbits
+ 15023              		.align	1
+ 15024              		.global	RTC_SetCounter
+ 15025              		.thumb
+ 15026              		.thumb_func
+ 15028              	RTC_SetCounter:
+ 15029              	.LFB31:
+ 140:stm32f10x_rtc.c **** 
+ 141:stm32f10x_rtc.c **** /**
+ 142:stm32f10x_rtc.c ****   * @brief  Sets the RTC counter value.
+ 143:stm32f10x_rtc.c ****   * @param  CounterValue: RTC counter new value.
+ 144:stm32f10x_rtc.c ****   * @retval None
+ 145:stm32f10x_rtc.c ****   */
+ 146:stm32f10x_rtc.c **** void RTC_SetCounter(uint32_t CounterValue)
+ 147:stm32f10x_rtc.c **** { 
+ 15030              		.loc 1 148 0
+ 15031              		@ args = 0, pretend = 0, frame = 0
+ 15032              		@ frame_needed = 0, uses_anonymous_args = 0
+ 15033              	.LVL8:
+ 15034 0000 10B5     		push	{r4, lr}
+ 15035              	.LCFI0:
+ 15036              	.LVL9:
+ 15037              		.loc 1 148 0
+ 15038 0002 0446     		mov	r4, r0
+ 148:stm32f10x_rtc.c ****   RTC_EnterConfigMode();
+ 15039              		.loc 1 149 0
+ 15040 0004 FFF7FEFF 		bl	RTC_EnterConfigMode
+ 15041              	.LVL10:
+ 149:stm32f10x_rtc.c ****   /* Set RTC COUNTER MSB word */
+ 150:stm32f10x_rtc.c ****   RTC->CNTH = CounterValue >> 16;
+ 15042              		.loc 1 151 0
+ 15043 0008 034B     		ldr	r3, .L18
+ 15044 000a 220C     		lsrs	r2, r4, #16
+ 151:stm32f10x_rtc.c ****   /* Set RTC COUNTER LSB word */
+ 152:stm32f10x_rtc.c ****   RTC->CNTL = (CounterValue & RTC_LSB_Mask);
+ 15045              		.loc 1 153 0
+ 15046 000c A4B2     		uxth	r4, r4
+ 151:stm32f10x_rtc.c ****   /* Set RTC COUNTER LSB word */
+ 15047              		.loc 1 151 0
+ 15048 000e 1A83     		strh	r2, [r3, #24]	@ movhi
+ 15049              		.loc 1 153 0
+ 15050 0010 9C83     		strh	r4, [r3, #28]	@ movhi
+ 153:stm32f10x_rtc.c ****   RTC_ExitConfigMode();
+ 15051              		.loc 1 154 0
+ 15052 0012 FFF7FEFF 		bl	RTC_ExitConfigMode
+ 154:stm32f10x_rtc.c **** }
+ 15053              		.loc 1 155 0
+ 15054 0016 10BD     		pop	{r4, pc}
+ 15055              	.L19:
+ 15056              		.align	2
+ 15057              	.L18:
+ 15058 0018 00280040 		.word	1073752064
+ 15059              	.LFE31:
+ 15061              		.section	.text.RTC_SetPrescaler,"ax",%progbits
+ 15062              		.align	1
+ 15063              		.global	RTC_SetPrescaler
+ 15064              		.thumb
+ 15065              		.thumb_func
+ 15067              	RTC_SetPrescaler:
+ 15068              	.LFB32:
+ 155:stm32f10x_rtc.c **** 
+ 156:stm32f10x_rtc.c **** /**
+ 157:stm32f10x_rtc.c ****   * @brief  Sets the RTC prescaler value.
+ 158:stm32f10x_rtc.c ****   * @param  PrescalerValue: RTC prescaler new value.
+ 159:stm32f10x_rtc.c ****   * @retval None
+ 160:stm32f10x_rtc.c ****   */
+ 161:stm32f10x_rtc.c **** void RTC_SetPrescaler(uint32_t PrescalerValue)
+ 162:stm32f10x_rtc.c **** {
+ 15069              		.loc 1 163 0
+ 15070              		@ args = 0, pretend = 0, frame = 0
+ 15071              		@ frame_needed = 0, uses_anonymous_args = 0
+ 15072              	.LVL11:
+ 15073 0000 10B5     		push	{r4, lr}
+ 15074              	.LCFI1:
+ 15075              	.LVL12:
+ 15076              		.loc 1 163 0
+ 15077 0002 0446     		mov	r4, r0
+ 163:stm32f10x_rtc.c ****   /* Check the parameters */
+ 164:stm32f10x_rtc.c ****   assert_param(IS_RTC_PRESCALER(PrescalerValue));
+ 165:stm32f10x_rtc.c ****   
+ 166:stm32f10x_rtc.c ****   RTC_EnterConfigMode();
+ 15078              		.loc 1 167 0
+ 15079 0004 FFF7FEFF 		bl	RTC_EnterConfigMode
+ 15080              	.LVL13:
+ 167:stm32f10x_rtc.c ****   /* Set RTC PRESCALER MSB word */
+ 168:stm32f10x_rtc.c ****   RTC->PRLH = (PrescalerValue & PRLH_MSB_Mask) >> 16;
+ 15081              		.loc 1 169 0
+ 15082 0008 044B     		ldr	r3, .L21
+ 15083 000a C4F30342 		ubfx	r2, r4, #16, #4
+ 169:stm32f10x_rtc.c ****   /* Set RTC PRESCALER LSB word */
+ 170:stm32f10x_rtc.c ****   RTC->PRLL = (PrescalerValue & RTC_LSB_Mask);
+ 15084              		.loc 1 171 0
+ 15085 000e A4B2     		uxth	r4, r4
+ 169:stm32f10x_rtc.c ****   /* Set RTC PRESCALER LSB word */
+ 15086              		.loc 1 169 0
+ 15087 0010 1A81     		strh	r2, [r3, #8]	@ movhi
+ 15088              		.loc 1 171 0
+ 15089 0012 9C81     		strh	r4, [r3, #12]	@ movhi
+ 171:stm32f10x_rtc.c ****   RTC_ExitConfigMode();
+ 15090              		.loc 1 172 0
+ 15091 0014 FFF7FEFF 		bl	RTC_ExitConfigMode
+ 172:stm32f10x_rtc.c **** }
+ 15092              		.loc 1 173 0
+ 15093 0018 10BD     		pop	{r4, pc}
+ 15094              	.L22:
+ 15095 001a 00BF     		.align	2
+ 15096              	.L21:
+ 15097 001c 00280040 		.word	1073752064
+ 15098              	.LFE32:
+ 15100              		.section	.text.RTC_SetAlarm,"ax",%progbits
+ 15101              		.align	1
+ 15102              		.global	RTC_SetAlarm
+ 15103              		.thumb
+ 15104              		.thumb_func
+ 15106              	RTC_SetAlarm:
+ 15107              	.LFB33:
+ 173:stm32f10x_rtc.c **** 
+ 174:stm32f10x_rtc.c **** /**
+ 175:stm32f10x_rtc.c ****   * @brief  Sets the RTC alarm value.
+ 176:stm32f10x_rtc.c ****   * @param  AlarmValue: RTC alarm new value.
+ 177:stm32f10x_rtc.c ****   * @retval None
+ 178:stm32f10x_rtc.c ****   */
+ 179:stm32f10x_rtc.c **** void RTC_SetAlarm(uint32_t AlarmValue)
+ 180:stm32f10x_rtc.c **** {  
+ 15108              		.loc 1 181 0
+ 15109              		@ args = 0, pretend = 0, frame = 0
+ 15110              		@ frame_needed = 0, uses_anonymous_args = 0
+ 15111              	.LVL14:
+ 15112 0000 10B5     		push	{r4, lr}
+ 15113              	.LCFI2:
+ 15114              	.LVL15:
+ 15115              		.loc 1 181 0
+ 15116 0002 0446     		mov	r4, r0
+ 181:stm32f10x_rtc.c ****   RTC_EnterConfigMode();
+ 15117              		.loc 1 182 0
+ 15118 0004 FFF7FEFF 		bl	RTC_EnterConfigMode
+ 15119              	.LVL16:
+ 182:stm32f10x_rtc.c ****   /* Set the ALARM MSB word */
+ 183:stm32f10x_rtc.c ****   RTC->ALRH = AlarmValue >> 16;
+ 15120              		.loc 1 184 0
+ 15121 0008 034B     		ldr	r3, .L24
+ 15122 000a 220C     		lsrs	r2, r4, #16
+ 184:stm32f10x_rtc.c ****   /* Set the ALARM LSB word */
+ 185:stm32f10x_rtc.c ****   RTC->ALRL = (AlarmValue & RTC_LSB_Mask);
+ 15123              		.loc 1 186 0
+ 15124 000c A4B2     		uxth	r4, r4
+ 184:stm32f10x_rtc.c ****   /* Set the ALARM LSB word */
+ 15125              		.loc 1 184 0
+ 15126 000e 1A84     		strh	r2, [r3, #32]	@ movhi
+ 15127              		.loc 1 186 0
+ 15128 0010 9C84     		strh	r4, [r3, #36]	@ movhi
+ 186:stm32f10x_rtc.c ****   RTC_ExitConfigMode();
+ 15129              		.loc 1 187 0
+ 15130 0012 FFF7FEFF 		bl	RTC_ExitConfigMode
+ 187:stm32f10x_rtc.c **** }
+ 15131              		.loc 1 188 0
+ 15132 0016 10BD     		pop	{r4, pc}
+ 15133              	.L25:
+ 15134              		.align	2
+ 15135              	.L24:
+ 15136 0018 00280040 		.word	1073752064
+ 15137              	.LFE33:
+ 15139              		.section	.text.RTC_GetDivider,"ax",%progbits
+ 15140              		.align	1
+ 15141              		.global	RTC_GetDivider
+ 15142              		.thumb
+ 15143              		.thumb_func
+ 15145              	RTC_GetDivider:
+ 15146              	.LFB34:
+ 188:stm32f10x_rtc.c **** 
+ 189:stm32f10x_rtc.c **** /**
+ 190:stm32f10x_rtc.c ****   * @brief  Gets the RTC divider value.
+ 191:stm32f10x_rtc.c ****   * @param  None
+ 192:stm32f10x_rtc.c ****   * @retval RTC Divider value.
+ 193:stm32f10x_rtc.c ****   */
+ 194:stm32f10x_rtc.c **** uint32_t RTC_GetDivider(void)
+ 195:stm32f10x_rtc.c **** {
+ 15147              		.loc 1 196 0
+ 15148              		@ args = 0, pretend = 0, frame = 0
+ 15149              		@ frame_needed = 0, uses_anonymous_args = 0
+ 15150              		@ link register save eliminated.
+ 15151              	.LVL17:
+ 196:stm32f10x_rtc.c ****   uint32_t tmp = 0x00;
+ 197:stm32f10x_rtc.c ****   tmp = ((uint32_t)RTC->DIVH & (uint32_t)0x000F) << 16;
+ 15152              		.loc 1 198 0
+ 15153 0000 044A     		ldr	r2, .L27
+ 15154 0002 B2F810C0 		ldrh	ip, [r2, #16]
+ 198:stm32f10x_rtc.c ****   tmp |= RTC->DIVL;
+ 15155              		.loc 1 199 0
+ 15156 0006 918A     		ldrh	r1, [r2, #20]
+ 198:stm32f10x_rtc.c ****   tmp |= RTC->DIVL;
+ 15157              		.loc 1 198 0
+ 15158 0008 0CF00F00 		and	r0, ip, #15
+ 15159              	.LVL18:
+ 15160              		.loc 1 199 0
+ 15161 000c 8BB2     		uxth	r3, r1
+ 15162              	.LVL19:
+ 15163 000e 43EA0040 		orr	r0, r3, r0, lsl #16
+ 199:stm32f10x_rtc.c ****   return tmp;
+ 200:stm32f10x_rtc.c **** }
+ 15164              		.loc 1 201 0
+ 15165 0012 7047     		bx	lr
+ 15166              	.L28:
+ 15167              		.align	2
+ 15168              	.L27:
+ 15169 0014 00280040 		.word	1073752064
+ 15170              	.LFE34:
+ 15172              		.section	.text.RTC_WaitForLastTask,"ax",%progbits
+ 15173              		.align	1
+ 15174              		.global	RTC_WaitForLastTask
+ 15175              		.thumb
+ 15176              		.thumb_func
+ 15178              	RTC_WaitForLastTask:
+ 15179              	.LFB35:
+ 201:stm32f10x_rtc.c **** 
+ 202:stm32f10x_rtc.c **** /**
+ 203:stm32f10x_rtc.c ****   * @brief  Waits until last write operation on RTC registers has finished.
+ 204:stm32f10x_rtc.c ****   * @note   This function must be called before any write to RTC registers.
+ 205:stm32f10x_rtc.c ****   * @param  None
+ 206:stm32f10x_rtc.c ****   * @retval None
+ 207:stm32f10x_rtc.c ****   */
+ 208:stm32f10x_rtc.c **** void RTC_WaitForLastTask(void)
+ 209:stm32f10x_rtc.c **** {
+ 15180              		.loc 1 210 0
+ 15181              		@ args = 0, pretend = 0, frame = 0
+ 15182              		@ frame_needed = 0, uses_anonymous_args = 0
+ 15183              		@ link register save eliminated.
+ 210:stm32f10x_rtc.c ****   /* Loop until RTOFF flag is set */
+ 211:stm32f10x_rtc.c ****   while ((RTC->CRL & RTC_FLAG_RTOFF) == (uint16_t)RESET)
+ 15184              		.loc 1 212 0
+ 15185 0000 024B     		ldr	r3, .L32
+ 15186              	.L30:
+ 15187              		.loc 1 212 0 is_stmt 0 discriminator 1
+ 15188 0002 9A88     		ldrh	r2, [r3, #4]
+ 15189 0004 12F0200F 		tst	r2, #32
+ 15190 0008 FBD0     		beq	.L30
+ 212:stm32f10x_rtc.c ****   {
+ 213:stm32f10x_rtc.c ****   }
+ 214:stm32f10x_rtc.c **** }
+ 15191              		.loc 1 215 0 is_stmt 1
+ 15192 000a 7047     		bx	lr
+ 15193              	.L33:
+ 15194              		.align	2
+ 15195              	.L32:
+ 15196 000c 00280040 		.word	1073752064
+ 15197              	.LFE35:
+ 15199              		.section	.text.RTC_WaitForSynchro,"ax",%progbits
+ 15200              		.align	1
+ 15201              		.global	RTC_WaitForSynchro
+ 15202              		.thumb
+ 15203              		.thumb_func
+ 15205              	RTC_WaitForSynchro:
+ 15206              	.LFB36:
+ 215:stm32f10x_rtc.c **** 
+ 216:stm32f10x_rtc.c **** /**
+ 217:stm32f10x_rtc.c ****   * @brief  Waits until the RTC registers (RTC_CNT, RTC_ALR and RTC_PRL)
+ 218:stm32f10x_rtc.c ****   *   are synchronized with RTC APB clock.
+ 219:stm32f10x_rtc.c ****   * @note   This function must be called before any read operation after an APB reset
+ 220:stm32f10x_rtc.c ****   *   or an APB clock stop.
+ 221:stm32f10x_rtc.c ****   * @param  None
+ 222:stm32f10x_rtc.c ****   * @retval None
+ 223:stm32f10x_rtc.c ****   */
+ 224:stm32f10x_rtc.c **** void RTC_WaitForSynchro(void)
+ 225:stm32f10x_rtc.c **** {
+ 15207              		.loc 1 226 0
+ 15208              		@ args = 0, pretend = 0, frame = 0
+ 15209              		@ frame_needed = 0, uses_anonymous_args = 0
+ 15210              		@ link register save eliminated.
+ 226:stm32f10x_rtc.c ****   /* Clear RSF flag */
+ 227:stm32f10x_rtc.c ****   RTC->CRL &= (uint16_t)~RTC_FLAG_RSF;
+ 15211              		.loc 1 228 0
+ 15212 0000 064A     		ldr	r2, .L37
+ 15213 0002 B2F804C0 		ldrh	ip, [r2, #4]
+ 15214 0006 2CF00801 		bic	r1, ip, #8
+ 15215 000a 0804     		lsls	r0, r1, #16
+ 15216 000c 030C     		lsrs	r3, r0, #16
+ 15217 000e 9380     		strh	r3, [r2, #4]	@ movhi
+ 15218              	.L35:
+ 228:stm32f10x_rtc.c ****   /* Loop until RSF flag is set */
+ 229:stm32f10x_rtc.c ****   while ((RTC->CRL & RTC_FLAG_RSF) == (uint16_t)RESET)
+ 15219              		.loc 1 230 0 discriminator 1
+ 15220 0010 9388     		ldrh	r3, [r2, #4]
+ 15221 0012 13F0080F 		tst	r3, #8
+ 15222 0016 FBD0     		beq	.L35
+ 230:stm32f10x_rtc.c ****   {
+ 231:stm32f10x_rtc.c ****   }
+ 232:stm32f10x_rtc.c **** }
+ 15223              		.loc 1 233 0
+ 15224 0018 7047     		bx	lr
+ 15225              	.L38:
+ 15226 001a 00BF     		.align	2
+ 15227              	.L37:
+ 15228 001c 00280040 		.word	1073752064
+ 15229              	.LFE36:
+ 15231              		.section	.text.RTC_GetFlagStatus,"ax",%progbits
+ 15232              		.align	1
+ 15233              		.global	RTC_GetFlagStatus
+ 15234              		.thumb
+ 15235              		.thumb_func
+ 15237              	RTC_GetFlagStatus:
+ 15238              	.LFB37:
+ 233:stm32f10x_rtc.c **** 
+ 234:stm32f10x_rtc.c **** /**
+ 235:stm32f10x_rtc.c ****   * @brief  Checks whether the specified RTC flag is set or not.
+ 236:stm32f10x_rtc.c ****   * @param  RTC_FLAG: specifies the flag to check.
+ 237:stm32f10x_rtc.c ****   *   This parameter can be one the following values:
+ 238:stm32f10x_rtc.c ****   *     @arg RTC_FLAG_RTOFF: RTC Operation OFF flag
+ 239:stm32f10x_rtc.c ****   *     @arg RTC_FLAG_RSF: Registers Synchronized flag
+ 240:stm32f10x_rtc.c ****   *     @arg RTC_FLAG_OW: Overflow flag
+ 241:stm32f10x_rtc.c ****   *     @arg RTC_FLAG_ALR: Alarm flag
+ 242:stm32f10x_rtc.c ****   *     @arg RTC_FLAG_SEC: Second flag
+ 243:stm32f10x_rtc.c ****   * @retval The new state of RTC_FLAG (SET or RESET).
+ 244:stm32f10x_rtc.c ****   */
+ 245:stm32f10x_rtc.c **** FlagStatus RTC_GetFlagStatus(uint16_t RTC_FLAG)
+ 246:stm32f10x_rtc.c **** {
+ 15239              		.loc 1 247 0
+ 15240              		@ args = 0, pretend = 0, frame = 0
+ 15241              		@ frame_needed = 0, uses_anonymous_args = 0
+ 15242              		@ link register save eliminated.
+ 15243              	.LVL20:
+ 247:stm32f10x_rtc.c ****   FlagStatus bitstatus = RESET;
+ 248:stm32f10x_rtc.c ****   
+ 249:stm32f10x_rtc.c ****   /* Check the parameters */
+ 250:stm32f10x_rtc.c ****   assert_param(IS_RTC_GET_FLAG(RTC_FLAG)); 
+ 251:stm32f10x_rtc.c ****   
+ 252:stm32f10x_rtc.c ****   if ((RTC->CRL & RTC_FLAG) != (uint16_t)RESET)
+ 15244              		.loc 1 253 0
+ 15245 0000 0349     		ldr	r1, .L40
+ 15246 0002 8B88     		ldrh	r3, [r1, #4]
+ 15247 0004 1842     		tst	r0, r3
+ 15248 0006 0CBF     		ite	eq
+ 15249 0008 0020     		moveq	r0, #0
+ 15250 000a 0120     		movne	r0, #1
+ 15251              	.LVL21:
+ 253:stm32f10x_rtc.c ****   {
+ 254:stm32f10x_rtc.c ****     bitstatus = SET;
+ 255:stm32f10x_rtc.c ****   }
+ 256:stm32f10x_rtc.c ****   else
+ 257:stm32f10x_rtc.c ****   {
+ 258:stm32f10x_rtc.c ****     bitstatus = RESET;
+ 259:stm32f10x_rtc.c ****   }
+ 260:stm32f10x_rtc.c ****   return bitstatus;
+ 261:stm32f10x_rtc.c **** }
+ 15252              		.loc 1 262 0
+ 15253 000c 7047     		bx	lr
+ 15254              	.L41:
+ 15255 000e 00BF     		.align	2
+ 15256              	.L40:
+ 15257 0010 00280040 		.word	1073752064
+ 15258              	.LFE37:
+ 15260              		.section	.text.RTC_ClearFlag,"ax",%progbits
+ 15261              		.align	1
+ 15262              		.global	RTC_ClearFlag
+ 15263              		.thumb
+ 15264              		.thumb_func
+ 15266              	RTC_ClearFlag:
+ 15267              	.LFB38:
+ 262:stm32f10x_rtc.c **** 
+ 263:stm32f10x_rtc.c **** /**
+ 264:stm32f10x_rtc.c ****   * @brief  Clears the RTC’s pending flags.
+ 265:stm32f10x_rtc.c ****   * @param  RTC_FLAG: specifies the flag to clear.
+ 266:stm32f10x_rtc.c ****   *   This parameter can be any combination of the following values:
+ 267:stm32f10x_rtc.c ****   *     @arg RTC_FLAG_RSF: Registers Synchronized flag. This flag is cleared only after
+ 268:stm32f10x_rtc.c ****   *                        an APB reset or an APB Clock stop.
+ 269:stm32f10x_rtc.c ****   *     @arg RTC_FLAG_OW: Overflow flag
+ 270:stm32f10x_rtc.c ****   *     @arg RTC_FLAG_ALR: Alarm flag
+ 271:stm32f10x_rtc.c ****   *     @arg RTC_FLAG_SEC: Second flag
+ 272:stm32f10x_rtc.c ****   * @retval None
+ 273:stm32f10x_rtc.c ****   */
+ 274:stm32f10x_rtc.c **** void RTC_ClearFlag(uint16_t RTC_FLAG)
+ 275:stm32f10x_rtc.c **** {
+ 15268              		.loc 1 276 0
+ 15269              		@ args = 0, pretend = 0, frame = 0
+ 15270              		@ frame_needed = 0, uses_anonymous_args = 0
+ 15271              		@ link register save eliminated.
+ 15272              	.LVL22:
+ 276:stm32f10x_rtc.c ****   /* Check the parameters */
+ 277:stm32f10x_rtc.c ****   assert_param(IS_RTC_CLEAR_FLAG(RTC_FLAG)); 
+ 278:stm32f10x_rtc.c ****     
+ 279:stm32f10x_rtc.c ****   /* Clear the coressponding RTC flag */
+ 280:stm32f10x_rtc.c ****   RTC->CRL &= (uint16_t)~RTC_FLAG;
+ 15273              		.loc 1 281 0
+ 15274 0000 034B     		ldr	r3, .L43
+ 15275 0002 9988     		ldrh	r1, [r3, #4]
+ 15276 0004 8AB2     		uxth	r2, r1
+ 15277 0006 22EA0000 		bic	r0, r2, r0
+ 15278              	.LVL23:
+ 15279 000a 9880     		strh	r0, [r3, #4]	@ movhi
+ 281:stm32f10x_rtc.c **** }
+ 15280              		.loc 1 282 0
+ 15281 000c 7047     		bx	lr
+ 15282              	.L44:
+ 15283 000e 00BF     		.align	2
+ 15284              	.L43:
+ 15285 0010 00280040 		.word	1073752064
+ 15286              	.LFE38:
+ 15288              		.section	.text.RTC_GetITStatus,"ax",%progbits
+ 15289              		.align	1
+ 15290              		.global	RTC_GetITStatus
+ 15291              		.thumb
+ 15292              		.thumb_func
+ 15294              	RTC_GetITStatus:
+ 15295              	.LFB39:
+ 282:stm32f10x_rtc.c **** 
+ 283:stm32f10x_rtc.c **** /**
+ 284:stm32f10x_rtc.c ****   * @brief  Checks whether the specified RTC interrupt has occured or not.
+ 285:stm32f10x_rtc.c ****   * @param  RTC_IT: specifies the RTC interrupts sources to check.
+ 286:stm32f10x_rtc.c ****   *   This parameter can be one of the following values:
+ 287:stm32f10x_rtc.c ****   *     @arg RTC_IT_OW: Overflow interrupt
+ 288:stm32f10x_rtc.c ****   *     @arg RTC_IT_ALR: Alarm interrupt
+ 289:stm32f10x_rtc.c ****   *     @arg RTC_IT_SEC: Second interrupt
+ 290:stm32f10x_rtc.c ****   * @retval The new state of the RTC_IT (SET or RESET).
+ 291:stm32f10x_rtc.c ****   */
+ 292:stm32f10x_rtc.c **** ITStatus RTC_GetITStatus(uint16_t RTC_IT)
+ 293:stm32f10x_rtc.c **** {
+ 15296              		.loc 1 294 0
+ 15297              		@ args = 0, pretend = 0, frame = 0
+ 15298              		@ frame_needed = 0, uses_anonymous_args = 0
+ 15299              		@ link register save eliminated.
+ 15300              	.LVL24:
+ 294:stm32f10x_rtc.c ****   ITStatus bitstatus = RESET;
+ 295:stm32f10x_rtc.c ****   /* Check the parameters */
+ 296:stm32f10x_rtc.c ****   assert_param(IS_RTC_GET_IT(RTC_IT)); 
+ 297:stm32f10x_rtc.c ****   
+ 298:stm32f10x_rtc.c ****   bitstatus = (ITStatus)(RTC->CRL & RTC_IT);
+ 15301              		.loc 1 299 0
+ 15302 0000 DFF824C0 		ldr	ip, .L48
+ 15303 0004 BCF80420 		ldrh	r2, [ip, #4]
+ 299:stm32f10x_rtc.c ****   if (((RTC->CRH & RTC_IT) != (uint16_t)RESET) && (bitstatus != (uint16_t)RESET))
+ 15304              		.loc 1 300 0
+ 15305 0008 BCF80010 		ldrh	r1, [ip, #0]
+ 299:stm32f10x_rtc.c ****   if (((RTC->CRH & RTC_IT) != (uint16_t)RESET) && (bitstatus != (uint16_t)RESET))
+ 15306              		.loc 1 299 0
+ 15307 000c 92B2     		uxth	r2, r2
+ 15308              	.LVL25:
+ 15309              		.loc 1 300 0
+ 15310 000e 10EA0103 		ands	r3, r0, r1
+ 300:stm32f10x_rtc.c ****   {
+ 301:stm32f10x_rtc.c ****     bitstatus = SET;
+ 302:stm32f10x_rtc.c ****   }
+ 303:stm32f10x_rtc.c ****   else
+ 304:stm32f10x_rtc.c ****   {
+ 305:stm32f10x_rtc.c ****     bitstatus = RESET;
+ 15311              		.loc 1 306 0
+ 15312 0012 08BF     		it	eq
+ 15313 0014 1846     		moveq	r0, r3
+ 15314              	.LVL26:
+ 300:stm32f10x_rtc.c ****   {
+ 15315              		.loc 1 300 0
+ 15316 0016 05D0     		beq	.L46
+ 299:stm32f10x_rtc.c ****   if (((RTC->CRH & RTC_IT) != (uint16_t)RESET) && (bitstatus != (uint16_t)RESET))
+ 15317              		.loc 1 299 0 discriminator 1
+ 15318 0018 1040     		ands	r0, r0, r2
+ 302:stm32f10x_rtc.c ****     bitstatus = SET;
+ 15319              		.loc 1 302 0 discriminator 1
+ 15320 001a 10F0FF0F 		tst	r0, #255
+ 15321 001e 0CBF     		ite	eq
+ 15322 0020 0020     		moveq	r0, #0
+ 15323 0022 0120     		movne	r0, #1
+ 15324              	.L46:
+ 15325              	.LVL27:
+ 15326              	.LVL28:
+ 306:stm32f10x_rtc.c ****   }
+ 307:stm32f10x_rtc.c ****   return bitstatus;
+ 308:stm32f10x_rtc.c **** }
+ 15327              		.loc 1 309 0
+ 15328 0024 7047     		bx	lr
+ 15329              	.L49:
+ 15330 0026 00BF     		.align	2
+ 15331              	.L48:
+ 15332 0028 00280040 		.word	1073752064
+ 15333              	.LFE39:
+ 15335              		.section	.text.RTC_ClearITPendingBit,"ax",%progbits
+ 15336              		.align	1
+ 15337              		.global	RTC_ClearITPendingBit
+ 15338              		.thumb
+ 15339              		.thumb_func
+ 15341              	RTC_ClearITPendingBit:
+ 15342              	.LFB40:
+ 309:stm32f10x_rtc.c **** 
+ 310:stm32f10x_rtc.c **** /**
+ 311:stm32f10x_rtc.c ****   * @brief  Clears the RTC’s interrupt pending bits.
+ 312:stm32f10x_rtc.c ****   * @param  RTC_IT: specifies the interrupt pending bit to clear.
+ 313:stm32f10x_rtc.c ****   *   This parameter can be any combination of the following values:
+ 314:stm32f10x_rtc.c ****   *     @arg RTC_IT_OW: Overflow interrupt
+ 315:stm32f10x_rtc.c ****   *     @arg RTC_IT_ALR: Alarm interrupt
+ 316:stm32f10x_rtc.c ****   *     @arg RTC_IT_SEC: Second interrupt
+ 317:stm32f10x_rtc.c ****   * @retval None
+ 318:stm32f10x_rtc.c ****   */
+ 319:stm32f10x_rtc.c **** void RTC_ClearITPendingBit(uint16_t RTC_IT)
+ 320:stm32f10x_rtc.c **** {
+ 15343              		.loc 1 321 0
+ 15344              		@ args = 0, pretend = 0, frame = 0
+ 15345              		@ frame_needed = 0, uses_anonymous_args = 0
+ 15346              		@ link register save eliminated.
+ 15347              	.LVL29:
+ 321:stm32f10x_rtc.c ****   /* Check the parameters */
+ 322:stm32f10x_rtc.c ****   assert_param(IS_RTC_IT(RTC_IT));  
+ 323:stm32f10x_rtc.c ****   
+ 324:stm32f10x_rtc.c ****   /* Clear the coressponding RTC pending bit */
+ 325:stm32f10x_rtc.c ****   RTC->CRL &= (uint16_t)~RTC_IT;
+ 15348              		.loc 1 326 0
+ 15349 0000 034B     		ldr	r3, .L51
+ 15350 0002 9988     		ldrh	r1, [r3, #4]
+ 15351 0004 8AB2     		uxth	r2, r1
+ 15352 0006 22EA0000 		bic	r0, r2, r0
+ 15353              	.LVL30:
+ 15354 000a 9880     		strh	r0, [r3, #4]	@ movhi
+ 326:stm32f10x_rtc.c **** }
+ 15355              		.loc 1 327 0
+ 15356 000c 7047     		bx	lr
+ 15357              	.L52:
+ 15358 000e 00BF     		.align	2
+ 15359              	.L51:
+ 15360 0010 00280040 		.word	1073752064
+ 15361              	.LFE40:
+ 15515              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 stm32f10x_rtc.c
+C:\Users\ts\AppData\Local\Temp\ccvYSyLd.s:14897  .text.RTC_ITConfig:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccvYSyLd.s:14902  .text.RTC_ITConfig:00000000 RTC_ITConfig
+C:\Users\ts\AppData\Local\Temp\ccvYSyLd.s:14934  .text.RTC_ITConfig:0000001c $d
+C:\Users\ts\AppData\Local\Temp\ccvYSyLd.s:14938  .text.RTC_EnterConfigMode:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccvYSyLd.s:14943  .text.RTC_EnterConfigMode:00000000 RTC_EnterConfigMode
+C:\Users\ts\AppData\Local\Temp\ccvYSyLd.s:14960  .text.RTC_EnterConfigMode:00000010 $d
+C:\Users\ts\AppData\Local\Temp\ccvYSyLd.s:14964  .text.RTC_ExitConfigMode:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccvYSyLd.s:14969  .text.RTC_ExitConfigMode:00000000 RTC_ExitConfigMode
+C:\Users\ts\AppData\Local\Temp\ccvYSyLd.s:14987  .text.RTC_ExitConfigMode:00000014 $d
+C:\Users\ts\AppData\Local\Temp\ccvYSyLd.s:14991  .text.RTC_GetCounter:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccvYSyLd.s:14996  .text.RTC_GetCounter:00000000 RTC_GetCounter
+C:\Users\ts\AppData\Local\Temp\ccvYSyLd.s:15019  .text.RTC_GetCounter:00000010 $d
+C:\Users\ts\AppData\Local\Temp\ccvYSyLd.s:15023  .text.RTC_SetCounter:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccvYSyLd.s:15028  .text.RTC_SetCounter:00000000 RTC_SetCounter
+C:\Users\ts\AppData\Local\Temp\ccvYSyLd.s:15058  .text.RTC_SetCounter:00000018 $d
+C:\Users\ts\AppData\Local\Temp\ccvYSyLd.s:15062  .text.RTC_SetPrescaler:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccvYSyLd.s:15067  .text.RTC_SetPrescaler:00000000 RTC_SetPrescaler
+C:\Users\ts\AppData\Local\Temp\ccvYSyLd.s:15097  .text.RTC_SetPrescaler:0000001c $d
+C:\Users\ts\AppData\Local\Temp\ccvYSyLd.s:15101  .text.RTC_SetAlarm:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccvYSyLd.s:15106  .text.RTC_SetAlarm:00000000 RTC_SetAlarm
+C:\Users\ts\AppData\Local\Temp\ccvYSyLd.s:15136  .text.RTC_SetAlarm:00000018 $d
+C:\Users\ts\AppData\Local\Temp\ccvYSyLd.s:15140  .text.RTC_GetDivider:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccvYSyLd.s:15145  .text.RTC_GetDivider:00000000 RTC_GetDivider
+C:\Users\ts\AppData\Local\Temp\ccvYSyLd.s:15169  .text.RTC_GetDivider:00000014 $d
+C:\Users\ts\AppData\Local\Temp\ccvYSyLd.s:15173  .text.RTC_WaitForLastTask:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccvYSyLd.s:15178  .text.RTC_WaitForLastTask:00000000 RTC_WaitForLastTask
+C:\Users\ts\AppData\Local\Temp\ccvYSyLd.s:15196  .text.RTC_WaitForLastTask:0000000c $d
+C:\Users\ts\AppData\Local\Temp\ccvYSyLd.s:15200  .text.RTC_WaitForSynchro:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccvYSyLd.s:15205  .text.RTC_WaitForSynchro:00000000 RTC_WaitForSynchro
+C:\Users\ts\AppData\Local\Temp\ccvYSyLd.s:15228  .text.RTC_WaitForSynchro:0000001c $d
+C:\Users\ts\AppData\Local\Temp\ccvYSyLd.s:15232  .text.RTC_GetFlagStatus:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccvYSyLd.s:15237  .text.RTC_GetFlagStatus:00000000 RTC_GetFlagStatus
+C:\Users\ts\AppData\Local\Temp\ccvYSyLd.s:15257  .text.RTC_GetFlagStatus:00000010 $d
+C:\Users\ts\AppData\Local\Temp\ccvYSyLd.s:15261  .text.RTC_ClearFlag:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccvYSyLd.s:15266  .text.RTC_ClearFlag:00000000 RTC_ClearFlag
+C:\Users\ts\AppData\Local\Temp\ccvYSyLd.s:15285  .text.RTC_ClearFlag:00000010 $d
+C:\Users\ts\AppData\Local\Temp\ccvYSyLd.s:15289  .text.RTC_GetITStatus:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccvYSyLd.s:15294  .text.RTC_GetITStatus:00000000 RTC_GetITStatus
+C:\Users\ts\AppData\Local\Temp\ccvYSyLd.s:15332  .text.RTC_GetITStatus:00000028 $d
+C:\Users\ts\AppData\Local\Temp\ccvYSyLd.s:15336  .text.RTC_ClearITPendingBit:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccvYSyLd.s:15341  .text.RTC_ClearITPendingBit:00000000 RTC_ClearITPendingBit
+C:\Users\ts\AppData\Local\Temp\ccvYSyLd.s:15360  .text.RTC_ClearITPendingBit:00000010 $d
+C:\Users\ts\AppData\Local\Temp\ccvYSyLd.s:15376  .debug_frame:00000010 $d
+
+NO UNDEFINED SYMBOLS

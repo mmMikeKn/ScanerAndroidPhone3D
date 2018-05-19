@@ -1,0 +1,250 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 4
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"stm32f10x_dbgmcu.c"
+  23              	.Ltext0:
+  24              		.file 1 "stm32f10x_dbgmcu.c"
+ 14897              		.align	1
+ 14898              		.global	DBGMCU_GetREVID
+ 14899              		.thumb
+ 14900              		.thumb_func
+ 14902              	DBGMCU_GetREVID:
+ 14903              	.LFB27:
+   0:stm32f10x_dbgmcu.c **** /**
+   1:stm32f10x_dbgmcu.c ****   ******************************************************************************
+   2:stm32f10x_dbgmcu.c ****   * @file    stm32f10x_dbgmcu.c
+   3:stm32f10x_dbgmcu.c ****   * @author  MCD Application Team
+   4:stm32f10x_dbgmcu.c ****   * @version V3.1.2
+   5:stm32f10x_dbgmcu.c ****   * @date    09/28/2009
+   6:stm32f10x_dbgmcu.c ****   * @brief   This file provides all the DBGMCU firmware functions.
+   7:stm32f10x_dbgmcu.c ****   ******************************************************************************
+   8:stm32f10x_dbgmcu.c ****   * @copy
+   9:stm32f10x_dbgmcu.c ****   *
+  10:stm32f10x_dbgmcu.c ****   * THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
+  11:stm32f10x_dbgmcu.c ****   * WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE
+  12:stm32f10x_dbgmcu.c ****   * TIME. AS A RESULT, STMICROELECTRONICS SHALL NOT BE HELD LIABLE FOR ANY
+  13:stm32f10x_dbgmcu.c ****   * DIRECT, INDIRECT OR CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY CLAIMS ARISING
+  14:stm32f10x_dbgmcu.c ****   * FROM THE CONTENT OF SUCH FIRMWARE AND/OR THE USE MADE BY CUSTOMERS OF THE
+  15:stm32f10x_dbgmcu.c ****   * CODING INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
+  16:stm32f10x_dbgmcu.c ****   *
+  17:stm32f10x_dbgmcu.c ****   * <h2><center>&copy; COPYRIGHT 2009 STMicroelectronics</center></h2>
+  18:stm32f10x_dbgmcu.c ****   */ 
+  19:stm32f10x_dbgmcu.c **** 
+  20:stm32f10x_dbgmcu.c **** /* Includes ------------------------------------------------------------------*/
+  21:stm32f10x_dbgmcu.c **** #include "stm32f10x_dbgmcu.h"
+  22:stm32f10x_dbgmcu.c **** 
+  23:stm32f10x_dbgmcu.c **** /** @addtogroup STM32F10x_StdPeriph_Driver
+  24:stm32f10x_dbgmcu.c ****   * @{
+  25:stm32f10x_dbgmcu.c ****   */
+  26:stm32f10x_dbgmcu.c **** 
+  27:stm32f10x_dbgmcu.c **** /** @defgroup DBGMCU 
+  28:stm32f10x_dbgmcu.c ****   * @brief DBGMCU driver modules
+  29:stm32f10x_dbgmcu.c ****   * @{
+  30:stm32f10x_dbgmcu.c ****   */ 
+  31:stm32f10x_dbgmcu.c **** 
+  32:stm32f10x_dbgmcu.c **** /** @defgroup DBGMCU_Private_TypesDefinitions
+  33:stm32f10x_dbgmcu.c ****   * @{
+  34:stm32f10x_dbgmcu.c ****   */
+  35:stm32f10x_dbgmcu.c **** 
+  36:stm32f10x_dbgmcu.c **** /**
+  37:stm32f10x_dbgmcu.c ****   * @}
+  38:stm32f10x_dbgmcu.c ****   */
+  39:stm32f10x_dbgmcu.c **** 
+  40:stm32f10x_dbgmcu.c **** /** @defgroup DBGMCU_Private_Defines
+  41:stm32f10x_dbgmcu.c ****   * @{
+  42:stm32f10x_dbgmcu.c ****   */
+  43:stm32f10x_dbgmcu.c **** 
+  44:stm32f10x_dbgmcu.c **** #define IDCODE_DEVID_Mask    ((uint32_t)0x00000FFF)
+  45:stm32f10x_dbgmcu.c **** /**
+  46:stm32f10x_dbgmcu.c ****   * @}
+  47:stm32f10x_dbgmcu.c ****   */
+  48:stm32f10x_dbgmcu.c **** 
+  49:stm32f10x_dbgmcu.c **** /** @defgroup DBGMCU_Private_Macros
+  50:stm32f10x_dbgmcu.c ****   * @{
+  51:stm32f10x_dbgmcu.c ****   */
+  52:stm32f10x_dbgmcu.c **** 
+  53:stm32f10x_dbgmcu.c **** /**
+  54:stm32f10x_dbgmcu.c ****   * @}
+  55:stm32f10x_dbgmcu.c ****   */
+  56:stm32f10x_dbgmcu.c **** 
+  57:stm32f10x_dbgmcu.c **** /** @defgroup DBGMCU_Private_Variables
+  58:stm32f10x_dbgmcu.c ****   * @{
+  59:stm32f10x_dbgmcu.c ****   */
+  60:stm32f10x_dbgmcu.c **** 
+  61:stm32f10x_dbgmcu.c **** /**
+  62:stm32f10x_dbgmcu.c ****   * @}
+  63:stm32f10x_dbgmcu.c ****   */
+  64:stm32f10x_dbgmcu.c **** 
+  65:stm32f10x_dbgmcu.c **** /** @defgroup DBGMCU_Private_FunctionPrototypes
+  66:stm32f10x_dbgmcu.c ****   * @{
+  67:stm32f10x_dbgmcu.c ****   */
+  68:stm32f10x_dbgmcu.c **** 
+  69:stm32f10x_dbgmcu.c **** /**
+  70:stm32f10x_dbgmcu.c ****   * @}
+  71:stm32f10x_dbgmcu.c ****   */
+  72:stm32f10x_dbgmcu.c **** 
+  73:stm32f10x_dbgmcu.c **** /** @defgroup DBGMCU_Private_Functions
+  74:stm32f10x_dbgmcu.c ****   * @{
+  75:stm32f10x_dbgmcu.c ****   */
+  76:stm32f10x_dbgmcu.c **** 
+  77:stm32f10x_dbgmcu.c **** /**
+  78:stm32f10x_dbgmcu.c ****   * @brief  Returns the device revision identifier.
+  79:stm32f10x_dbgmcu.c ****   * @param  None
+  80:stm32f10x_dbgmcu.c ****   * @retval Device revision identifier
+  81:stm32f10x_dbgmcu.c ****   */
+  82:stm32f10x_dbgmcu.c **** uint32_t DBGMCU_GetREVID(void)
+  83:stm32f10x_dbgmcu.c **** {
+ 14904              		.loc 1 84 0
+ 14905              		@ args = 0, pretend = 0, frame = 0
+ 14906              		@ frame_needed = 0, uses_anonymous_args = 0
+ 14907              		@ link register save eliminated.
+  84:stm32f10x_dbgmcu.c ****    return(DBGMCU->IDCODE >> 16);
+ 14908              		.loc 1 85 0
+ 14909 0000 014B     		ldr	r3, .L2
+ 14910 0002 1868     		ldr	r0, [r3, #0]
+ 14911 0004 000C     		lsrs	r0, r0, #16
+  85:stm32f10x_dbgmcu.c **** }
+ 14912              		.loc 1 86 0
+ 14913 0006 7047     		bx	lr
+ 14914              	.L3:
+ 14915              		.align	2
+ 14916              	.L2:
+ 14917 0008 002004E0 		.word	-536600576
+ 14918              	.LFE27:
+ 14920              		.section	.text.DBGMCU_GetDEVID,"ax",%progbits
+ 14921              		.align	1
+ 14922              		.global	DBGMCU_GetDEVID
+ 14923              		.thumb
+ 14924              		.thumb_func
+ 14926              	DBGMCU_GetDEVID:
+ 14927              	.LFB28:
+  86:stm32f10x_dbgmcu.c **** 
+  87:stm32f10x_dbgmcu.c **** /**
+  88:stm32f10x_dbgmcu.c ****   * @brief  Returns the device identifier.
+  89:stm32f10x_dbgmcu.c ****   * @param  None
+  90:stm32f10x_dbgmcu.c ****   * @retval Device identifier
+  91:stm32f10x_dbgmcu.c ****   */
+  92:stm32f10x_dbgmcu.c **** uint32_t DBGMCU_GetDEVID(void)
+  93:stm32f10x_dbgmcu.c **** {
+ 14928              		.loc 1 94 0
+ 14929              		@ args = 0, pretend = 0, frame = 0
+ 14930              		@ frame_needed = 0, uses_anonymous_args = 0
+ 14931              		@ link register save eliminated.
+  94:stm32f10x_dbgmcu.c ****    return(DBGMCU->IDCODE & IDCODE_DEVID_Mask);
+ 14932              		.loc 1 95 0
+ 14933 0000 024B     		ldr	r3, .L5
+ 14934 0002 1968     		ldr	r1, [r3, #0]
+ 14935 0004 0805     		lsls	r0, r1, #20
+ 14936 0006 000D     		lsrs	r0, r0, #20
+  95:stm32f10x_dbgmcu.c **** }
+ 14937              		.loc 1 96 0
+ 14938 0008 7047     		bx	lr
+ 14939              	.L6:
+ 14940 000a 00BF     		.align	2
+ 14941              	.L5:
+ 14942 000c 002004E0 		.word	-536600576
+ 14943              	.LFE28:
+ 14945              		.section	.text.DBGMCU_Config,"ax",%progbits
+ 14946              		.align	1
+ 14947              		.global	DBGMCU_Config
+ 14948              		.thumb
+ 14949              		.thumb_func
+ 14951              	DBGMCU_Config:
+ 14952              	.LFB29:
+  96:stm32f10x_dbgmcu.c **** 
+  97:stm32f10x_dbgmcu.c **** /**
+  98:stm32f10x_dbgmcu.c ****   * @brief  Configures the specified peripheral and low power mode behavior
+  99:stm32f10x_dbgmcu.c ****   *   when the MCU under Debug mode.
+ 100:stm32f10x_dbgmcu.c ****   * @param  DBGMCU_Periph: specifies the peripheral and low power mode.
+ 101:stm32f10x_dbgmcu.c ****   *   This parameter can be any combination of the following values:
+ 102:stm32f10x_dbgmcu.c ****   *     @arg DBGMCU_SLEEP: Keep debugger connection during SLEEP mode              
+ 103:stm32f10x_dbgmcu.c ****   *     @arg DBGMCU_STOP: Keep debugger connection during STOP mode               
+ 104:stm32f10x_dbgmcu.c ****   *     @arg DBGMCU_STANDBY: Keep debugger connection during STANDBY mode            
+ 105:stm32f10x_dbgmcu.c ****   *     @arg DBGMCU_IWDG_STOP: Debug IWDG stopped when Core is halted          
+ 106:stm32f10x_dbgmcu.c ****   *     @arg DBGMCU_WWDG_STOP: Debug WWDG stopped when Core is halted          
+ 107:stm32f10x_dbgmcu.c ****   *     @arg DBGMCU_TIM1_STOP: TIM1 counter stopped when Core is halted          
+ 108:stm32f10x_dbgmcu.c ****   *     @arg DBGMCU_TIM2_STOP: TIM2 counter stopped when Core is halted          
+ 109:stm32f10x_dbgmcu.c ****   *     @arg DBGMCU_TIM3_STOP: TIM3 counter stopped when Core is halted          
+ 110:stm32f10x_dbgmcu.c ****   *     @arg DBGMCU_TIM4_STOP: TIM4 counter stopped when Core is halted          
+ 111:stm32f10x_dbgmcu.c ****   *     @arg DBGMCU_CAN1_STOP: Debug CAN2 stopped when Core is halted           
+ 112:stm32f10x_dbgmcu.c ****   *     @arg DBGMCU_I2C1_SMBUS_TIMEOUT: I2C1 SMBUS timeout mode stopped when Core is halted
+ 113:stm32f10x_dbgmcu.c ****   *     @arg DBGMCU_I2C2_SMBUS_TIMEOUT: I2C2 SMBUS timeout mode stopped when Core is halted
+ 114:stm32f10x_dbgmcu.c ****   *     @arg DBGMCU_TIM5_STOP: TIM5 counter stopped when Core is halted          
+ 115:stm32f10x_dbgmcu.c ****   *     @arg DBGMCU_TIM6_STOP: TIM6 counter stopped when Core is halted          
+ 116:stm32f10x_dbgmcu.c ****   *     @arg DBGMCU_TIM7_STOP: TIM7 counter stopped when Core is halted          
+ 117:stm32f10x_dbgmcu.c ****   *     @arg DBGMCU_TIM8_STOP: TIM8 counter stopped when Core is halted
+ 118:stm32f10x_dbgmcu.c ****   *     @arg DBGMCU_CAN2_STOP: Debug CAN2 stopped when Core is halted           
+ 119:stm32f10x_dbgmcu.c ****   * @param  NewState: new state of the specified peripheral in Debug mode.
+ 120:stm32f10x_dbgmcu.c ****   *   This parameter can be: ENABLE or DISABLE.
+ 121:stm32f10x_dbgmcu.c ****   * @retval None
+ 122:stm32f10x_dbgmcu.c ****   */
+ 123:stm32f10x_dbgmcu.c **** void DBGMCU_Config(uint32_t DBGMCU_Periph, FunctionalState NewState)
+ 124:stm32f10x_dbgmcu.c **** {
+ 14953              		.loc 1 125 0
+ 14954              		@ args = 0, pretend = 0, frame = 0
+ 14955              		@ frame_needed = 0, uses_anonymous_args = 0
+ 14956              		@ link register save eliminated.
+ 14957              	.LVL0:
+ 125:stm32f10x_dbgmcu.c ****   /* Check the parameters */
+ 126:stm32f10x_dbgmcu.c ****   assert_param(IS_DBGMCU_PERIPH(DBGMCU_Periph));
+ 127:stm32f10x_dbgmcu.c ****   assert_param(IS_FUNCTIONAL_STATE(NewState));
+ 128:stm32f10x_dbgmcu.c **** 
+ 129:stm32f10x_dbgmcu.c ****   if (NewState != DISABLE)
+ 14958              		.loc 1 130 0
+ 14959 0000 19B1     		cbz	r1, .L8
+ 130:stm32f10x_dbgmcu.c ****   {
+ 131:stm32f10x_dbgmcu.c ****     DBGMCU->CR |= DBGMCU_Periph;
+ 14960              		.loc 1 132 0
+ 14961 0002 054B     		ldr	r3, .L12
+ 14962 0004 5A68     		ldr	r2, [r3, #4]
+ 14963              	.LVL1:
+ 14964 0006 1043     		orrs	r0, r0, r2
+ 14965              	.LVL2:
+ 14966 0008 03E0     		b	.L10
+ 14967              	.LVL3:
+ 14968              	.L8:
+ 132:stm32f10x_dbgmcu.c ****   }
+ 133:stm32f10x_dbgmcu.c ****   else
+ 134:stm32f10x_dbgmcu.c ****   {
+ 135:stm32f10x_dbgmcu.c ****     DBGMCU->CR &= ~DBGMCU_Periph;
+ 14969              		.loc 1 136 0
+ 14970 000a 034B     		ldr	r3, .L12
+ 14971 000c 5968     		ldr	r1, [r3, #4]
+ 14972              	.LVL4:
+ 14973 000e 21EA0000 		bic	r0, r1, r0
+ 14974              	.LVL5:
+ 14975              	.L10:
+ 14976 0012 5860     		str	r0, [r3, #4]
+ 136:stm32f10x_dbgmcu.c ****   }
+ 137:stm32f10x_dbgmcu.c **** }
+ 14977              		.loc 1 138 0
+ 14978 0014 7047     		bx	lr
+ 14979              	.L13:
+ 14980 0016 00BF     		.align	2
+ 14981              	.L12:
+ 14982 0018 002004E0 		.word	-536600576
+ 14983              	.LFE29:
+ 15025              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 stm32f10x_dbgmcu.c
+C:\Users\ts\AppData\Local\Temp\cco2KtuJ.s:14897  .text.DBGMCU_GetREVID:00000000 $t
+C:\Users\ts\AppData\Local\Temp\cco2KtuJ.s:14902  .text.DBGMCU_GetREVID:00000000 DBGMCU_GetREVID
+C:\Users\ts\AppData\Local\Temp\cco2KtuJ.s:14917  .text.DBGMCU_GetREVID:00000008 $d
+C:\Users\ts\AppData\Local\Temp\cco2KtuJ.s:14921  .text.DBGMCU_GetDEVID:00000000 $t
+C:\Users\ts\AppData\Local\Temp\cco2KtuJ.s:14926  .text.DBGMCU_GetDEVID:00000000 DBGMCU_GetDEVID
+C:\Users\ts\AppData\Local\Temp\cco2KtuJ.s:14942  .text.DBGMCU_GetDEVID:0000000c $d
+C:\Users\ts\AppData\Local\Temp\cco2KtuJ.s:14946  .text.DBGMCU_Config:00000000 $t
+C:\Users\ts\AppData\Local\Temp\cco2KtuJ.s:14951  .text.DBGMCU_Config:00000000 DBGMCU_Config
+C:\Users\ts\AppData\Local\Temp\cco2KtuJ.s:14982  .text.DBGMCU_Config:00000018 $d
+C:\Users\ts\AppData\Local\Temp\cco2KtuJ.s:14998  .debug_frame:00000010 $d
+
+NO UNDEFINED SYMBOLS

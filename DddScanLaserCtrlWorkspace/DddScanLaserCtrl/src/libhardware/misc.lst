@@ -1,0 +1,451 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 4
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"misc.c"
+  23              	.Ltext0:
+  24              		.file 1 "misc.c"
+ 14909              		.align	1
+ 14910              		.global	NVIC_PriorityGroupConfig
+ 14911              		.thumb
+ 14912              		.thumb_func
+ 14914              	NVIC_PriorityGroupConfig:
+ 14915              	.LFB27:
+   0:misc.c        **** /**
+   1:misc.c        ****   ******************************************************************************
+   2:misc.c        ****   * @file    misc.c
+   3:misc.c        ****   * @author  MCD Application Team
+   4:misc.c        ****   * @version V3.1.2
+   5:misc.c        ****   * @date    09/28/2009
+   6:misc.c        ****   * @brief   This file provides all the miscellaneous firmware functions (add-on
+   7:misc.c        ****   *          to CMSIS functions).
+   8:misc.c        ****   ******************************************************************************
+   9:misc.c        ****   * @copy
+  10:misc.c        ****   *
+  11:misc.c        ****   * THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
+  12:misc.c        ****   * WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE
+  13:misc.c        ****   * TIME. AS A RESULT, STMICROELECTRONICS SHALL NOT BE HELD LIABLE FOR ANY
+  14:misc.c        ****   * DIRECT, INDIRECT OR CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY CLAIMS ARISING
+  15:misc.c        ****   * FROM THE CONTENT OF SUCH FIRMWARE AND/OR THE USE MADE BY CUSTOMERS OF THE
+  16:misc.c        ****   * CODING INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
+  17:misc.c        ****   *
+  18:misc.c        ****   * <h2><center>&copy; COPYRIGHT 2009 STMicroelectronics</center></h2>
+  19:misc.c        ****   */ 
+  20:misc.c        **** 
+  21:misc.c        **** /* Includes ------------------------------------------------------------------*/
+  22:misc.c        **** #include "misc.h"
+  23:misc.c        **** 
+  24:misc.c        **** /** @addtogroup STM32F10x_StdPeriph_Driver
+  25:misc.c        ****   * @{
+  26:misc.c        ****   */
+  27:misc.c        **** 
+  28:misc.c        **** /** @defgroup MISC 
+  29:misc.c        ****   * @brief MISC driver modules
+  30:misc.c        ****   * @{
+  31:misc.c        ****   */
+  32:misc.c        **** 
+  33:misc.c        **** /** @defgroup MISC_Private_TypesDefinitions
+  34:misc.c        ****   * @{
+  35:misc.c        ****   */
+  36:misc.c        **** 
+  37:misc.c        **** /**
+  38:misc.c        ****   * @}
+  39:misc.c        ****   */ 
+  40:misc.c        **** 
+  41:misc.c        **** /** @defgroup MISC_Private_Defines
+  42:misc.c        ****   * @{
+  43:misc.c        ****   */
+  44:misc.c        **** 
+  45:misc.c        **** #define AIRCR_VECTKEY_MASK    ((uint32_t)0x05FA0000)
+  46:misc.c        **** /**
+  47:misc.c        ****   * @}
+  48:misc.c        ****   */
+  49:misc.c        **** 
+  50:misc.c        **** /** @defgroup MISC_Private_Macros
+  51:misc.c        ****   * @{
+  52:misc.c        ****   */
+  53:misc.c        **** 
+  54:misc.c        **** /**
+  55:misc.c        ****   * @}
+  56:misc.c        ****   */
+  57:misc.c        **** 
+  58:misc.c        **** /** @defgroup MISC_Private_Variables
+  59:misc.c        ****   * @{
+  60:misc.c        ****   */
+  61:misc.c        **** 
+  62:misc.c        **** /**
+  63:misc.c        ****   * @}
+  64:misc.c        ****   */
+  65:misc.c        **** 
+  66:misc.c        **** /** @defgroup MISC_Private_FunctionPrototypes
+  67:misc.c        ****   * @{
+  68:misc.c        ****   */
+  69:misc.c        **** 
+  70:misc.c        **** /**
+  71:misc.c        ****   * @}
+  72:misc.c        ****   */
+  73:misc.c        **** 
+  74:misc.c        **** /** @defgroup MISC_Private_Functions
+  75:misc.c        ****   * @{
+  76:misc.c        ****   */
+  77:misc.c        **** 
+  78:misc.c        **** /**
+  79:misc.c        ****   * @brief  Configures the priority grouping: pre-emption priority and subpriority.
+  80:misc.c        ****   * @param  NVIC_PriorityGroup: specifies the priority grouping bits length. 
+  81:misc.c        ****   *   This parameter can be one of the following values:
+  82:misc.c        ****   *     @arg NVIC_PriorityGroup_0: 0 bits for pre-emption priority
+  83:misc.c        ****   *                                4 bits for subpriority
+  84:misc.c        ****   *     @arg NVIC_PriorityGroup_1: 1 bits for pre-emption priority
+  85:misc.c        ****   *                                3 bits for subpriority
+  86:misc.c        ****   *     @arg NVIC_PriorityGroup_2: 2 bits for pre-emption priority
+  87:misc.c        ****   *                                2 bits for subpriority
+  88:misc.c        ****   *     @arg NVIC_PriorityGroup_3: 3 bits for pre-emption priority
+  89:misc.c        ****   *                                1 bits for subpriority
+  90:misc.c        ****   *     @arg NVIC_PriorityGroup_4: 4 bits for pre-emption priority
+  91:misc.c        ****   *                                0 bits for subpriority
+  92:misc.c        ****   * @retval None
+  93:misc.c        ****   */
+  94:misc.c        **** void NVIC_PriorityGroupConfig(uint32_t NVIC_PriorityGroup)
+  95:misc.c        **** {
+ 14916              		.loc 1 96 0
+ 14917              		@ args = 0, pretend = 0, frame = 0
+ 14918              		@ frame_needed = 0, uses_anonymous_args = 0
+ 14919              		@ link register save eliminated.
+ 14920              	.LVL0:
+  96:misc.c        ****   /* Check the parameters */
+  97:misc.c        ****   assert_param(IS_NVIC_PRIORITY_GROUP(NVIC_PriorityGroup));
+  98:misc.c        ****   
+  99:misc.c        ****   /* Set the PRIGROUP[10:8] bits according to NVIC_PriorityGroup value */
+ 100:misc.c        ****   SCB->AIRCR = AIRCR_VECTKEY_MASK | NVIC_PriorityGroup;
+ 14921              		.loc 1 101 0
+ 14922 0000 40F0BE61 		orr	r1, r0, #99614720
+ 14923 0004 024B     		ldr	r3, .L2
+ 14924 0006 41F42020 		orr	r0, r1, #655360
+ 14925              	.LVL1:
+ 14926 000a D860     		str	r0, [r3, #12]
+ 101:misc.c        **** }
+ 14927              		.loc 1 102 0
+ 14928 000c 7047     		bx	lr
+ 14929              	.L3:
+ 14930 000e 00BF     		.align	2
+ 14931              	.L2:
+ 14932 0010 00ED00E0 		.word	-536810240
+ 14933              	.LFE27:
+ 14935              		.section	.text.NVIC_Init,"ax",%progbits
+ 14936              		.align	1
+ 14937              		.global	NVIC_Init
+ 14938              		.thumb
+ 14939              		.thumb_func
+ 14941              	NVIC_Init:
+ 14942              	.LFB28:
+ 102:misc.c        **** 
+ 103:misc.c        **** /**
+ 104:misc.c        ****   * @brief  Initializes the NVIC peripheral according to the specified
+ 105:misc.c        ****   *   parameters in the NVIC_InitStruct.
+ 106:misc.c        ****   * @param  NVIC_InitStruct: pointer to a NVIC_InitTypeDef structure that contains
+ 107:misc.c        ****   *   the configuration information for the specified NVIC peripheral.
+ 108:misc.c        ****   * @retval None
+ 109:misc.c        ****   */
+ 110:misc.c        **** void NVIC_Init(NVIC_InitTypeDef* NVIC_InitStruct)
+ 111:misc.c        **** {
+ 14943              		.loc 1 112 0
+ 14944              		@ args = 0, pretend = 0, frame = 0
+ 14945              		@ frame_needed = 0, uses_anonymous_args = 0
+ 14946              		@ link register save eliminated.
+ 14947              	.LVL2:
+ 112:misc.c        ****   uint32_t tmppriority = 0x00, tmppre = 0x00, tmpsub = 0x0F;
+ 113:misc.c        ****   
+ 114:misc.c        ****   /* Check the parameters */
+ 115:misc.c        ****   assert_param(IS_FUNCTIONAL_STATE(NVIC_InitStruct->NVIC_IRQChannelCmd));
+ 116:misc.c        ****   assert_param(IS_NVIC_PREEMPTION_PRIORITY(NVIC_InitStruct->NVIC_IRQChannelPreemptionPriority));  
+ 117:misc.c        ****   assert_param(IS_NVIC_SUB_PRIORITY(NVIC_InitStruct->NVIC_IRQChannelSubPriority));
+ 118:misc.c        ****     
+ 119:misc.c        ****   if (NVIC_InitStruct->NVIC_IRQChannelCmd != DISABLE)
+ 14948              		.loc 1 120 0
+ 14949 0000 C278     		ldrb	r2, [r0, #3]	@ zero_extendqisi2
+ 14950 0002 0378     		ldrb	r3, [r0, #0]	@ zero_extendqisi2
+ 14951 0004 FAB1     		cbz	r2, .L5
+ 14952              	.LVL3:
+ 120:misc.c        ****   {
+ 121:misc.c        ****     /* Compute the Corresponding IRQ Priority --------------------------------*/    
+ 122:misc.c        ****     tmppriority = (0x700 - ((SCB->AIRCR) & (uint32_t)0x700))>> 0x08;
+ 14953              		.loc 1 123 0
+ 14954 0006 DFF854C0 		ldr	ip, .L9
+ 14955 000a DCF80C10 		ldr	r1, [ip, #12]
+ 14956              	.LVL4:
+ 123:misc.c        ****     tmppre = (0x4 - tmppriority);
+ 124:misc.c        ****     tmpsub = tmpsub >> tmppriority;
+ 125:misc.c        **** 
+ 126:misc.c        ****     tmppriority = (uint32_t)NVIC_InitStruct->NVIC_IRQChannelPreemptionPriority << tmppre;
+ 14957              		.loc 1 127 0
+ 14958 000e 90F801C0 		ldrb	ip, [r0, #1]	@ zero_extendqisi2
+ 123:misc.c        ****     tmppre = (0x4 - tmppriority);
+ 14959              		.loc 1 123 0
+ 14960 0012 CA43     		mvns	r2, r1
+ 14961 0014 C2F30222 		ubfx	r2, r2, #8, #3
+ 14962              	.LVL5:
+ 14963              		.loc 1 127 0
+ 14964 0018 C2F10401 		rsb	r1, r2, #4
+ 14965 001c 0CFA01FC 		lsl	ip, ip, r1
+ 14966              	.LVL6:
+ 127:misc.c        ****     tmppriority |=  NVIC_InitStruct->NVIC_IRQChannelSubPriority & tmpsub;
+ 14967              		.loc 1 128 0
+ 14968 0020 0F21     		movs	r1, #15
+ 14969 0022 D140     		lsrs	r1, r1, r2
+ 14970 0024 8078     		ldrb	r0, [r0, #2]	@ zero_extendqisi2
+ 14971              	.LVL7:
+ 14972 0026 0140     		ands	r1, r1, r0
+ 14973 0028 41EA0C02 		orr	r2, r1, ip
+ 14974              	.LVL8:
+ 128:misc.c        ****     tmppriority = tmppriority << 0x04;
+ 129:misc.c        ****         
+ 130:misc.c        ****     NVIC->IP[NVIC_InitStruct->NVIC_IRQChannel] = tmppriority;
+ 14975              		.loc 1 131 0
+ 14976 002c 0C48     		ldr	r0, .L9+4
+ 14977 002e 1101     		lsls	r1, r2, #4
+ 14978 0030 C9B2     		uxtb	r1, r1
+ 14979 0032 1A18     		adds	r2, r3, r0
+ 14980 0034 82F80013 		strb	r1, [r2, #768]
+ 131:misc.c        ****     
+ 132:misc.c        ****     /* Enable the Selected IRQ Channels --------------------------------------*/
+ 133:misc.c        ****     NVIC->ISER[NVIC_InitStruct->NVIC_IRQChannel >> 0x05] =
+ 134:misc.c        ****       (uint32_t)0x01 << (NVIC_InitStruct->NVIC_IRQChannel & (uint8_t)0x1F);
+ 14981              		.loc 1 135 0
+ 14982 0038 0120     		movs	r0, #1
+ 134:misc.c        ****       (uint32_t)0x01 << (NVIC_InitStruct->NVIC_IRQChannel & (uint8_t)0x1F);
+ 14983              		.loc 1 134 0
+ 14984 003a 5909     		lsrs	r1, r3, #5
+ 14985              		.loc 1 135 0
+ 14986 003c 03F01F03 		and	r3, r3, #31
+ 14987 0040 10FA03F3 		lsls	r3, r0, r3
+ 14988 0044 06E0     		b	.L7
+ 14989              	.LVL9:
+ 14990              	.L5:
+ 135:misc.c        ****   }
+ 136:misc.c        ****   else
+ 137:misc.c        ****   {
+ 138:misc.c        ****     /* Disable the Selected IRQ Channels -------------------------------------*/
+ 139:misc.c        ****     NVIC->ICER[NVIC_InitStruct->NVIC_IRQChannel >> 0x05] =
+ 14991              		.loc 1 140 0
+ 14992 0046 5909     		lsrs	r1, r3, #5
+ 140:misc.c        ****       (uint32_t)0x01 << (NVIC_InitStruct->NVIC_IRQChannel & (uint8_t)0x1F);
+ 14993              		.loc 1 141 0
+ 14994 0048 0120     		movs	r0, #1
+ 14995              	.LVL10:
+ 14996 004a 03F01F03 		and	r3, r3, #31
+ 14997 004e 10FA03F3 		lsls	r3, r0, r3
+ 140:misc.c        ****       (uint32_t)0x01 << (NVIC_InitStruct->NVIC_IRQChannel & (uint8_t)0x1F);
+ 14998              		.loc 1 140 0
+ 14999 0052 2031     		adds	r1, r1, #32
+ 15000              	.LVL11:
+ 15001              	.L7:
+ 15002 0054 024A     		ldr	r2, .L9+4
+ 15003 0056 42F82130 		str	r3, [r2, r1, lsl #2]
+ 141:misc.c        ****   }
+ 142:misc.c        **** }
+ 15004              		.loc 1 143 0
+ 15005 005a 7047     		bx	lr
+ 15006              	.L10:
+ 15007              		.align	2
+ 15008              	.L9:
+ 15009 005c 00ED00E0 		.word	-536810240
+ 15010 0060 00E100E0 		.word	-536813312
+ 15011              	.LFE28:
+ 15013              		.section	.text.NVIC_SetVectorTable,"ax",%progbits
+ 15014              		.align	1
+ 15015              		.global	NVIC_SetVectorTable
+ 15016              		.thumb
+ 15017              		.thumb_func
+ 15019              	NVIC_SetVectorTable:
+ 15020              	.LFB29:
+ 143:misc.c        **** 
+ 144:misc.c        **** /**
+ 145:misc.c        ****   * @brief  Sets the vector table location and Offset.
+ 146:misc.c        ****   * @param  NVIC_VectTab: specifies if the vector table is in RAM or FLASH memory.
+ 147:misc.c        ****   *   This parameter can be one of the following values:
+ 148:misc.c        ****   *     @arg NVIC_VectTab_RAM
+ 149:misc.c        ****   *     @arg NVIC_VectTab_FLASH
+ 150:misc.c        ****   * @param  Offset: Vector Table base offset field. This value must be a multiple of 0x100.
+ 151:misc.c        ****   * @retval None
+ 152:misc.c        ****   */
+ 153:misc.c        **** void NVIC_SetVectorTable(uint32_t NVIC_VectTab, uint32_t Offset)
+ 154:misc.c        **** { 
+ 15021              		.loc 1 155 0
+ 15022              		@ args = 0, pretend = 0, frame = 0
+ 15023              		@ frame_needed = 0, uses_anonymous_args = 0
+ 15024              		@ link register save eliminated.
+ 15025              	.LVL12:
+ 155:misc.c        ****   /* Check the parameters */
+ 156:misc.c        ****   assert_param(IS_NVIC_VECTTAB(NVIC_VectTab));
+ 157:misc.c        ****   assert_param(IS_NVIC_OFFSET(Offset));  
+ 158:misc.c        ****    
+ 159:misc.c        ****   SCB->VTOR = NVIC_VectTab | (Offset & (uint32_t)0x1FFFFF80);
+ 15026              		.loc 1 160 0
+ 15027 0000 21F06042 		bic	r2, r1, #-536870912
+ 15028 0004 22F07F01 		bic	r1, r2, #127
+ 15029              	.LVL13:
+ 15030 0008 024B     		ldr	r3, .L12
+ 15031              	.LVL14:
+ 15032 000a 41EA0000 		orr	r0, r1, r0
+ 15033              	.LVL15:
+ 15034 000e 9860     		str	r0, [r3, #8]
+ 160:misc.c        **** }
+ 15035              		.loc 1 161 0
+ 15036 0010 7047     		bx	lr
+ 15037              	.L13:
+ 15038 0012 00BF     		.align	2
+ 15039              	.L12:
+ 15040 0014 00ED00E0 		.word	-536810240
+ 15041              	.LFE29:
+ 15043              		.section	.text.NVIC_SystemLPConfig,"ax",%progbits
+ 15044              		.align	1
+ 15045              		.global	NVIC_SystemLPConfig
+ 15046              		.thumb
+ 15047              		.thumb_func
+ 15049              	NVIC_SystemLPConfig:
+ 15050              	.LFB30:
+ 161:misc.c        **** 
+ 162:misc.c        **** /**
+ 163:misc.c        ****   * @brief  Selects the condition for the system to enter low power mode.
+ 164:misc.c        ****   * @param  LowPowerMode: Specifies the new mode for the system to enter low power mode.
+ 165:misc.c        ****   *   This parameter can be one of the following values:
+ 166:misc.c        ****   *     @arg NVIC_LP_SEVONPEND
+ 167:misc.c        ****   *     @arg NVIC_LP_SLEEPDEEP
+ 168:misc.c        ****   *     @arg NVIC_LP_SLEEPONEXIT
+ 169:misc.c        ****   * @param  NewState: new state of LP condition. This parameter can be: ENABLE or DISABLE.
+ 170:misc.c        ****   * @retval None
+ 171:misc.c        ****   */
+ 172:misc.c        **** void NVIC_SystemLPConfig(uint8_t LowPowerMode, FunctionalState NewState)
+ 173:misc.c        **** {
+ 15051              		.loc 1 174 0
+ 15052              		@ args = 0, pretend = 0, frame = 0
+ 15053              		@ frame_needed = 0, uses_anonymous_args = 0
+ 15054              		@ link register save eliminated.
+ 15055              	.LVL16:
+ 174:misc.c        ****   /* Check the parameters */
+ 175:misc.c        ****   assert_param(IS_NVIC_LP(LowPowerMode));
+ 176:misc.c        ****   assert_param(IS_FUNCTIONAL_STATE(NewState));  
+ 177:misc.c        ****   
+ 178:misc.c        ****   if (NewState != DISABLE)
+ 15056              		.loc 1 179 0
+ 15057 0000 19B1     		cbz	r1, .L15
+ 179:misc.c        ****   {
+ 180:misc.c        ****     SCB->SCR |= LowPowerMode;
+ 15058              		.loc 1 181 0
+ 15059 0002 054B     		ldr	r3, .L18
+ 15060 0004 1A69     		ldr	r2, [r3, #16]
+ 15061 0006 1043     		orrs	r0, r0, r2
+ 15062              	.LVL17:
+ 15063 0008 03E0     		b	.L17
+ 15064              	.LVL18:
+ 15065              	.L15:
+ 181:misc.c        ****   }
+ 182:misc.c        ****   else
+ 183:misc.c        ****   {
+ 184:misc.c        ****     SCB->SCR &= (uint32_t)(~(uint32_t)LowPowerMode);
+ 15066              		.loc 1 185 0
+ 15067 000a 034B     		ldr	r3, .L18
+ 15068 000c 1969     		ldr	r1, [r3, #16]
+ 15069              	.LVL19:
+ 15070 000e 21EA0000 		bic	r0, r1, r0
+ 15071              	.LVL20:
+ 15072              	.L17:
+ 15073 0012 1861     		str	r0, [r3, #16]
+ 185:misc.c        ****   }
+ 186:misc.c        **** }
+ 15074              		.loc 1 187 0
+ 15075 0014 7047     		bx	lr
+ 15076              	.L19:
+ 15077 0016 00BF     		.align	2
+ 15078              	.L18:
+ 15079 0018 00ED00E0 		.word	-536810240
+ 15080              	.LFE30:
+ 15082              		.section	.text.SysTick_CLKSourceConfig,"ax",%progbits
+ 15083              		.align	1
+ 15084              		.global	SysTick_CLKSourceConfig
+ 15085              		.thumb
+ 15086              		.thumb_func
+ 15088              	SysTick_CLKSourceConfig:
+ 15089              	.LFB31:
+ 187:misc.c        **** 
+ 188:misc.c        **** /**
+ 189:misc.c        ****   * @brief  Configures the SysTick clock source.
+ 190:misc.c        ****   * @param  SysTick_CLKSource: specifies the SysTick clock source.
+ 191:misc.c        ****   *   This parameter can be one of the following values:
+ 192:misc.c        ****   *     @arg SysTick_CLKSource_HCLK_Div8: AHB clock divided by 8 selected as SysTick clock source.
+ 193:misc.c        ****   *     @arg SysTick_CLKSource_HCLK: AHB clock selected as SysTick clock source.
+ 194:misc.c        ****   * @retval None
+ 195:misc.c        ****   */
+ 196:misc.c        **** void SysTick_CLKSourceConfig(uint32_t SysTick_CLKSource)
+ 197:misc.c        **** {
+ 15090              		.loc 1 198 0
+ 15091              		@ args = 0, pretend = 0, frame = 0
+ 15092              		@ frame_needed = 0, uses_anonymous_args = 0
+ 15093              		@ link register save eliminated.
+ 15094              	.LVL21:
+ 198:misc.c        ****   /* Check the parameters */
+ 199:misc.c        ****   assert_param(IS_SYSTICK_CLK_SOURCE(SysTick_CLKSource));
+ 200:misc.c        ****   if (SysTick_CLKSource == SysTick_CLKSource_HCLK)
+ 15095              		.loc 1 201 0
+ 15096 0000 0428     		cmp	r0, #4
+ 201:misc.c        ****   {
+ 202:misc.c        ****     SysTick->CTRL |= SysTick_CLKSource_HCLK;
+ 15097              		.loc 1 203 0
+ 15098 0002 0BBF     		itete	eq
+ 15099 0004 054B     		ldreq	r3, .L24
+ 203:misc.c        ****   }
+ 204:misc.c        ****   else
+ 205:misc.c        ****   {
+ 206:misc.c        ****     SysTick->CTRL &= SysTick_CLKSource_HCLK_Div8;
+ 15100              		.loc 1 207 0
+ 15101 0006 054B     		ldrne	r3, .L24
+ 203:misc.c        ****   }
+ 15102              		.loc 1 203 0
+ 15103 0008 1A68     		ldreq	r2, [r3, #0]
+ 15104              		.loc 1 207 0
+ 15105 000a 1A68     		ldrne	r2, [r3, #0]
+ 203:misc.c        ****   }
+ 15106              		.loc 1 203 0
+ 15107 000c 0CBF     		ite	eq
+ 15108 000e 42F00402 		orreq	r2, r2, #4
+ 15109              		.loc 1 207 0
+ 15110 0012 22F00402 		bicne	r2, r2, #4
+ 15111 0016 1A60     		str	r2, [r3, #0]
+ 207:misc.c        ****   }
+ 208:misc.c        **** }
+ 15112              		.loc 1 209 0
+ 15113 0018 7047     		bx	lr
+ 15114              	.L25:
+ 15115 001a 00BF     		.align	2
+ 15116              	.L24:
+ 15117 001c 10E000E0 		.word	-536813552
+ 15118              	.LFE31:
+ 15176              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 misc.c
+C:\Users\ts\AppData\Local\Temp\ccqDnpfa.s:14909  .text.NVIC_PriorityGroupConfig:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccqDnpfa.s:14914  .text.NVIC_PriorityGroupConfig:00000000 NVIC_PriorityGroupConfig
+C:\Users\ts\AppData\Local\Temp\ccqDnpfa.s:14932  .text.NVIC_PriorityGroupConfig:00000010 $d
+C:\Users\ts\AppData\Local\Temp\ccqDnpfa.s:14936  .text.NVIC_Init:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccqDnpfa.s:14941  .text.NVIC_Init:00000000 NVIC_Init
+C:\Users\ts\AppData\Local\Temp\ccqDnpfa.s:15009  .text.NVIC_Init:0000005c $d
+C:\Users\ts\AppData\Local\Temp\ccqDnpfa.s:15014  .text.NVIC_SetVectorTable:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccqDnpfa.s:15019  .text.NVIC_SetVectorTable:00000000 NVIC_SetVectorTable
+C:\Users\ts\AppData\Local\Temp\ccqDnpfa.s:15040  .text.NVIC_SetVectorTable:00000014 $d
+C:\Users\ts\AppData\Local\Temp\ccqDnpfa.s:15044  .text.NVIC_SystemLPConfig:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccqDnpfa.s:15049  .text.NVIC_SystemLPConfig:00000000 NVIC_SystemLPConfig
+C:\Users\ts\AppData\Local\Temp\ccqDnpfa.s:15079  .text.NVIC_SystemLPConfig:00000018 $d
+C:\Users\ts\AppData\Local\Temp\ccqDnpfa.s:15083  .text.SysTick_CLKSourceConfig:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccqDnpfa.s:15088  .text.SysTick_CLKSourceConfig:00000000 SysTick_CLKSourceConfig
+C:\Users\ts\AppData\Local\Temp\ccqDnpfa.s:15117  .text.SysTick_CLKSourceConfig:0000001c $d
+C:\Users\ts\AppData\Local\Temp\ccqDnpfa.s:15133  .debug_frame:00000010 $d
+
+NO UNDEFINED SYMBOLS

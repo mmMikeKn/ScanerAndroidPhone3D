@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.home.mm.ddd_scanner.MainActivity">
+
+    <TextureView
+        android:id="@+id/procView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/preViewLayout"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true">
+
+        <TextureView
+            android:id="@+id/preView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </FrameLayout>
+
+    <Button
+        style="@style/MyButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Get ext.hwd. version"
+        android:id="@+id/buttonGetHwdVersion"
+        android:layout_gravity="right|top"
+        android:layout_alignParentTop="false"
+        android:layout_alignParentStart="false"
+        android:layout_below="@+id/buttonSave" />
+
+    <Button
+        android:id="@+id/buttonStart"
+        style="@style/MyButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="start"
+        android:layout_gravity="center"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        style="@style/MyButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Finish"
+        android:id="@+id/buttonFinish"
+        android:layout_gravity="center_horizontal|bottom"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true" />
+
+    <Button
+        style="@style/MyButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Save"
+        android:id="@+id/buttonSave"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="50dp"
+        android:layout_alignParentRight="false"
+        android:layout_alignParentLeft="true" />
+
+    <Button
+        style="@style/MyButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Configure"
+        android:id="@+id/buttonConfigure"
+        android:layout_alignParentTop="false"
+        android:layout_below="@+id/buttonReCalculate"
+        android:layout_alignEnd="@id/buttonReCalculate"
+        android:layout_alignStart="@id/buttonReCalculate" />
+
+    <Button
+        style="@style/MyButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ReCalculate"
+        android:id="@+id/buttonReCalculate"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true" />
+
+    <Button
+        style="@style/MyButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:text="Cancel"
+        android:id="@+id/buttonCancel"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="50dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text=""
+        android:id="@+id/textViewsSaveMsg"
+        android:background="@drawable/msg_background"
+        android:textColor="@android:color/white"
+        android:gravity="center_horizontal"
+        android:layout_centerInParent="true"
+        android:layout_margin="30dp" />
+
+    <Button
+        style="@style/MyButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=" Motors power off "
+        android:id="@+id/buttonMotorPowerOff"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true" />
+
+    <Button
+        style="@style/MyButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Lasers off"
+        android:id="@+id/buttonLaserOff"
+        android:layout_below="@+id/buttonMotorPowerOff"
+        android:layout_alignEnd="@id/buttonMotorPowerOff"
+        android:layout_alignStart="@id/buttonMotorPowerOff" />
+
+    <Button
+        style="@style/MyButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Lasers On"
+        android:id="@+id/buttonLaserOn"
+        android:layout_below="@+id/buttonLaserOff"
+        android:layout_alignStart="@id/buttonMotorPowerOff"
+        android:layout_alignEnd="@id/buttonMotorPowerOff" />
+
+    <Button
+        android:id="@+id/buttonGotoStart"
+        style="@style/MyButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/buttonMotorPowerOff"
+        android:layout_alignStart="@id/buttonMotorPowerOff"
+        android:layout_below="@+id/buttonLaserOn"
+        android:text="Goto start pos" />
+
+    <Button
+        android:id="@+id/buttonGotoTestPosition"
+        style="@style/MyButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/buttonMotorPowerOff"
+        android:layout_alignStart="@+id/buttonMotorPowerOff"
+        android:layout_below="@+id/buttonGotoStart"
+        android:text="Goto test pos" />
+
+    <Button
+        style="@style/MyButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start test mode"
+        android:id="@+id/buttonStartTestMode"
+        android:layout_alignParentEnd="false"
+        android:layout_above="@+id/buttonStart"
+        android:layout_marginBottom="20dp" />
+
+    <Button
+        style="@style/MyButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cancel"
+        android:id="@+id/buttonCancelTestMode"
+        android:layout_alignTop="@+id/buttonFinish"
+        android:hint="Finsih test mode without saving config"
+        android:layout_alignEnd="@+id/buttonStartTestMode" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textViewTestInfoGreen"
+        android:layout_above="@+id/textViewTestInfoRed"
+        android:layout_centerHorizontal="true"
+        android:textColor="#00ff00"
+        android:background="@drawable/msg_background"
+        android:textAlignment="center"
+        android:textStyle="normal"
+        android:fontFamily="monospace"
+        android:layout_marginRight="5dp"
+        android:layout_marginLeft="5dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textViewTestInfoRed"
+        android:layout_above="@+id/buttonStart"
+        android:layout_centerHorizontal="true"
+        android:textColor="#ff0000"
+        android:background="@drawable/msg_background"
+        android:textAlignment="center"
+        android:textStyle="normal"
+        android:fontFamily="monospace"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="3dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginBottom="10dp" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textViewScrInfo"
+        android:layout_centerHorizontal="true"
+        android:textColor="#00ffe5"
+        android:background="@drawable/msg_background"
+        android:textAlignment="center"
+        android:textStyle="normal"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_alignParentTop="true"
+        android:layout_gravity="top|left"
+        android:gravity="top|left" />
+    <Button
+        style="@style/MyButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="goto center"
+        android:id="@+id/buttonRedTestGotoCenter"
+        android:layout_alignTop="@+id/buttonRedTestGotoLeft"
+        android:textColor="#ff0000"
+        android:layout_centerHorizontal="true" />
+    <Button
+        style="@style/MyButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="to right"
+        android:id="@+id/buttonRedTestGotoRight"
+        android:textColor="#ff0000"
+        android:layout_alignTop="@+id/buttonRedTestGotoLeft"
+        android:layout_alignParentRight="true" />
+    <Button
+        style="@style/MyButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="to left"
+        android:id="@+id/buttonRedTestGotoLeft"
+        android:textColor="#ff0000"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/buttonRedTestAngleMinus" />
+    <Button
+        style="@style/MyButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="+a"
+        android:id="@+id/buttonRedTestAnglePlus"
+        android:textColor="#ff0000"
+        android:layout_alignParentLeft="false"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@+id/buttonRedTestAngleMinus" />
+    <Button
+        style="@style/MyButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="-a"
+        android:id="@+id/buttonRedTestAngleMinus"
+        android:textColor="#ff0000"
+        android:layout_alignParentRight="false"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/textViewScrInfo" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textViewTestInfoRedAdd"
+        android:layout_centerHorizontal="true"
+        android:textColor="#ff0000"
+        android:background="@drawable/msg_background"
+        android:textAlignment="center"
+        android:textStyle="normal"
+        android:layout_alignParentTop="false"
+        android:layout_gravity="top|left"
+        android:layout_toRightOf="@+id/buttonRedTestAngleMinus"
+        android:layout_toLeftOf="@+id/buttonRedTestAnglePlus"
+        android:height="40dp"
+        android:layout_alignTop="@+id/buttonRedTestAngleMinus"
+        android:layout_alignBottom="@+id/buttonRedTestAngleMinus" />
+
+    <Button
+        style="@style/MyButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="goto center"
+        android:id="@+id/buttonGreenTestGotoCenter"
+        android:layout_alignTop="@+id/buttonGreenTestGotoLeft"
+        android:textColor="#00ff00"
+        android:layout_centerHorizontal="true" />
+    <Button
+        style="@style/MyButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="to right"
+        android:id="@+id/buttonGreenTestGotoRight"
+        android:textColor="#00ff00"
+        android:layout_alignTop="@+id/buttonGreenTestGotoLeft"
+        android:layout_alignParentRight="true" />
+    <Button
+        style="@style/MyButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="to left"
+        android:id="@+id/buttonGreenTestGotoLeft"
+        android:textColor="#00ff00"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/buttonGreenTestAngleMinus" />
+    <Button
+        style="@style/MyButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="+a"
+        android:id="@+id/buttonGreenTestAnglePlus"
+        android:textColor="#00ff00"
+        android:layout_alignParentLeft="false"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@+id/buttonGreenTestAngleMinus" />
+    <Button
+        style="@style/MyButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="-a"
+        android:id="@+id/buttonGreenTestAngleMinus"
+        android:textColor="#00ff00"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/buttonRedTestGotoLeft" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textViewTestInfoGreenAdd"
+        android:layout_centerHorizontal="true"
+        android:textColor="#00ff00"
+        android:background="@drawable/msg_background"
+        android:textAlignment="center"
+        android:textStyle="normal"
+        android:layout_alignParentTop="false"
+        android:layout_gravity="top|left"
+        android:layout_toRightOf="@+id/buttonGreenTestAngleMinus"
+        android:layout_toLeftOf="@+id/buttonGreenTestAnglePlus"
+        android:height="40dp"
+        android:layout_alignTop="@+id/buttonGreenTestAngleMinus"
+        android:layout_alignBottom="@+id/buttonGreenTestAngleMinus" />
+
+
+</RelativeLayout>

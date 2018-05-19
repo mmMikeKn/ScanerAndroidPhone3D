@@ -1,0 +1,2353 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 4
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"stm32f10x_flash.c"
+  23              	.Ltext0:
+  24              		.file 1 "stm32f10x_flash.c"
+ 15231              		.align	1
+ 15232              		.global	FLASH_SetLatency
+ 15233              		.thumb
+ 15234              		.thumb_func
+ 15236              	FLASH_SetLatency:
+ 15237              	.LFB27:
+   0:stm32f10x_flash.c **** /**
+   1:stm32f10x_flash.c ****   ******************************************************************************
+   2:stm32f10x_flash.c ****   * @file    stm32f10x_flash.c
+   3:stm32f10x_flash.c ****   * @author  MCD Application Team
+   4:stm32f10x_flash.c ****   * @version V3.1.2
+   5:stm32f10x_flash.c ****   * @date    09/28/2009
+   6:stm32f10x_flash.c ****   * @brief   This file provides all the FLASH firmware functions.
+   7:stm32f10x_flash.c ****   ******************************************************************************
+   8:stm32f10x_flash.c ****   * @copy
+   9:stm32f10x_flash.c ****   *
+  10:stm32f10x_flash.c ****   * THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
+  11:stm32f10x_flash.c ****   * WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE
+  12:stm32f10x_flash.c ****   * TIME. AS A RESULT, STMICROELECTRONICS SHALL NOT BE HELD LIABLE FOR ANY
+  13:stm32f10x_flash.c ****   * DIRECT, INDIRECT OR CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY CLAIMS ARISING
+  14:stm32f10x_flash.c ****   * FROM THE CONTENT OF SUCH FIRMWARE AND/OR THE USE MADE BY CUSTOMERS OF THE
+  15:stm32f10x_flash.c ****   * CODING INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
+  16:stm32f10x_flash.c ****   *
+  17:stm32f10x_flash.c ****   * <h2><center>&copy; COPYRIGHT 2009 STMicroelectronics</center></h2>
+  18:stm32f10x_flash.c ****   */ 
+  19:stm32f10x_flash.c **** 
+  20:stm32f10x_flash.c **** /* Includes ------------------------------------------------------------------*/
+  21:stm32f10x_flash.c **** #include "stm32f10x_flash.h"
+  22:stm32f10x_flash.c **** 
+  23:stm32f10x_flash.c **** /** @addtogroup STM32F10x_StdPeriph_Driver
+  24:stm32f10x_flash.c ****   * @{
+  25:stm32f10x_flash.c ****   */
+  26:stm32f10x_flash.c **** 
+  27:stm32f10x_flash.c **** /** @defgroup FLASH 
+  28:stm32f10x_flash.c ****   * @brief FLASH driver modules
+  29:stm32f10x_flash.c ****   * @{
+  30:stm32f10x_flash.c ****   */ 
+  31:stm32f10x_flash.c **** 
+  32:stm32f10x_flash.c **** /** @defgroup FLASH_Private_TypesDefinitions
+  33:stm32f10x_flash.c ****   * @{
+  34:stm32f10x_flash.c ****   */
+  35:stm32f10x_flash.c **** 
+  36:stm32f10x_flash.c **** /**
+  37:stm32f10x_flash.c ****   * @}
+  38:stm32f10x_flash.c ****   */ 
+  39:stm32f10x_flash.c **** 
+  40:stm32f10x_flash.c **** /** @defgroup FLASH_Private_Defines
+  41:stm32f10x_flash.c ****   * @{
+  42:stm32f10x_flash.c ****   */ 
+  43:stm32f10x_flash.c **** 
+  44:stm32f10x_flash.c **** /* Flash Access Control Register bits */
+  45:stm32f10x_flash.c **** #define ACR_LATENCY_Mask         ((uint32_t)0x00000038)
+  46:stm32f10x_flash.c **** #define ACR_HLFCYA_Mask          ((uint32_t)0xFFFFFFF7)
+  47:stm32f10x_flash.c **** #define ACR_PRFTBE_Mask          ((uint32_t)0xFFFFFFEF)
+  48:stm32f10x_flash.c **** 
+  49:stm32f10x_flash.c **** /* Flash Access Control Register bits */
+  50:stm32f10x_flash.c **** #define ACR_PRFTBS_Mask          ((uint32_t)0x00000020) 
+  51:stm32f10x_flash.c **** 
+  52:stm32f10x_flash.c **** /* Flash Control Register bits */
+  53:stm32f10x_flash.c **** #define CR_PG_Set                ((uint32_t)0x00000001)
+  54:stm32f10x_flash.c **** #define CR_PG_Reset              ((uint32_t)0x00001FFE) 
+  55:stm32f10x_flash.c **** #define CR_PER_Set               ((uint32_t)0x00000002)
+  56:stm32f10x_flash.c **** #define CR_PER_Reset             ((uint32_t)0x00001FFD)
+  57:stm32f10x_flash.c **** #define CR_MER_Set               ((uint32_t)0x00000004)
+  58:stm32f10x_flash.c **** #define CR_MER_Reset             ((uint32_t)0x00001FFB)
+  59:stm32f10x_flash.c **** #define CR_OPTPG_Set             ((uint32_t)0x00000010)
+  60:stm32f10x_flash.c **** #define CR_OPTPG_Reset           ((uint32_t)0x00001FEF)
+  61:stm32f10x_flash.c **** #define CR_OPTER_Set             ((uint32_t)0x00000020)
+  62:stm32f10x_flash.c **** #define CR_OPTER_Reset           ((uint32_t)0x00001FDF)
+  63:stm32f10x_flash.c **** #define CR_STRT_Set              ((uint32_t)0x00000040)
+  64:stm32f10x_flash.c **** #define CR_LOCK_Set              ((uint32_t)0x00000080)
+  65:stm32f10x_flash.c **** 
+  66:stm32f10x_flash.c **** /* FLASH Mask */
+  67:stm32f10x_flash.c **** #define RDPRT_Mask               ((uint32_t)0x00000002)
+  68:stm32f10x_flash.c **** #define WRP0_Mask                ((uint32_t)0x000000FF)
+  69:stm32f10x_flash.c **** #define WRP1_Mask                ((uint32_t)0x0000FF00)
+  70:stm32f10x_flash.c **** #define WRP2_Mask                ((uint32_t)0x00FF0000)
+  71:stm32f10x_flash.c **** #define WRP3_Mask                ((uint32_t)0xFF000000)
+  72:stm32f10x_flash.c **** 
+  73:stm32f10x_flash.c **** /* FLASH Keys */
+  74:stm32f10x_flash.c **** #define RDP_Key                  ((uint16_t)0x00A5)
+  75:stm32f10x_flash.c **** #define FLASH_KEY1               ((uint32_t)0x45670123)
+  76:stm32f10x_flash.c **** #define FLASH_KEY2               ((uint32_t)0xCDEF89AB)
+  77:stm32f10x_flash.c **** 
+  78:stm32f10x_flash.c **** /* Delay definition */   
+  79:stm32f10x_flash.c **** #define EraseTimeout             ((uint32_t)0x00000FFF)
+  80:stm32f10x_flash.c **** #define ProgramTimeout           ((uint32_t)0x0000000F)
+  81:stm32f10x_flash.c **** 
+  82:stm32f10x_flash.c **** /**
+  83:stm32f10x_flash.c ****   * @}
+  84:stm32f10x_flash.c ****   */ 
+  85:stm32f10x_flash.c **** 
+  86:stm32f10x_flash.c **** /** @defgroup FLASH_Private_Macros
+  87:stm32f10x_flash.c ****   * @{
+  88:stm32f10x_flash.c ****   */
+  89:stm32f10x_flash.c **** 
+  90:stm32f10x_flash.c **** /**
+  91:stm32f10x_flash.c ****   * @}
+  92:stm32f10x_flash.c ****   */ 
+  93:stm32f10x_flash.c **** 
+  94:stm32f10x_flash.c **** /** @defgroup FLASH_Private_Variables
+  95:stm32f10x_flash.c ****   * @{
+  96:stm32f10x_flash.c ****   */
+  97:stm32f10x_flash.c **** 
+  98:stm32f10x_flash.c **** /**
+  99:stm32f10x_flash.c ****   * @}
+ 100:stm32f10x_flash.c ****   */ 
+ 101:stm32f10x_flash.c **** 
+ 102:stm32f10x_flash.c **** /** @defgroup FLASH_Private_FunctionPrototypes
+ 103:stm32f10x_flash.c ****   * @{
+ 104:stm32f10x_flash.c ****   */
+ 105:stm32f10x_flash.c **** 
+ 106:stm32f10x_flash.c **** static void delay(void);
+ 107:stm32f10x_flash.c **** /**
+ 108:stm32f10x_flash.c ****   * @}
+ 109:stm32f10x_flash.c ****   */
+ 110:stm32f10x_flash.c **** 
+ 111:stm32f10x_flash.c **** /** @defgroup FLASH_Private_Functions
+ 112:stm32f10x_flash.c ****   * @{
+ 113:stm32f10x_flash.c ****   */
+ 114:stm32f10x_flash.c **** 
+ 115:stm32f10x_flash.c **** /**
+ 116:stm32f10x_flash.c ****   * @brief  Sets the code latency value.
+ 117:stm32f10x_flash.c ****   * @param  FLASH_Latency: specifies the FLASH Latency value.
+ 118:stm32f10x_flash.c ****   *   This parameter can be one of the following values:
+ 119:stm32f10x_flash.c ****   *     @arg FLASH_Latency_0: FLASH Zero Latency cycle
+ 120:stm32f10x_flash.c ****   *     @arg FLASH_Latency_1: FLASH One Latency cycle
+ 121:stm32f10x_flash.c ****   *     @arg FLASH_Latency_2: FLASH Two Latency cycles
+ 122:stm32f10x_flash.c ****   * @retval None
+ 123:stm32f10x_flash.c ****   */
+ 124:stm32f10x_flash.c **** void FLASH_SetLatency(uint32_t FLASH_Latency)
+ 125:stm32f10x_flash.c **** {
+ 15238              		.loc 1 126 0
+ 15239              		@ args = 0, pretend = 0, frame = 0
+ 15240              		@ frame_needed = 0, uses_anonymous_args = 0
+ 15241              		@ link register save eliminated.
+ 15242              	.LVL0:
+ 126:stm32f10x_flash.c ****   uint32_t tmpreg = 0;
+ 127:stm32f10x_flash.c ****   
+ 128:stm32f10x_flash.c ****   /* Check the parameters */
+ 129:stm32f10x_flash.c ****   assert_param(IS_FLASH_LATENCY(FLASH_Latency));
+ 130:stm32f10x_flash.c ****   
+ 131:stm32f10x_flash.c ****   /* Read the ACR register */
+ 132:stm32f10x_flash.c ****   tmpreg = FLASH->ACR;  
+ 15243              		.loc 1 133 0
+ 15244 0000 034B     		ldr	r3, .L2
+ 15245 0002 1968     		ldr	r1, [r3, #0]
+ 15246              	.LVL1:
+ 133:stm32f10x_flash.c ****   
+ 134:stm32f10x_flash.c ****   /* Sets the Latency value */
+ 135:stm32f10x_flash.c ****   tmpreg &= ACR_LATENCY_Mask;
+ 15247              		.loc 1 136 0
+ 15248 0004 01F03802 		and	r2, r1, #56
+ 15249              	.LVL2:
+ 136:stm32f10x_flash.c ****   tmpreg |= FLASH_Latency;
+ 15250              		.loc 1 137 0
+ 15251 0008 1043     		orrs	r0, r0, r2
+ 15252              	.LVL3:
+ 137:stm32f10x_flash.c ****   
+ 138:stm32f10x_flash.c ****   /* Write the ACR register */
+ 139:stm32f10x_flash.c ****   FLASH->ACR = tmpreg;
+ 15253              		.loc 1 140 0
+ 15254 000a 1860     		str	r0, [r3, #0]
+ 140:stm32f10x_flash.c **** }
+ 15255              		.loc 1 141 0
+ 15256 000c 7047     		bx	lr
+ 15257              	.L3:
+ 15258 000e 00BF     		.align	2
+ 15259              	.L2:
+ 15260 0010 00200240 		.word	1073881088
+ 15261              	.LFE27:
+ 15263              		.section	.text.FLASH_HalfCycleAccessCmd,"ax",%progbits
+ 15264              		.align	1
+ 15265              		.global	FLASH_HalfCycleAccessCmd
+ 15266              		.thumb
+ 15267              		.thumb_func
+ 15269              	FLASH_HalfCycleAccessCmd:
+ 15270              	.LFB28:
+ 141:stm32f10x_flash.c **** 
+ 142:stm32f10x_flash.c **** /**
+ 143:stm32f10x_flash.c ****   * @brief  Enables or disables the Half cycle flash access.
+ 144:stm32f10x_flash.c ****   * @param  FLASH_HalfCycleAccess: specifies the FLASH Half cycle Access mode.
+ 145:stm32f10x_flash.c ****   *   This parameter can be one of the following values:
+ 146:stm32f10x_flash.c ****   *     @arg FLASH_HalfCycleAccess_Enable: FLASH Half Cycle Enable
+ 147:stm32f10x_flash.c ****   *     @arg FLASH_HalfCycleAccess_Disable: FLASH Half Cycle Disable
+ 148:stm32f10x_flash.c ****   * @retval None
+ 149:stm32f10x_flash.c ****   */
+ 150:stm32f10x_flash.c **** void FLASH_HalfCycleAccessCmd(uint32_t FLASH_HalfCycleAccess)
+ 151:stm32f10x_flash.c **** {
+ 15271              		.loc 1 152 0
+ 15272              		@ args = 0, pretend = 0, frame = 0
+ 15273              		@ frame_needed = 0, uses_anonymous_args = 0
+ 15274              		@ link register save eliminated.
+ 15275              	.LVL4:
+ 152:stm32f10x_flash.c ****   /* Check the parameters */
+ 153:stm32f10x_flash.c ****   assert_param(IS_FLASH_HALFCYCLEACCESS_STATE(FLASH_HalfCycleAccess));
+ 154:stm32f10x_flash.c ****   
+ 155:stm32f10x_flash.c ****   /* Enable or disable the Half cycle access */
+ 156:stm32f10x_flash.c ****   FLASH->ACR &= ACR_HLFCYA_Mask;
+ 15276              		.loc 1 157 0
+ 15277 0000 044B     		ldr	r3, .L5
+ 15278 0002 D3F800C0 		ldr	ip, [r3, #0]
+ 15279 0006 2CF00801 		bic	r1, ip, #8
+ 15280 000a 1960     		str	r1, [r3, #0]
+ 157:stm32f10x_flash.c ****   FLASH->ACR |= FLASH_HalfCycleAccess;
+ 15281              		.loc 1 158 0
+ 15282 000c 1A68     		ldr	r2, [r3, #0]
+ 15283              	.LVL5:
+ 15284 000e 1043     		orrs	r0, r0, r2
+ 15285              	.LVL6:
+ 15286 0010 1860     		str	r0, [r3, #0]
+ 158:stm32f10x_flash.c **** }
+ 15287              		.loc 1 159 0
+ 15288 0012 7047     		bx	lr
+ 15289              	.L6:
+ 15290              		.align	2
+ 15291              	.L5:
+ 15292 0014 00200240 		.word	1073881088
+ 15293              	.LFE28:
+ 15295              		.section	.text.FLASH_PrefetchBufferCmd,"ax",%progbits
+ 15296              		.align	1
+ 15297              		.global	FLASH_PrefetchBufferCmd
+ 15298              		.thumb
+ 15299              		.thumb_func
+ 15301              	FLASH_PrefetchBufferCmd:
+ 15302              	.LFB29:
+ 159:stm32f10x_flash.c **** 
+ 160:stm32f10x_flash.c **** /**
+ 161:stm32f10x_flash.c ****   * @brief  Enables or disables the Prefetch Buffer.
+ 162:stm32f10x_flash.c ****   * @param  FLASH_PrefetchBuffer: specifies the Prefetch buffer status.
+ 163:stm32f10x_flash.c ****   *   This parameter can be one of the following values:
+ 164:stm32f10x_flash.c ****   *     @arg FLASH_PrefetchBuffer_Enable: FLASH Prefetch Buffer Enable
+ 165:stm32f10x_flash.c ****   *     @arg FLASH_PrefetchBuffer_Disable: FLASH Prefetch Buffer Disable
+ 166:stm32f10x_flash.c ****   * @retval None
+ 167:stm32f10x_flash.c ****   */
+ 168:stm32f10x_flash.c **** void FLASH_PrefetchBufferCmd(uint32_t FLASH_PrefetchBuffer)
+ 169:stm32f10x_flash.c **** {
+ 15303              		.loc 1 170 0
+ 15304              		@ args = 0, pretend = 0, frame = 0
+ 15305              		@ frame_needed = 0, uses_anonymous_args = 0
+ 15306              		@ link register save eliminated.
+ 15307              	.LVL7:
+ 170:stm32f10x_flash.c ****   /* Check the parameters */
+ 171:stm32f10x_flash.c ****   assert_param(IS_FLASH_PREFETCHBUFFER_STATE(FLASH_PrefetchBuffer));
+ 172:stm32f10x_flash.c ****   
+ 173:stm32f10x_flash.c ****   /* Enable or disable the Prefetch Buffer */
+ 174:stm32f10x_flash.c ****   FLASH->ACR &= ACR_PRFTBE_Mask;
+ 15308              		.loc 1 175 0
+ 15309 0000 044B     		ldr	r3, .L8
+ 15310 0002 D3F800C0 		ldr	ip, [r3, #0]
+ 15311 0006 2CF01001 		bic	r1, ip, #16
+ 15312 000a 1960     		str	r1, [r3, #0]
+ 175:stm32f10x_flash.c ****   FLASH->ACR |= FLASH_PrefetchBuffer;
+ 15313              		.loc 1 176 0
+ 15314 000c 1A68     		ldr	r2, [r3, #0]
+ 15315              	.LVL8:
+ 15316 000e 1043     		orrs	r0, r0, r2
+ 15317              	.LVL9:
+ 15318 0010 1860     		str	r0, [r3, #0]
+ 176:stm32f10x_flash.c **** }
+ 15319              		.loc 1 177 0
+ 15320 0012 7047     		bx	lr
+ 15321              	.L9:
+ 15322              		.align	2
+ 15323              	.L8:
+ 15324 0014 00200240 		.word	1073881088
+ 15325              	.LFE29:
+ 15327              		.section	.text.FLASH_Unlock,"ax",%progbits
+ 15328              		.align	1
+ 15329              		.global	FLASH_Unlock
+ 15330              		.thumb
+ 15331              		.thumb_func
+ 15333              	FLASH_Unlock:
+ 15334              	.LFB30:
+ 177:stm32f10x_flash.c **** 
+ 178:stm32f10x_flash.c **** /**
+ 179:stm32f10x_flash.c ****   * @brief  Unlocks the FLASH Program Erase Controller.
+ 180:stm32f10x_flash.c ****   * @param  None
+ 181:stm32f10x_flash.c ****   * @retval None
+ 182:stm32f10x_flash.c ****   */
+ 183:stm32f10x_flash.c **** void FLASH_Unlock(void)
+ 184:stm32f10x_flash.c **** {
+ 15335              		.loc 1 185 0
+ 15336              		@ args = 0, pretend = 0, frame = 0
+ 15337              		@ frame_needed = 0, uses_anonymous_args = 0
+ 15338              		@ link register save eliminated.
+ 185:stm32f10x_flash.c ****   /* Authorize the FPEC Access */
+ 186:stm32f10x_flash.c ****   FLASH->KEYR = FLASH_KEY1;
+ 15339              		.loc 1 187 0
+ 15340 0000 0348     		ldr	r0, .L11
+ 15341 0002 044B     		ldr	r3, .L11+4
+ 187:stm32f10x_flash.c ****   FLASH->KEYR = FLASH_KEY2;
+ 15342              		.loc 1 188 0
+ 15343 0004 00F18832 		add	r2, r0, #-2004318072
+ 187:stm32f10x_flash.c ****   FLASH->KEYR = FLASH_KEY2;
+ 15344              		.loc 1 187 0
+ 15345 0008 5860     		str	r0, [r3, #4]
+ 15346              		.loc 1 188 0
+ 15347 000a 5A60     		str	r2, [r3, #4]
+ 188:stm32f10x_flash.c **** }
+ 15348              		.loc 1 189 0
+ 15349 000c 7047     		bx	lr
+ 15350              	.L12:
+ 15351 000e 00BF     		.align	2
+ 15352              	.L11:
+ 15353 0010 23016745 		.word	1164378403
+ 15354 0014 00200240 		.word	1073881088
+ 15355              	.LFE30:
+ 15357              		.section	.text.FLASH_Lock,"ax",%progbits
+ 15358              		.align	1
+ 15359              		.global	FLASH_Lock
+ 15360              		.thumb
+ 15361              		.thumb_func
+ 15363              	FLASH_Lock:
+ 15364              	.LFB31:
+ 189:stm32f10x_flash.c **** 
+ 190:stm32f10x_flash.c **** /**
+ 191:stm32f10x_flash.c ****   * @brief  Locks the FLASH Program Erase Controller.
+ 192:stm32f10x_flash.c ****   * @param  None
+ 193:stm32f10x_flash.c ****   * @retval None
+ 194:stm32f10x_flash.c ****   */
+ 195:stm32f10x_flash.c **** void FLASH_Lock(void)
+ 196:stm32f10x_flash.c **** {
+ 15365              		.loc 1 197 0
+ 15366              		@ args = 0, pretend = 0, frame = 0
+ 15367              		@ frame_needed = 0, uses_anonymous_args = 0
+ 15368              		@ link register save eliminated.
+ 197:stm32f10x_flash.c ****   /* Set the Lock Bit to lock the FPEC and the FCR */
+ 198:stm32f10x_flash.c ****   FLASH->CR |= CR_LOCK_Set;
+ 15369              		.loc 1 199 0
+ 15370 0000 024B     		ldr	r3, .L14
+ 15371 0002 1869     		ldr	r0, [r3, #16]
+ 15372 0004 40F08002 		orr	r2, r0, #128
+ 15373 0008 1A61     		str	r2, [r3, #16]
+ 199:stm32f10x_flash.c **** }
+ 15374              		.loc 1 200 0
+ 15375 000a 7047     		bx	lr
+ 15376              	.L15:
+ 15377              		.align	2
+ 15378              	.L14:
+ 15379 000c 00200240 		.word	1073881088
+ 15380              	.LFE31:
+ 15382              		.section	.text.FLASH_GetUserOptionByte,"ax",%progbits
+ 15383              		.align	1
+ 15384              		.global	FLASH_GetUserOptionByte
+ 15385              		.thumb
+ 15386              		.thumb_func
+ 15388              	FLASH_GetUserOptionByte:
+ 15389              	.LFB41:
+ 200:stm32f10x_flash.c **** 
+ 201:stm32f10x_flash.c **** /**
+ 202:stm32f10x_flash.c ****   * @brief  Erases a specified FLASH page.
+ 203:stm32f10x_flash.c ****   * @param  Page_Address: The page address to be erased.
+ 204:stm32f10x_flash.c ****   * @retval FLASH Status: The returned value can be: FLASH_BUSY, FLASH_ERROR_PG,
+ 205:stm32f10x_flash.c ****   *   FLASH_ERROR_WRP, FLASH_COMPLETE or FLASH_TIMEOUT.
+ 206:stm32f10x_flash.c ****   */
+ 207:stm32f10x_flash.c **** FLASH_Status FLASH_ErasePage(uint32_t Page_Address)
+ 208:stm32f10x_flash.c **** {
+ 209:stm32f10x_flash.c ****   FLASH_Status status = FLASH_COMPLETE;
+ 210:stm32f10x_flash.c ****   /* Check the parameters */
+ 211:stm32f10x_flash.c ****   assert_param(IS_FLASH_ADDRESS(Page_Address));
+ 212:stm32f10x_flash.c ****   /* Wait for last operation to be completed */
+ 213:stm32f10x_flash.c ****   status = FLASH_WaitForLastOperation(EraseTimeout);
+ 214:stm32f10x_flash.c ****   
+ 215:stm32f10x_flash.c ****   if(status == FLASH_COMPLETE)
+ 216:stm32f10x_flash.c ****   { 
+ 217:stm32f10x_flash.c ****     /* if the previous operation is completed, proceed to erase the page */
+ 218:stm32f10x_flash.c ****     FLASH->CR|= CR_PER_Set;
+ 219:stm32f10x_flash.c ****     FLASH->AR = Page_Address; 
+ 220:stm32f10x_flash.c ****     FLASH->CR|= CR_STRT_Set;
+ 221:stm32f10x_flash.c ****     
+ 222:stm32f10x_flash.c ****     /* Wait for last operation to be completed */
+ 223:stm32f10x_flash.c ****     status = FLASH_WaitForLastOperation(EraseTimeout);
+ 224:stm32f10x_flash.c ****     if(status != FLASH_TIMEOUT)
+ 225:stm32f10x_flash.c ****     {
+ 226:stm32f10x_flash.c ****       /* if the erase operation is completed, disable the PER Bit */
+ 227:stm32f10x_flash.c ****       FLASH->CR &= CR_PER_Reset;
+ 228:stm32f10x_flash.c ****     }
+ 229:stm32f10x_flash.c ****   }
+ 230:stm32f10x_flash.c ****   /* Return the Erase Status */
+ 231:stm32f10x_flash.c ****   return status;
+ 232:stm32f10x_flash.c **** }
+ 233:stm32f10x_flash.c **** 
+ 234:stm32f10x_flash.c **** /**
+ 235:stm32f10x_flash.c ****   * @brief  Erases all FLASH pages.
+ 236:stm32f10x_flash.c ****   * @param  None
+ 237:stm32f10x_flash.c ****   * @retval FLASH Status: The returned value can be: FLASH_ERROR_PG,
+ 238:stm32f10x_flash.c ****   *   FLASH_ERROR_WRP, FLASH_COMPLETE or FLASH_TIMEOUT.
+ 239:stm32f10x_flash.c ****   */
+ 240:stm32f10x_flash.c **** FLASH_Status FLASH_EraseAllPages(void)
+ 241:stm32f10x_flash.c **** {
+ 242:stm32f10x_flash.c ****   FLASH_Status status = FLASH_COMPLETE;
+ 243:stm32f10x_flash.c ****   /* Wait for last operation to be completed */
+ 244:stm32f10x_flash.c ****   status = FLASH_WaitForLastOperation(EraseTimeout);
+ 245:stm32f10x_flash.c ****   
+ 246:stm32f10x_flash.c ****   if(status == FLASH_COMPLETE)
+ 247:stm32f10x_flash.c ****   {
+ 248:stm32f10x_flash.c ****     /* if the previous operation is completed, proceed to erase all pages */
+ 249:stm32f10x_flash.c ****      FLASH->CR |= CR_MER_Set;
+ 250:stm32f10x_flash.c ****      FLASH->CR |= CR_STRT_Set;
+ 251:stm32f10x_flash.c ****     
+ 252:stm32f10x_flash.c ****     /* Wait for last operation to be completed */
+ 253:stm32f10x_flash.c ****     status = FLASH_WaitForLastOperation(EraseTimeout);
+ 254:stm32f10x_flash.c ****     if(status != FLASH_TIMEOUT)
+ 255:stm32f10x_flash.c ****     {
+ 256:stm32f10x_flash.c ****       /* if the erase operation is completed, disable the MER Bit */
+ 257:stm32f10x_flash.c ****       FLASH->CR &= CR_MER_Reset;
+ 258:stm32f10x_flash.c ****     }
+ 259:stm32f10x_flash.c ****   }	   
+ 260:stm32f10x_flash.c ****   /* Return the Erase Status */
+ 261:stm32f10x_flash.c ****   return status;
+ 262:stm32f10x_flash.c **** }
+ 263:stm32f10x_flash.c **** 
+ 264:stm32f10x_flash.c **** /**
+ 265:stm32f10x_flash.c ****   * @brief  Erases the FLASH option bytes.
+ 266:stm32f10x_flash.c ****   * @note   This functions erases all option bytes and then deactivates the Read
+ 267:stm32f10x_flash.c ****   *         protection. If the user needs to keep the Read protection activated,
+ 268:stm32f10x_flash.c ****   *         he has to enable it after this function call (using
+ 269:stm32f10x_flash.c ****   *         FLASH_ReadOutProtection function)
+ 270:stm32f10x_flash.c ****   * @param  None
+ 271:stm32f10x_flash.c ****   * @retval FLASH Status: The returned value can be: FLASH_ERROR_PG,
+ 272:stm32f10x_flash.c ****   *   FLASH_ERROR_WRP, FLASH_COMPLETE or FLASH_TIMEOUT.
+ 273:stm32f10x_flash.c ****   */
+ 274:stm32f10x_flash.c **** FLASH_Status FLASH_EraseOptionBytes(void)
+ 275:stm32f10x_flash.c **** {
+ 276:stm32f10x_flash.c ****   FLASH_Status status = FLASH_COMPLETE;
+ 277:stm32f10x_flash.c ****   
+ 278:stm32f10x_flash.c ****   /* Wait for last operation to be completed */
+ 279:stm32f10x_flash.c ****   status = FLASH_WaitForLastOperation(EraseTimeout);
+ 280:stm32f10x_flash.c ****   if(status == FLASH_COMPLETE)
+ 281:stm32f10x_flash.c ****   {
+ 282:stm32f10x_flash.c ****     /* Authorize the small information block programming */
+ 283:stm32f10x_flash.c ****     FLASH->OPTKEYR = FLASH_KEY1;
+ 284:stm32f10x_flash.c ****     FLASH->OPTKEYR = FLASH_KEY2;
+ 285:stm32f10x_flash.c ****     
+ 286:stm32f10x_flash.c ****     /* if the previous operation is completed, proceed to erase the option bytes */
+ 287:stm32f10x_flash.c ****     FLASH->CR |= CR_OPTER_Set;
+ 288:stm32f10x_flash.c ****     FLASH->CR |= CR_STRT_Set;
+ 289:stm32f10x_flash.c ****     /* Wait for last operation to be completed */
+ 290:stm32f10x_flash.c ****     status = FLASH_WaitForLastOperation(EraseTimeout);
+ 291:stm32f10x_flash.c ****     
+ 292:stm32f10x_flash.c ****     if(status == FLASH_COMPLETE)
+ 293:stm32f10x_flash.c ****     {
+ 294:stm32f10x_flash.c ****       /* if the erase operation is completed, disable the OPTER Bit */
+ 295:stm32f10x_flash.c ****       FLASH->CR &= CR_OPTER_Reset;
+ 296:stm32f10x_flash.c ****        
+ 297:stm32f10x_flash.c ****       /* Enable the Option Bytes Programming operation */
+ 298:stm32f10x_flash.c ****       FLASH->CR |= CR_OPTPG_Set;
+ 299:stm32f10x_flash.c ****       /* Disable the Read protection */
+ 300:stm32f10x_flash.c ****       OB->RDP= RDP_Key; 
+ 301:stm32f10x_flash.c ****       /* Wait for last operation to be completed */
+ 302:stm32f10x_flash.c ****       status = FLASH_WaitForLastOperation(ProgramTimeout);
+ 303:stm32f10x_flash.c ****  
+ 304:stm32f10x_flash.c ****       if(status != FLASH_TIMEOUT)
+ 305:stm32f10x_flash.c ****       {
+ 306:stm32f10x_flash.c ****         /* if the program operation is completed, disable the OPTPG Bit */
+ 307:stm32f10x_flash.c ****         FLASH->CR &= CR_OPTPG_Reset;
+ 308:stm32f10x_flash.c ****       }
+ 309:stm32f10x_flash.c ****     }
+ 310:stm32f10x_flash.c ****     else
+ 311:stm32f10x_flash.c ****     {
+ 312:stm32f10x_flash.c ****       if (status != FLASH_TIMEOUT)
+ 313:stm32f10x_flash.c ****       {
+ 314:stm32f10x_flash.c ****         /* Disable the OPTPG Bit */
+ 315:stm32f10x_flash.c ****         FLASH->CR &= CR_OPTPG_Reset;
+ 316:stm32f10x_flash.c ****       }
+ 317:stm32f10x_flash.c ****     }  
+ 318:stm32f10x_flash.c ****   }
+ 319:stm32f10x_flash.c ****   /* Return the erase status */
+ 320:stm32f10x_flash.c ****   return status;
+ 321:stm32f10x_flash.c **** }
+ 322:stm32f10x_flash.c **** 
+ 323:stm32f10x_flash.c **** /**
+ 324:stm32f10x_flash.c ****   * @brief  Programs a word at a specified address.
+ 325:stm32f10x_flash.c ****   * @param  Address: specifies the address to be programmed.
+ 326:stm32f10x_flash.c ****   * @param  Data: specifies the data to be programmed.
+ 327:stm32f10x_flash.c ****   * @retval FLASH Status: The returned value can be: FLASH_ERROR_PG,
+ 328:stm32f10x_flash.c ****   *   FLASH_ERROR_WRP, FLASH_COMPLETE or FLASH_TIMEOUT. 
+ 329:stm32f10x_flash.c ****   */
+ 330:stm32f10x_flash.c **** FLASH_Status FLASH_ProgramWord(uint32_t Address, uint32_t Data)
+ 331:stm32f10x_flash.c **** {
+ 332:stm32f10x_flash.c ****   FLASH_Status status = FLASH_COMPLETE;
+ 333:stm32f10x_flash.c ****   __IO uint32_t tmp = 0;
+ 334:stm32f10x_flash.c **** 
+ 335:stm32f10x_flash.c ****   /* Check the parameters */
+ 336:stm32f10x_flash.c ****   assert_param(IS_FLASH_ADDRESS(Address));
+ 337:stm32f10x_flash.c ****   /* Wait for last operation to be completed */
+ 338:stm32f10x_flash.c ****   status = FLASH_WaitForLastOperation(ProgramTimeout);
+ 339:stm32f10x_flash.c ****   
+ 340:stm32f10x_flash.c ****   if(status == FLASH_COMPLETE)
+ 341:stm32f10x_flash.c ****   {
+ 342:stm32f10x_flash.c ****     /* if the previous operation is completed, proceed to program the new first 
+ 343:stm32f10x_flash.c ****     half word */
+ 344:stm32f10x_flash.c ****     FLASH->CR |= CR_PG_Set;
+ 345:stm32f10x_flash.c ****   
+ 346:stm32f10x_flash.c ****     *(__IO uint16_t*)Address = (uint16_t)Data;
+ 347:stm32f10x_flash.c ****     /* Wait for last operation to be completed */
+ 348:stm32f10x_flash.c ****     status = FLASH_WaitForLastOperation(ProgramTimeout);
+ 349:stm32f10x_flash.c ****  
+ 350:stm32f10x_flash.c ****     if(status == FLASH_COMPLETE)
+ 351:stm32f10x_flash.c ****     {
+ 352:stm32f10x_flash.c ****       /* if the previous operation is completed, proceed to program the new second 
+ 353:stm32f10x_flash.c ****       half word */
+ 354:stm32f10x_flash.c ****       tmp = Address + 2;
+ 355:stm32f10x_flash.c **** 
+ 356:stm32f10x_flash.c ****       *(__IO uint16_t*) tmp = Data >> 16;
+ 357:stm32f10x_flash.c ****     
+ 358:stm32f10x_flash.c ****       /* Wait for last operation to be completed */
+ 359:stm32f10x_flash.c ****       status = FLASH_WaitForLastOperation(ProgramTimeout);
+ 360:stm32f10x_flash.c ****         
+ 361:stm32f10x_flash.c ****       if(status != FLASH_TIMEOUT)
+ 362:stm32f10x_flash.c ****       {
+ 363:stm32f10x_flash.c ****         /* Disable the PG Bit */
+ 364:stm32f10x_flash.c ****         FLASH->CR &= CR_PG_Reset;
+ 365:stm32f10x_flash.c ****       }
+ 366:stm32f10x_flash.c ****     }
+ 367:stm32f10x_flash.c ****     else
+ 368:stm32f10x_flash.c ****     {
+ 369:stm32f10x_flash.c ****       if (status != FLASH_TIMEOUT)
+ 370:stm32f10x_flash.c ****       {
+ 371:stm32f10x_flash.c ****         /* Disable the PG Bit */
+ 372:stm32f10x_flash.c ****         FLASH->CR &= CR_PG_Reset;
+ 373:stm32f10x_flash.c ****       }
+ 374:stm32f10x_flash.c ****      }
+ 375:stm32f10x_flash.c ****   }
+ 376:stm32f10x_flash.c ****   /* Return the Program Status */
+ 377:stm32f10x_flash.c ****   return status;
+ 378:stm32f10x_flash.c **** }
+ 379:stm32f10x_flash.c **** 
+ 380:stm32f10x_flash.c **** /**
+ 381:stm32f10x_flash.c ****   * @brief  Programs a half word at a specified address.
+ 382:stm32f10x_flash.c ****   * @param  Address: specifies the address to be programmed.
+ 383:stm32f10x_flash.c ****   * @param  Data: specifies the data to be programmed.
+ 384:stm32f10x_flash.c ****   * @retval FLASH Status: The returned value can be: FLASH_ERROR_PG,
+ 385:stm32f10x_flash.c ****   *   FLASH_ERROR_WRP, FLASH_COMPLETE or FLASH_TIMEOUT. 
+ 386:stm32f10x_flash.c ****   */
+ 387:stm32f10x_flash.c **** FLASH_Status FLASH_ProgramHalfWord(uint32_t Address, uint16_t Data)
+ 388:stm32f10x_flash.c **** {
+ 389:stm32f10x_flash.c ****   FLASH_Status status = FLASH_COMPLETE;
+ 390:stm32f10x_flash.c ****   /* Check the parameters */
+ 391:stm32f10x_flash.c ****   assert_param(IS_FLASH_ADDRESS(Address));
+ 392:stm32f10x_flash.c ****   /* Wait for last operation to be completed */
+ 393:stm32f10x_flash.c ****   status = FLASH_WaitForLastOperation(ProgramTimeout);
+ 394:stm32f10x_flash.c ****   
+ 395:stm32f10x_flash.c ****   if(status == FLASH_COMPLETE)
+ 396:stm32f10x_flash.c ****   {
+ 397:stm32f10x_flash.c ****     /* if the previous operation is completed, proceed to program the new data */
+ 398:stm32f10x_flash.c ****     FLASH->CR |= CR_PG_Set;
+ 399:stm32f10x_flash.c ****   
+ 400:stm32f10x_flash.c ****     *(__IO uint16_t*)Address = Data;
+ 401:stm32f10x_flash.c ****     /* Wait for last operation to be completed */
+ 402:stm32f10x_flash.c ****     status = FLASH_WaitForLastOperation(ProgramTimeout);
+ 403:stm32f10x_flash.c ****     if(status != FLASH_TIMEOUT)
+ 404:stm32f10x_flash.c ****     {
+ 405:stm32f10x_flash.c ****       /* if the program operation is completed, disable the PG Bit */
+ 406:stm32f10x_flash.c ****       FLASH->CR &= CR_PG_Reset;
+ 407:stm32f10x_flash.c ****     }
+ 408:stm32f10x_flash.c ****   } 
+ 409:stm32f10x_flash.c ****   /* Return the Program Status */
+ 410:stm32f10x_flash.c ****   return status;
+ 411:stm32f10x_flash.c **** }
+ 412:stm32f10x_flash.c **** 
+ 413:stm32f10x_flash.c **** /**
+ 414:stm32f10x_flash.c ****   * @brief  Programs a half word at a specified Option Byte Data address.
+ 415:stm32f10x_flash.c ****   * @param  Address: specifies the address to be programmed.
+ 416:stm32f10x_flash.c ****   *   This parameter can be 0x1FFFF804 or 0x1FFFF806. 
+ 417:stm32f10x_flash.c ****   * @param  Data: specifies the data to be programmed.
+ 418:stm32f10x_flash.c ****   * @retval FLASH Status: The returned value can be: FLASH_ERROR_PG,
+ 419:stm32f10x_flash.c ****   *   FLASH_ERROR_WRP, FLASH_COMPLETE or FLASH_TIMEOUT. 
+ 420:stm32f10x_flash.c ****   */
+ 421:stm32f10x_flash.c **** FLASH_Status FLASH_ProgramOptionByteData(uint32_t Address, uint8_t Data)
+ 422:stm32f10x_flash.c **** {
+ 423:stm32f10x_flash.c ****   FLASH_Status status = FLASH_COMPLETE;
+ 424:stm32f10x_flash.c ****   /* Check the parameters */
+ 425:stm32f10x_flash.c ****   assert_param(IS_OB_DATA_ADDRESS(Address));
+ 426:stm32f10x_flash.c ****   status = FLASH_WaitForLastOperation(ProgramTimeout);
+ 427:stm32f10x_flash.c ****   if(status == FLASH_COMPLETE)
+ 428:stm32f10x_flash.c ****   {
+ 429:stm32f10x_flash.c ****     /* Authorize the small information block programming */
+ 430:stm32f10x_flash.c ****     FLASH->OPTKEYR = FLASH_KEY1;
+ 431:stm32f10x_flash.c ****     FLASH->OPTKEYR = FLASH_KEY2;
+ 432:stm32f10x_flash.c ****     /* Enables the Option Bytes Programming operation */
+ 433:stm32f10x_flash.c ****     FLASH->CR |= CR_OPTPG_Set; 
+ 434:stm32f10x_flash.c ****     *(__IO uint16_t*)Address = Data;
+ 435:stm32f10x_flash.c ****     
+ 436:stm32f10x_flash.c ****     /* Wait for last operation to be completed */
+ 437:stm32f10x_flash.c ****     status = FLASH_WaitForLastOperation(ProgramTimeout);
+ 438:stm32f10x_flash.c ****     if(status != FLASH_TIMEOUT)
+ 439:stm32f10x_flash.c ****     {
+ 440:stm32f10x_flash.c ****       /* if the program operation is completed, disable the OPTPG Bit */
+ 441:stm32f10x_flash.c ****       FLASH->CR &= CR_OPTPG_Reset;
+ 442:stm32f10x_flash.c ****     }
+ 443:stm32f10x_flash.c ****   }    
+ 444:stm32f10x_flash.c ****   /* Return the Option Byte Data Program Status */
+ 445:stm32f10x_flash.c ****   return status;
+ 446:stm32f10x_flash.c **** }
+ 447:stm32f10x_flash.c **** 
+ 448:stm32f10x_flash.c **** /**
+ 449:stm32f10x_flash.c ****   * @brief  Write protects the desired pages
+ 450:stm32f10x_flash.c ****   * @param  FLASH_Pages: specifies the address of the pages to be write protected.
+ 451:stm32f10x_flash.c ****   *   This parameter can be:
+ 452:stm32f10x_flash.c ****   *     @arg For @b STM32_Low-density_devices: value between FLASH_WRProt_Pages0to3 and FLASH_WRPro
+ 453:stm32f10x_flash.c ****   *     @arg For @b STM32_Medium-density_devices: value between FLASH_WRProt_Pages0to3
+ 454:stm32f10x_flash.c ****   *       and FLASH_WRProt_Pages124to127
+ 455:stm32f10x_flash.c ****   *     @arg For @b STM32_High-density_devices: value between FLASH_WRProt_Pages0to1 and
+ 456:stm32f10x_flash.c ****   *       FLASH_WRProt_Pages60to61 or FLASH_WRProt_Pages62to255
+ 457:stm32f10x_flash.c ****   *     @arg For @b STM32_Connectivity_line_devices: value between FLASH_WRProt_Pages0to1 and
+ 458:stm32f10x_flash.c ****   *       FLASH_WRProt_Pages60to61 or FLASH_WRProt_Pages62to127    
+ 459:stm32f10x_flash.c ****   *     @arg FLASH_WRProt_AllPages
+ 460:stm32f10x_flash.c ****   * @retval FLASH Status: The returned value can be: FLASH_ERROR_PG,
+ 461:stm32f10x_flash.c ****   *   FLASH_ERROR_WRP, FLASH_COMPLETE or FLASH_TIMEOUT.
+ 462:stm32f10x_flash.c ****   */
+ 463:stm32f10x_flash.c **** FLASH_Status FLASH_EnableWriteProtection(uint32_t FLASH_Pages)
+ 464:stm32f10x_flash.c **** {
+ 465:stm32f10x_flash.c ****   uint16_t WRP0_Data = 0xFFFF, WRP1_Data = 0xFFFF, WRP2_Data = 0xFFFF, WRP3_Data = 0xFFFF;
+ 466:stm32f10x_flash.c ****   
+ 467:stm32f10x_flash.c ****   FLASH_Status status = FLASH_COMPLETE;
+ 468:stm32f10x_flash.c ****   
+ 469:stm32f10x_flash.c ****   /* Check the parameters */
+ 470:stm32f10x_flash.c ****   assert_param(IS_FLASH_WRPROT_PAGE(FLASH_Pages));
+ 471:stm32f10x_flash.c ****   
+ 472:stm32f10x_flash.c ****   FLASH_Pages = (uint32_t)(~FLASH_Pages);
+ 473:stm32f10x_flash.c ****   WRP0_Data = (uint16_t)(FLASH_Pages & WRP0_Mask);
+ 474:stm32f10x_flash.c ****   WRP1_Data = (uint16_t)((FLASH_Pages & WRP1_Mask) >> 8);
+ 475:stm32f10x_flash.c ****   WRP2_Data = (uint16_t)((FLASH_Pages & WRP2_Mask) >> 16);
+ 476:stm32f10x_flash.c ****   WRP3_Data = (uint16_t)((FLASH_Pages & WRP3_Mask) >> 24);
+ 477:stm32f10x_flash.c ****   
+ 478:stm32f10x_flash.c ****   /* Wait for last operation to be completed */
+ 479:stm32f10x_flash.c ****   status = FLASH_WaitForLastOperation(ProgramTimeout);
+ 480:stm32f10x_flash.c ****   
+ 481:stm32f10x_flash.c ****   if(status == FLASH_COMPLETE)
+ 482:stm32f10x_flash.c ****   {
+ 483:stm32f10x_flash.c ****     /* Authorizes the small information block programming */
+ 484:stm32f10x_flash.c ****     FLASH->OPTKEYR = FLASH_KEY1;
+ 485:stm32f10x_flash.c ****     FLASH->OPTKEYR = FLASH_KEY2;
+ 486:stm32f10x_flash.c ****     FLASH->CR |= CR_OPTPG_Set;
+ 487:stm32f10x_flash.c ****     if(WRP0_Data != 0xFF)
+ 488:stm32f10x_flash.c ****     {
+ 489:stm32f10x_flash.c ****       OB->WRP0 = WRP0_Data;
+ 490:stm32f10x_flash.c ****       
+ 491:stm32f10x_flash.c ****       /* Wait for last operation to be completed */
+ 492:stm32f10x_flash.c ****       status = FLASH_WaitForLastOperation(ProgramTimeout);
+ 493:stm32f10x_flash.c ****     }
+ 494:stm32f10x_flash.c ****     if((status == FLASH_COMPLETE) && (WRP1_Data != 0xFF))
+ 495:stm32f10x_flash.c ****     {
+ 496:stm32f10x_flash.c ****       OB->WRP1 = WRP1_Data;
+ 497:stm32f10x_flash.c ****       
+ 498:stm32f10x_flash.c ****       /* Wait for last operation to be completed */
+ 499:stm32f10x_flash.c ****       status = FLASH_WaitForLastOperation(ProgramTimeout);
+ 500:stm32f10x_flash.c ****     }
+ 501:stm32f10x_flash.c ****     if((status == FLASH_COMPLETE) && (WRP2_Data != 0xFF))
+ 502:stm32f10x_flash.c ****     {
+ 503:stm32f10x_flash.c ****       OB->WRP2 = WRP2_Data;
+ 504:stm32f10x_flash.c ****       
+ 505:stm32f10x_flash.c ****       /* Wait for last operation to be completed */
+ 506:stm32f10x_flash.c ****       status = FLASH_WaitForLastOperation(ProgramTimeout);
+ 507:stm32f10x_flash.c ****     }
+ 508:stm32f10x_flash.c ****     
+ 509:stm32f10x_flash.c ****     if((status == FLASH_COMPLETE)&& (WRP3_Data != 0xFF))
+ 510:stm32f10x_flash.c ****     {
+ 511:stm32f10x_flash.c ****       OB->WRP3 = WRP3_Data;
+ 512:stm32f10x_flash.c ****      
+ 513:stm32f10x_flash.c ****       /* Wait for last operation to be completed */
+ 514:stm32f10x_flash.c ****       status = FLASH_WaitForLastOperation(ProgramTimeout);
+ 515:stm32f10x_flash.c ****     }
+ 516:stm32f10x_flash.c ****           
+ 517:stm32f10x_flash.c ****     if(status != FLASH_TIMEOUT)
+ 518:stm32f10x_flash.c ****     {
+ 519:stm32f10x_flash.c ****       /* if the program operation is completed, disable the OPTPG Bit */
+ 520:stm32f10x_flash.c ****       FLASH->CR &= CR_OPTPG_Reset;
+ 521:stm32f10x_flash.c ****     }
+ 522:stm32f10x_flash.c ****   } 
+ 523:stm32f10x_flash.c ****   /* Return the write protection operation Status */
+ 524:stm32f10x_flash.c ****   return status;       
+ 525:stm32f10x_flash.c **** }
+ 526:stm32f10x_flash.c **** 
+ 527:stm32f10x_flash.c **** /**
+ 528:stm32f10x_flash.c ****   * @brief  Enables or disables the read out protection.
+ 529:stm32f10x_flash.c ****   * @note   If the user has already programmed the other option bytes before calling 
+ 530:stm32f10x_flash.c ****   *   this function, he must re-program them since this function erases all option bytes.
+ 531:stm32f10x_flash.c ****   * @param  Newstate: new state of the ReadOut Protection.
+ 532:stm32f10x_flash.c ****   *   This parameter can be: ENABLE or DISABLE.
+ 533:stm32f10x_flash.c ****   * @retval FLASH Status: The returned value can be: FLASH_ERROR_PG,
+ 534:stm32f10x_flash.c ****   *   FLASH_ERROR_WRP, FLASH_COMPLETE or FLASH_TIMEOUT.
+ 535:stm32f10x_flash.c ****   */
+ 536:stm32f10x_flash.c **** FLASH_Status FLASH_ReadOutProtection(FunctionalState NewState)
+ 537:stm32f10x_flash.c **** {
+ 538:stm32f10x_flash.c ****   FLASH_Status status = FLASH_COMPLETE;
+ 539:stm32f10x_flash.c ****   /* Check the parameters */
+ 540:stm32f10x_flash.c ****   assert_param(IS_FUNCTIONAL_STATE(NewState));
+ 541:stm32f10x_flash.c ****   status = FLASH_WaitForLastOperation(EraseTimeout);
+ 542:stm32f10x_flash.c ****   if(status == FLASH_COMPLETE)
+ 543:stm32f10x_flash.c ****   {
+ 544:stm32f10x_flash.c ****     /* Authorizes the small information block programming */
+ 545:stm32f10x_flash.c ****     FLASH->OPTKEYR = FLASH_KEY1;
+ 546:stm32f10x_flash.c ****     FLASH->OPTKEYR = FLASH_KEY2;
+ 547:stm32f10x_flash.c ****     FLASH->CR |= CR_OPTER_Set;
+ 548:stm32f10x_flash.c ****     FLASH->CR |= CR_STRT_Set;
+ 549:stm32f10x_flash.c ****     /* Wait for last operation to be completed */
+ 550:stm32f10x_flash.c ****     status = FLASH_WaitForLastOperation(EraseTimeout);
+ 551:stm32f10x_flash.c ****     if(status == FLASH_COMPLETE)
+ 552:stm32f10x_flash.c ****     {
+ 553:stm32f10x_flash.c ****       /* if the erase operation is completed, disable the OPTER Bit */
+ 554:stm32f10x_flash.c ****       FLASH->CR &= CR_OPTER_Reset;
+ 555:stm32f10x_flash.c ****       /* Enable the Option Bytes Programming operation */
+ 556:stm32f10x_flash.c ****       FLASH->CR |= CR_OPTPG_Set; 
+ 557:stm32f10x_flash.c ****       if(NewState != DISABLE)
+ 558:stm32f10x_flash.c ****       {
+ 559:stm32f10x_flash.c ****         OB->RDP = 0x00;
+ 560:stm32f10x_flash.c ****       }
+ 561:stm32f10x_flash.c ****       else
+ 562:stm32f10x_flash.c ****       {
+ 563:stm32f10x_flash.c ****         OB->RDP = RDP_Key;  
+ 564:stm32f10x_flash.c ****       }
+ 565:stm32f10x_flash.c ****       /* Wait for last operation to be completed */
+ 566:stm32f10x_flash.c ****       status = FLASH_WaitForLastOperation(EraseTimeout); 
+ 567:stm32f10x_flash.c ****     
+ 568:stm32f10x_flash.c ****       if(status != FLASH_TIMEOUT)
+ 569:stm32f10x_flash.c ****       {
+ 570:stm32f10x_flash.c ****         /* if the program operation is completed, disable the OPTPG Bit */
+ 571:stm32f10x_flash.c ****         FLASH->CR &= CR_OPTPG_Reset;
+ 572:stm32f10x_flash.c ****       }
+ 573:stm32f10x_flash.c ****     }
+ 574:stm32f10x_flash.c ****     else 
+ 575:stm32f10x_flash.c ****     {
+ 576:stm32f10x_flash.c ****       if(status != FLASH_TIMEOUT)
+ 577:stm32f10x_flash.c ****       {
+ 578:stm32f10x_flash.c ****         /* Disable the OPTER Bit */
+ 579:stm32f10x_flash.c ****         FLASH->CR &= CR_OPTER_Reset;
+ 580:stm32f10x_flash.c ****       }
+ 581:stm32f10x_flash.c ****     }
+ 582:stm32f10x_flash.c ****   }
+ 583:stm32f10x_flash.c ****   /* Return the protection operation Status */
+ 584:stm32f10x_flash.c ****   return status;      
+ 585:stm32f10x_flash.c **** }
+ 586:stm32f10x_flash.c **** 
+ 587:stm32f10x_flash.c **** /**
+ 588:stm32f10x_flash.c ****   * @brief  Programs the FLASH User Option Byte: IWDG_SW / RST_STOP / RST_STDBY.
+ 589:stm32f10x_flash.c ****   * @param  OB_IWDG: Selects the IWDG mode
+ 590:stm32f10x_flash.c ****   *   This parameter can be one of the following values:
+ 591:stm32f10x_flash.c ****   *     @arg OB_IWDG_SW: Software IWDG selected
+ 592:stm32f10x_flash.c ****   *     @arg OB_IWDG_HW: Hardware IWDG selected
+ 593:stm32f10x_flash.c ****   * @param  OB_STOP: Reset event when entering STOP mode.
+ 594:stm32f10x_flash.c ****   *   This parameter can be one of the following values:
+ 595:stm32f10x_flash.c ****   *     @arg OB_STOP_NoRST: No reset generated when entering in STOP
+ 596:stm32f10x_flash.c ****   *     @arg OB_STOP_RST: Reset generated when entering in STOP
+ 597:stm32f10x_flash.c ****   * @param  OB_STDBY: Reset event when entering Standby mode.
+ 598:stm32f10x_flash.c ****   *   This parameter can be one of the following values:
+ 599:stm32f10x_flash.c ****   *     @arg OB_STDBY_NoRST: No reset generated when entering in STANDBY
+ 600:stm32f10x_flash.c ****   *     @arg OB_STDBY_RST: Reset generated when entering in STANDBY
+ 601:stm32f10x_flash.c ****   * @retval FLASH Status: The returned value can be: FLASH_ERROR_PG, 
+ 602:stm32f10x_flash.c ****   * FLASH_ERROR_WRP, FLASH_COMPLETE or FLASH_TIMEOUT.
+ 603:stm32f10x_flash.c ****   */
+ 604:stm32f10x_flash.c **** FLASH_Status FLASH_UserOptionByteConfig(uint16_t OB_IWDG, uint16_t OB_STOP, uint16_t OB_STDBY)
+ 605:stm32f10x_flash.c **** {
+ 606:stm32f10x_flash.c ****   FLASH_Status status = FLASH_COMPLETE; 
+ 607:stm32f10x_flash.c **** 
+ 608:stm32f10x_flash.c ****   /* Check the parameters */
+ 609:stm32f10x_flash.c ****   assert_param(IS_OB_IWDG_SOURCE(OB_IWDG));
+ 610:stm32f10x_flash.c ****   assert_param(IS_OB_STOP_SOURCE(OB_STOP));
+ 611:stm32f10x_flash.c ****   assert_param(IS_OB_STDBY_SOURCE(OB_STDBY));
+ 612:stm32f10x_flash.c **** 
+ 613:stm32f10x_flash.c ****   /* Authorize the small information block programming */
+ 614:stm32f10x_flash.c ****   FLASH->OPTKEYR = FLASH_KEY1;
+ 615:stm32f10x_flash.c ****   FLASH->OPTKEYR = FLASH_KEY2;
+ 616:stm32f10x_flash.c ****   
+ 617:stm32f10x_flash.c ****   /* Wait for last operation to be completed */
+ 618:stm32f10x_flash.c ****   status = FLASH_WaitForLastOperation(ProgramTimeout);
+ 619:stm32f10x_flash.c ****   
+ 620:stm32f10x_flash.c ****   if(status == FLASH_COMPLETE)
+ 621:stm32f10x_flash.c ****   {  
+ 622:stm32f10x_flash.c ****     /* Enable the Option Bytes Programming operation */
+ 623:stm32f10x_flash.c ****     FLASH->CR |= CR_OPTPG_Set; 
+ 624:stm32f10x_flash.c ****            
+ 625:stm32f10x_flash.c ****     OB->USER = OB_IWDG | (uint16_t)(OB_STOP | (uint16_t)(OB_STDBY | ((uint16_t)0xF8))); 
+ 626:stm32f10x_flash.c ****   
+ 627:stm32f10x_flash.c ****     /* Wait for last operation to be completed */
+ 628:stm32f10x_flash.c ****     status = FLASH_WaitForLastOperation(ProgramTimeout);
+ 629:stm32f10x_flash.c ****     if(status != FLASH_TIMEOUT)
+ 630:stm32f10x_flash.c ****     {
+ 631:stm32f10x_flash.c ****       /* if the program operation is completed, disable the OPTPG Bit */
+ 632:stm32f10x_flash.c ****       FLASH->CR &= CR_OPTPG_Reset;
+ 633:stm32f10x_flash.c ****     }
+ 634:stm32f10x_flash.c ****   }    
+ 635:stm32f10x_flash.c ****   /* Return the Option Byte program Status */
+ 636:stm32f10x_flash.c ****   return status;
+ 637:stm32f10x_flash.c **** }
+ 638:stm32f10x_flash.c **** 
+ 639:stm32f10x_flash.c **** /**
+ 640:stm32f10x_flash.c ****   * @brief  Returns the FLASH User Option Bytes values.
+ 641:stm32f10x_flash.c ****   * @param  None
+ 642:stm32f10x_flash.c ****   * @retval The FLASH User Option Bytes values:IWDG_SW(Bit0), RST_STOP(Bit1)
+ 643:stm32f10x_flash.c ****   *   and RST_STDBY(Bit2).
+ 644:stm32f10x_flash.c ****   */
+ 645:stm32f10x_flash.c **** uint32_t FLASH_GetUserOptionByte(void)
+ 646:stm32f10x_flash.c **** {
+ 15390              		.loc 1 647 0
+ 15391              		@ args = 0, pretend = 0, frame = 0
+ 15392              		@ frame_needed = 0, uses_anonymous_args = 0
+ 15393              		@ link register save eliminated.
+ 647:stm32f10x_flash.c ****   /* Return the User Option Byte */
+ 648:stm32f10x_flash.c ****   return (uint32_t)(FLASH->OBR >> 2);
+ 15394              		.loc 1 649 0
+ 15395 0000 014B     		ldr	r3, .L17
+ 15396 0002 D869     		ldr	r0, [r3, #28]
+ 15397 0004 8008     		lsrs	r0, r0, #2
+ 649:stm32f10x_flash.c **** }
+ 15398              		.loc 1 650 0
+ 15399 0006 7047     		bx	lr
+ 15400              	.L18:
+ 15401              		.align	2
+ 15402              	.L17:
+ 15403 0008 00200240 		.word	1073881088
+ 15404              	.LFE41:
+ 15406              		.section	.text.FLASH_GetWriteProtectionOptionByte,"ax",%progbits
+ 15407              		.align	1
+ 15408              		.global	FLASH_GetWriteProtectionOptionByte
+ 15409              		.thumb
+ 15410              		.thumb_func
+ 15412              	FLASH_GetWriteProtectionOptionByte:
+ 15413              	.LFB42:
+ 650:stm32f10x_flash.c **** 
+ 651:stm32f10x_flash.c **** /**
+ 652:stm32f10x_flash.c ****   * @brief  Returns the FLASH Write Protection Option Bytes Register value.
+ 653:stm32f10x_flash.c ****   * @param  None
+ 654:stm32f10x_flash.c ****   * @retval The FLASH Write Protection  Option Bytes Register value
+ 655:stm32f10x_flash.c ****   */
+ 656:stm32f10x_flash.c **** uint32_t FLASH_GetWriteProtectionOptionByte(void)
+ 657:stm32f10x_flash.c **** {
+ 15414              		.loc 1 658 0
+ 15415              		@ args = 0, pretend = 0, frame = 0
+ 15416              		@ frame_needed = 0, uses_anonymous_args = 0
+ 15417              		@ link register save eliminated.
+ 658:stm32f10x_flash.c ****   /* Return the Falsh write protection Register value */
+ 659:stm32f10x_flash.c ****   return (uint32_t)(FLASH->WRPR);
+ 15418              		.loc 1 660 0
+ 15419 0000 014B     		ldr	r3, .L20
+ 15420 0002 186A     		ldr	r0, [r3, #32]
+ 660:stm32f10x_flash.c **** }
+ 15421              		.loc 1 661 0
+ 15422 0004 7047     		bx	lr
+ 15423              	.L21:
+ 15424 0006 00BF     		.align	2
+ 15425              	.L20:
+ 15426 0008 00200240 		.word	1073881088
+ 15427              	.LFE42:
+ 15429              		.section	.text.FLASH_GetReadOutProtectionStatus,"ax",%progbits
+ 15430              		.align	1
+ 15431              		.global	FLASH_GetReadOutProtectionStatus
+ 15432              		.thumb
+ 15433              		.thumb_func
+ 15435              	FLASH_GetReadOutProtectionStatus:
+ 15436              	.LFB43:
+ 661:stm32f10x_flash.c **** 
+ 662:stm32f10x_flash.c **** /**
+ 663:stm32f10x_flash.c ****   * @brief  Checks whether the FLASH Read Out Protection Status is set or not.
+ 664:stm32f10x_flash.c ****   * @param  None
+ 665:stm32f10x_flash.c ****   * @retval FLASH ReadOut Protection Status(SET or RESET)
+ 666:stm32f10x_flash.c ****   */
+ 667:stm32f10x_flash.c **** FlagStatus FLASH_GetReadOutProtectionStatus(void)
+ 668:stm32f10x_flash.c **** {
+ 15437              		.loc 1 669 0
+ 15438              		@ args = 0, pretend = 0, frame = 0
+ 15439              		@ frame_needed = 0, uses_anonymous_args = 0
+ 15440              		@ link register save eliminated.
+ 15441              	.LVL10:
+ 669:stm32f10x_flash.c ****   FlagStatus readoutstatus = RESET;
+ 670:stm32f10x_flash.c ****   if ((FLASH->OBR & RDPRT_Mask) != (uint32_t)RESET)
+ 15442              		.loc 1 671 0
+ 15443 0000 024B     		ldr	r3, .L23
+ 15444 0002 D869     		ldr	r0, [r3, #28]
+ 15445              	.LVL11:
+ 15446 0004 C0F34000 		ubfx	r0, r0, #1, #1
+ 671:stm32f10x_flash.c ****   {
+ 672:stm32f10x_flash.c ****     readoutstatus = SET;
+ 673:stm32f10x_flash.c ****   }
+ 674:stm32f10x_flash.c ****   else
+ 675:stm32f10x_flash.c ****   {
+ 676:stm32f10x_flash.c ****     readoutstatus = RESET;
+ 677:stm32f10x_flash.c ****   }
+ 678:stm32f10x_flash.c ****   return readoutstatus;
+ 679:stm32f10x_flash.c **** }
+ 15447              		.loc 1 680 0
+ 15448 0008 7047     		bx	lr
+ 15449              	.L24:
+ 15450 000a 00BF     		.align	2
+ 15451              	.L23:
+ 15452 000c 00200240 		.word	1073881088
+ 15453              	.LFE43:
+ 15455              		.section	.text.FLASH_GetPrefetchBufferStatus,"ax",%progbits
+ 15456              		.align	1
+ 15457              		.global	FLASH_GetPrefetchBufferStatus
+ 15458              		.thumb
+ 15459              		.thumb_func
+ 15461              	FLASH_GetPrefetchBufferStatus:
+ 15462              	.LFB44:
+ 680:stm32f10x_flash.c **** 
+ 681:stm32f10x_flash.c **** /**
+ 682:stm32f10x_flash.c ****   * @brief  Checks whether the FLASH Prefetch Buffer status is set or not.
+ 683:stm32f10x_flash.c ****   * @param  None
+ 684:stm32f10x_flash.c ****   * @retval FLASH Prefetch Buffer Status (SET or RESET).
+ 685:stm32f10x_flash.c ****   */
+ 686:stm32f10x_flash.c **** FlagStatus FLASH_GetPrefetchBufferStatus(void)
+ 687:stm32f10x_flash.c **** {
+ 15463              		.loc 1 688 0
+ 15464              		@ args = 0, pretend = 0, frame = 0
+ 15465              		@ frame_needed = 0, uses_anonymous_args = 0
+ 15466              		@ link register save eliminated.
+ 15467              	.LVL12:
+ 688:stm32f10x_flash.c ****   FlagStatus bitstatus = RESET;
+ 689:stm32f10x_flash.c ****   
+ 690:stm32f10x_flash.c ****   if ((FLASH->ACR & ACR_PRFTBS_Mask) != (uint32_t)RESET)
+ 15468              		.loc 1 691 0
+ 15469 0000 024B     		ldr	r3, .L26
+ 15470 0002 1868     		ldr	r0, [r3, #0]
+ 15471              	.LVL13:
+ 15472 0004 C0F34010 		ubfx	r0, r0, #5, #1
+ 691:stm32f10x_flash.c ****   {
+ 692:stm32f10x_flash.c ****     bitstatus = SET;
+ 693:stm32f10x_flash.c ****   }
+ 694:stm32f10x_flash.c ****   else
+ 695:stm32f10x_flash.c ****   {
+ 696:stm32f10x_flash.c ****     bitstatus = RESET;
+ 697:stm32f10x_flash.c ****   }
+ 698:stm32f10x_flash.c ****   /* Return the new state of FLASH Prefetch Buffer Status (SET or RESET) */
+ 699:stm32f10x_flash.c ****   return bitstatus; 
+ 700:stm32f10x_flash.c **** }
+ 15473              		.loc 1 701 0
+ 15474 0008 7047     		bx	lr
+ 15475              	.L27:
+ 15476 000a 00BF     		.align	2
+ 15477              	.L26:
+ 15478 000c 00200240 		.word	1073881088
+ 15479              	.LFE44:
+ 15481              		.section	.text.FLASH_ITConfig,"ax",%progbits
+ 15482              		.align	1
+ 15483              		.global	FLASH_ITConfig
+ 15484              		.thumb
+ 15485              		.thumb_func
+ 15487              	FLASH_ITConfig:
+ 15488              	.LFB45:
+ 701:stm32f10x_flash.c **** 
+ 702:stm32f10x_flash.c **** /**
+ 703:stm32f10x_flash.c ****   * @brief  Enables or disables the specified FLASH interrupts.
+ 704:stm32f10x_flash.c ****   * @param  FLASH_IT: specifies the FLASH interrupt sources to be enabled or disabled.
+ 705:stm32f10x_flash.c ****   *   This parameter can be any combination of the following values:
+ 706:stm32f10x_flash.c ****   *     @arg FLASH_IT_ERROR: FLASH Error Interrupt
+ 707:stm32f10x_flash.c ****   *     @arg FLASH_IT_EOP: FLASH end of operation Interrupt
+ 708:stm32f10x_flash.c ****   * @param  NewState: new state of the specified Flash interrupts.
+ 709:stm32f10x_flash.c ****   *   This parameter can be: ENABLE or DISABLE.      
+ 710:stm32f10x_flash.c ****   * @retval None 
+ 711:stm32f10x_flash.c ****   */
+ 712:stm32f10x_flash.c **** void FLASH_ITConfig(uint16_t FLASH_IT, FunctionalState NewState)
+ 713:stm32f10x_flash.c **** {
+ 15489              		.loc 1 714 0
+ 15490              		@ args = 0, pretend = 0, frame = 0
+ 15491              		@ frame_needed = 0, uses_anonymous_args = 0
+ 15492              		@ link register save eliminated.
+ 15493              	.LVL14:
+ 714:stm32f10x_flash.c ****   /* Check the parameters */
+ 715:stm32f10x_flash.c ****   assert_param(IS_FLASH_IT(FLASH_IT)); 
+ 716:stm32f10x_flash.c ****   assert_param(IS_FUNCTIONAL_STATE(NewState));
+ 717:stm32f10x_flash.c ****   if(NewState != DISABLE)
+ 15494              		.loc 1 718 0
+ 15495 0000 19B1     		cbz	r1, .L29
+ 718:stm32f10x_flash.c ****   {
+ 719:stm32f10x_flash.c ****     /* Enable the interrupt sources */
+ 720:stm32f10x_flash.c ****     FLASH->CR |= FLASH_IT;
+ 15496              		.loc 1 721 0
+ 15497 0002 054B     		ldr	r3, .L33
+ 15498 0004 1A69     		ldr	r2, [r3, #16]
+ 15499 0006 1043     		orrs	r0, r0, r2
+ 15500              	.LVL15:
+ 15501 0008 03E0     		b	.L31
+ 15502              	.LVL16:
+ 15503              	.L29:
+ 721:stm32f10x_flash.c ****   }
+ 722:stm32f10x_flash.c ****   else
+ 723:stm32f10x_flash.c ****   {
+ 724:stm32f10x_flash.c ****     /* Disable the interrupt sources */
+ 725:stm32f10x_flash.c ****     FLASH->CR &= ~(uint32_t)FLASH_IT;
+ 15504              		.loc 1 726 0
+ 15505 000a 034B     		ldr	r3, .L33
+ 15506 000c 1969     		ldr	r1, [r3, #16]
+ 15507              	.LVL17:
+ 15508 000e 21EA0000 		bic	r0, r1, r0
+ 15509              	.LVL18:
+ 15510              	.L31:
+ 15511 0012 1861     		str	r0, [r3, #16]
+ 726:stm32f10x_flash.c ****   }
+ 727:stm32f10x_flash.c **** }
+ 15512              		.loc 1 728 0
+ 15513 0014 7047     		bx	lr
+ 15514              	.L34:
+ 15515 0016 00BF     		.align	2
+ 15516              	.L33:
+ 15517 0018 00200240 		.word	1073881088
+ 15518              	.LFE45:
+ 15520              		.section	.text.FLASH_GetFlagStatus,"ax",%progbits
+ 15521              		.align	1
+ 15522              		.global	FLASH_GetFlagStatus
+ 15523              		.thumb
+ 15524              		.thumb_func
+ 15526              	FLASH_GetFlagStatus:
+ 15527              	.LFB46:
+ 728:stm32f10x_flash.c **** 
+ 729:stm32f10x_flash.c **** /**
+ 730:stm32f10x_flash.c ****   * @brief  Checks whether the specified FLASH flag is set or not.
+ 731:stm32f10x_flash.c ****   * @param  FLASH_FLAG: specifies the FLASH flag to check.
+ 732:stm32f10x_flash.c ****   *   This parameter can be one of the following values:
+ 733:stm32f10x_flash.c ****   *     @arg FLASH_FLAG_BSY: FLASH Busy flag           
+ 734:stm32f10x_flash.c ****   *     @arg FLASH_FLAG_PGERR: FLASH Program error flag       
+ 735:stm32f10x_flash.c ****   *     @arg FLASH_FLAG_WRPRTERR: FLASH Write protected error flag      
+ 736:stm32f10x_flash.c ****   *     @arg FLASH_FLAG_EOP: FLASH End of Operation flag           
+ 737:stm32f10x_flash.c ****   *     @arg FLASH_FLAG_OPTERR:  FLASH Option Byte error flag     
+ 738:stm32f10x_flash.c ****   * @retval The new state of FLASH_FLAG (SET or RESET).
+ 739:stm32f10x_flash.c ****   */
+ 740:stm32f10x_flash.c **** FlagStatus FLASH_GetFlagStatus(uint16_t FLASH_FLAG)
+ 741:stm32f10x_flash.c **** {
+ 15528              		.loc 1 742 0
+ 15529              		@ args = 0, pretend = 0, frame = 0
+ 15530              		@ frame_needed = 0, uses_anonymous_args = 0
+ 15531              		@ link register save eliminated.
+ 15532              	.LVL19:
+ 742:stm32f10x_flash.c ****   FlagStatus bitstatus = RESET;
+ 743:stm32f10x_flash.c ****   /* Check the parameters */
+ 744:stm32f10x_flash.c ****   assert_param(IS_FLASH_GET_FLAG(FLASH_FLAG)) ;
+ 745:stm32f10x_flash.c ****   if(FLASH_FLAG == FLASH_FLAG_OPTERR) 
+ 15533              		.loc 1 746 0
+ 15534 0000 0128     		cmp	r0, #1
+ 15535 0002 04D1     		bne	.L36
+ 746:stm32f10x_flash.c ****   {
+ 747:stm32f10x_flash.c ****     if((FLASH->OBR & FLASH_FLAG_OPTERR) != (uint32_t)RESET)
+ 15536              		.loc 1 748 0
+ 15537 0004 054B     		ldr	r3, .L38
+ 15538 0006 D869     		ldr	r0, [r3, #28]
+ 15539              	.LVL20:
+ 748:stm32f10x_flash.c ****     {
+ 749:stm32f10x_flash.c ****       bitstatus = SET;
+ 750:stm32f10x_flash.c ****     }
+ 751:stm32f10x_flash.c ****     else
+ 752:stm32f10x_flash.c ****     {
+ 753:stm32f10x_flash.c ****       bitstatus = RESET;
+ 15540              		.loc 1 754 0
+ 15541 0008 00F00100 		and	r0, r0, #1
+ 15542 000c 05E0     		b	.L37
+ 15543              	.LVL21:
+ 15544              	.L36:
+ 754:stm32f10x_flash.c ****     }
+ 755:stm32f10x_flash.c ****   }
+ 756:stm32f10x_flash.c ****   else
+ 757:stm32f10x_flash.c ****   {
+ 758:stm32f10x_flash.c ****    if((FLASH->SR & FLASH_FLAG) != (uint32_t)RESET)
+ 15545              		.loc 1 759 0
+ 15546 000e 034A     		ldr	r2, .L38
+ 15547 0010 D168     		ldr	r1, [r2, #12]
+ 754:stm32f10x_flash.c ****     }
+ 15548              		.loc 1 754 0
+ 15549 0012 0842     		tst	r0, r1
+ 15550 0014 0CBF     		ite	eq
+ 15551 0016 0020     		moveq	r0, #0
+ 15552 0018 0120     		movne	r0, #1
+ 15553              	.LVL22:
+ 15554              	.L37:
+ 15555              	.LVL23:
+ 759:stm32f10x_flash.c ****     {
+ 760:stm32f10x_flash.c ****       bitstatus = SET;
+ 761:stm32f10x_flash.c ****     }
+ 762:stm32f10x_flash.c ****     else
+ 763:stm32f10x_flash.c ****     {
+ 764:stm32f10x_flash.c ****       bitstatus = RESET;
+ 765:stm32f10x_flash.c ****     }
+ 766:stm32f10x_flash.c ****   }
+ 767:stm32f10x_flash.c ****   /* Return the new state of FLASH_FLAG (SET or RESET) */
+ 768:stm32f10x_flash.c ****   return bitstatus;
+ 769:stm32f10x_flash.c **** }
+ 15556              		.loc 1 770 0
+ 15557 001a 7047     		bx	lr
+ 15558              	.L39:
+ 15559              		.align	2
+ 15560              	.L38:
+ 15561 001c 00200240 		.word	1073881088
+ 15562              	.LFE46:
+ 15564              		.section	.text.FLASH_ClearFlag,"ax",%progbits
+ 15565              		.align	1
+ 15566              		.global	FLASH_ClearFlag
+ 15567              		.thumb
+ 15568              		.thumb_func
+ 15570              	FLASH_ClearFlag:
+ 15571              	.LFB47:
+ 770:stm32f10x_flash.c **** 
+ 771:stm32f10x_flash.c **** /**
+ 772:stm32f10x_flash.c ****   * @brief  Clears the FLASH’s pending flags.
+ 773:stm32f10x_flash.c ****   * @param  FLASH_FLAG: specifies the FLASH flags to clear.
+ 774:stm32f10x_flash.c ****   *   This parameter can be any combination of the following values:         
+ 775:stm32f10x_flash.c ****   *     @arg FLASH_FLAG_PGERR: FLASH Program error flag       
+ 776:stm32f10x_flash.c ****   *     @arg FLASH_FLAG_WRPRTERR: FLASH Write protected error flag      
+ 777:stm32f10x_flash.c ****   *     @arg FLASH_FLAG_EOP: FLASH End of Operation flag           
+ 778:stm32f10x_flash.c ****   * @retval None
+ 779:stm32f10x_flash.c ****   */
+ 780:stm32f10x_flash.c **** void FLASH_ClearFlag(uint16_t FLASH_FLAG)
+ 781:stm32f10x_flash.c **** {
+ 15572              		.loc 1 782 0
+ 15573              		@ args = 0, pretend = 0, frame = 0
+ 15574              		@ frame_needed = 0, uses_anonymous_args = 0
+ 15575              		@ link register save eliminated.
+ 15576              	.LVL24:
+ 782:stm32f10x_flash.c ****   /* Check the parameters */
+ 783:stm32f10x_flash.c ****   assert_param(IS_FLASH_CLEAR_FLAG(FLASH_FLAG)) ;
+ 784:stm32f10x_flash.c ****   
+ 785:stm32f10x_flash.c ****   /* Clear the flags */
+ 786:stm32f10x_flash.c ****   FLASH->SR = FLASH_FLAG;
+ 15577              		.loc 1 787 0
+ 15578 0000 014B     		ldr	r3, .L41
+ 15579 0002 D860     		str	r0, [r3, #12]
+ 787:stm32f10x_flash.c **** }
+ 15580              		.loc 1 788 0
+ 15581 0004 7047     		bx	lr
+ 15582              	.L42:
+ 15583 0006 00BF     		.align	2
+ 15584              	.L41:
+ 15585 0008 00200240 		.word	1073881088
+ 15586              	.LFE47:
+ 15588              		.section	.text.FLASH_GetStatus,"ax",%progbits
+ 15589              		.align	1
+ 15590              		.global	FLASH_GetStatus
+ 15591              		.thumb
+ 15592              		.thumb_func
+ 15594              	FLASH_GetStatus:
+ 15595              	.LFB48:
+ 788:stm32f10x_flash.c **** 
+ 789:stm32f10x_flash.c **** /**
+ 790:stm32f10x_flash.c ****   * @brief  Returns the FLASH Status.
+ 791:stm32f10x_flash.c ****   * @param  None
+ 792:stm32f10x_flash.c ****   * @retval FLASH Status: The returned value can be: FLASH_BUSY, FLASH_ERROR_PG,
+ 793:stm32f10x_flash.c ****   *   FLASH_ERROR_WRP or FLASH_COMPLETE
+ 794:stm32f10x_flash.c ****   */
+ 795:stm32f10x_flash.c **** FLASH_Status FLASH_GetStatus(void)
+ 796:stm32f10x_flash.c **** {
+ 15596              		.loc 1 797 0
+ 15597              		@ args = 0, pretend = 0, frame = 0
+ 15598              		@ frame_needed = 0, uses_anonymous_args = 0
+ 15599              		@ link register save eliminated.
+ 15600              	.LVL25:
+ 797:stm32f10x_flash.c ****   FLASH_Status flashstatus = FLASH_COMPLETE;
+ 798:stm32f10x_flash.c ****   
+ 799:stm32f10x_flash.c ****   if((FLASH->SR & FLASH_FLAG_BSY) == FLASH_FLAG_BSY) 
+ 15601              		.loc 1 800 0
+ 15602 0000 094B     		ldr	r3, .L48
+ 15603 0002 DA68     		ldr	r2, [r3, #12]
+ 15604 0004 12F0010F 		tst	r2, #1
+ 15605 0008 0AD1     		bne	.L45
+ 800:stm32f10x_flash.c ****   {
+ 801:stm32f10x_flash.c ****     flashstatus = FLASH_BUSY;
+ 802:stm32f10x_flash.c ****   }
+ 803:stm32f10x_flash.c ****   else 
+ 804:stm32f10x_flash.c ****   {  
+ 805:stm32f10x_flash.c ****     if((FLASH->SR & FLASH_FLAG_PGERR) != 0)
+ 15606              		.loc 1 806 0
+ 15607 000a D868     		ldr	r0, [r3, #12]
+ 15608 000c 10F0040F 		tst	r0, #4
+ 15609 0010 08D1     		bne	.L46
+ 806:stm32f10x_flash.c ****     { 
+ 807:stm32f10x_flash.c ****       flashstatus = FLASH_ERROR_PG;
+ 808:stm32f10x_flash.c ****     }
+ 809:stm32f10x_flash.c ****     else 
+ 810:stm32f10x_flash.c ****     {
+ 811:stm32f10x_flash.c ****       if((FLASH->SR & FLASH_FLAG_WRPRTERR) != 0 )
+ 15610              		.loc 1 812 0
+ 15611 0012 DB68     		ldr	r3, [r3, #12]
+ 15612 0014 13F0100F 		tst	r3, #16
+ 812:stm32f10x_flash.c ****       {
+ 813:stm32f10x_flash.c ****         flashstatus = FLASH_ERROR_WRP;
+ 15613              		.loc 1 814 0
+ 15614 0018 0CBF     		ite	eq
+ 15615 001a 0420     		moveq	r0, #4
+ 15616 001c 0320     		movne	r0, #3
+ 15617 001e 02E0     		b	.L44
+ 15618              	.L45:
+ 802:stm32f10x_flash.c ****     flashstatus = FLASH_BUSY;
+ 15619              		.loc 1 802 0
+ 15620 0020 0120     		movs	r0, #1
+ 15621 0022 00E0     		b	.L44
+ 15622              	.L46:
+ 808:stm32f10x_flash.c ****       flashstatus = FLASH_ERROR_PG;
+ 15623              		.loc 1 808 0
+ 15624 0024 0220     		movs	r0, #2
+ 15625              	.L44:
+ 15626              	.LVL26:
+ 15627              	.LVL27:
+ 814:stm32f10x_flash.c ****       }
+ 815:stm32f10x_flash.c ****       else
+ 816:stm32f10x_flash.c ****       {
+ 817:stm32f10x_flash.c ****         flashstatus = FLASH_COMPLETE;
+ 818:stm32f10x_flash.c ****       }
+ 819:stm32f10x_flash.c ****     }
+ 820:stm32f10x_flash.c ****   }
+ 821:stm32f10x_flash.c ****   /* Return the Flash Status */
+ 822:stm32f10x_flash.c ****   return flashstatus;
+ 823:stm32f10x_flash.c **** }
+ 15628              		.loc 1 824 0
+ 15629 0026 7047     		bx	lr
+ 15630              	.L49:
+ 15631              		.align	2
+ 15632              	.L48:
+ 15633 0028 00200240 		.word	1073881088
+ 15634              	.LFE48:
+ 15636              		.section	.text.FLASH_WaitForLastOperation,"ax",%progbits
+ 15637              		.align	1
+ 15638              		.global	FLASH_WaitForLastOperation
+ 15639              		.thumb
+ 15640              		.thumb_func
+ 15642              	FLASH_WaitForLastOperation:
+ 15643              	.LFB49:
+ 824:stm32f10x_flash.c **** 
+ 825:stm32f10x_flash.c **** /**
+ 826:stm32f10x_flash.c ****   * @brief  Waits for a Flash operation to complete or a TIMEOUT to occur.
+ 827:stm32f10x_flash.c ****   * @param  Timeout: FLASH progamming Timeout
+ 828:stm32f10x_flash.c ****   * @retval FLASH Status: The returned value can be: FLASH_ERROR_PG,
+ 829:stm32f10x_flash.c ****   *   FLASH_ERROR_WRP, FLASH_COMPLETE or FLASH_TIMEOUT.
+ 830:stm32f10x_flash.c ****   */
+ 831:stm32f10x_flash.c **** FLASH_Status FLASH_WaitForLastOperation(uint32_t Timeout)
+ 832:stm32f10x_flash.c **** { 
+ 15644              		.loc 1 833 0
+ 15645              		@ args = 0, pretend = 0, frame = 8
+ 15646              		@ frame_needed = 0, uses_anonymous_args = 0
+ 15647              	.LVL28:
+ 15648 0000 73B5     		push	{r0, r1, r4, r5, r6, lr}
+ 15649              	.LCFI0:
+ 15650              		.loc 1 833 0
+ 15651 0002 0446     		mov	r4, r0
+ 15652              	.LBB4:
+ 15653              	.LBB6:
+ 833:stm32f10x_flash.c ****   FLASH_Status status = FLASH_COMPLETE;
+ 834:stm32f10x_flash.c ****    
+ 835:stm32f10x_flash.c ****   /* Check for the Flash Status */
+ 836:stm32f10x_flash.c ****   status = FLASH_GetStatus();
+ 837:stm32f10x_flash.c ****   /* Wait for a Flash operation to complete or a TIMEOUT to occur */
+ 838:stm32f10x_flash.c ****   while((status == FLASH_BUSY) && (Timeout != 0x00))
+ 839:stm32f10x_flash.c ****   {
+ 840:stm32f10x_flash.c ****     delay();
+ 841:stm32f10x_flash.c ****     status = FLASH_GetStatus();
+ 842:stm32f10x_flash.c ****     Timeout--;
+ 843:stm32f10x_flash.c ****   }
+ 844:stm32f10x_flash.c ****   if(Timeout == 0x00 )
+ 845:stm32f10x_flash.c ****   {
+ 846:stm32f10x_flash.c ****     status = FLASH_TIMEOUT;
+ 847:stm32f10x_flash.c ****   }
+ 848:stm32f10x_flash.c ****   /* Return the operation status */
+ 849:stm32f10x_flash.c ****   return status;
+ 850:stm32f10x_flash.c **** }
+ 851:stm32f10x_flash.c **** 
+ 852:stm32f10x_flash.c **** /**
+ 853:stm32f10x_flash.c ****   * @brief  Inserts a time delay.
+ 854:stm32f10x_flash.c ****   * @param  None
+ 855:stm32f10x_flash.c ****   * @retval None
+ 856:stm32f10x_flash.c ****   */
+ 857:stm32f10x_flash.c **** static void delay(void)
+ 858:stm32f10x_flash.c **** {
+ 859:stm32f10x_flash.c ****   __IO uint32_t i = 0;
+ 15654              		.loc 1 860 0
+ 15655 0004 0026     		movs	r6, #0
+ 15656              	.LBE6:
+ 15657              	.LBE4:
+ 837:stm32f10x_flash.c ****   status = FLASH_GetStatus();
+ 15658              		.loc 1 837 0
+ 15659 0006 FFF7FEFF 		bl	FLASH_GetStatus
+ 15660              	.LVL29:
+ 15661              	.LBB8:
+ 15662              	.LBB5:
+ 860:stm32f10x_flash.c ****   for(i = 0xFF; i != 0; i--)
+ 15663              		.loc 1 861 0
+ 15664 000a FF25     		movs	r5, #255
+ 15665              	.LBE5:
+ 15666              	.LBE8:
+ 839:stm32f10x_flash.c ****   while((status == FLASH_BUSY) && (Timeout != 0x00))
+ 15667              		.loc 1 839 0
+ 15668 000c 0BE0     		b	.L51
+ 15669              	.LVL30:
+ 15670              	.L54:
+ 15671              	.LBB9:
+ 15672              	.LBB7:
+ 860:stm32f10x_flash.c ****   for(i = 0xFF; i != 0; i--)
+ 15673              		.loc 1 860 0
+ 15674 000e 0196     		str	r6, [sp, #4]
+ 15675              	.LVL31:
+ 15676              		.loc 1 861 0
+ 15677 0010 0195     		str	r5, [sp, #4]
+ 15678              	.LVL32:
+ 15679 0012 02E0     		b	.L52
+ 15680              	.LVL33:
+ 15681              	.L53:
+ 15682 0014 0198     		ldr	r0, [sp, #4]
+ 15683 0016 431E     		subs	r3, r0, #1
+ 15684 0018 0193     		str	r3, [sp, #4]
+ 15685              	.LVL34:
+ 15686              	.L52:
+ 15687 001a 0199     		ldr	r1, [sp, #4]
+ 15688 001c 0029     		cmp	r1, #0
+ 15689 001e F9D1     		bne	.L53
+ 15690              	.LBE7:
+ 15691              	.LBE9:
+ 842:stm32f10x_flash.c ****     status = FLASH_GetStatus();
+ 15692              		.loc 1 842 0
+ 15693 0020 FFF7FEFF 		bl	FLASH_GetStatus
+ 15694              	.LVL35:
+ 843:stm32f10x_flash.c ****     Timeout--;
+ 15695              		.loc 1 843 0
+ 15696 0024 013C     		subs	r4, r4, #1
+ 15697              	.LVL36:
+ 15698              	.L51:
+ 839:stm32f10x_flash.c ****   while((status == FLASH_BUSY) && (Timeout != 0x00))
+ 15699              		.loc 1 839 0 discriminator 1
+ 15700 0026 0128     		cmp	r0, #1
+ 15701 0028 14BF     		ite	ne
+ 15702 002a 0022     		movne	r2, #0
+ 15703 002c 0122     		moveq	r2, #1
+ 15704 002e 002C     		cmp	r4, #0
+ 15705 0030 0CBF     		ite	eq
+ 15706 0032 0022     		moveq	r2, #0
+ 15707 0034 02F00102 		andne	r2, r2, #1
+ 15708 0038 002A     		cmp	r2, #0
+ 15709 003a E8D1     		bne	.L54
+ 15710              	.LVL37:
+ 847:stm32f10x_flash.c ****     status = FLASH_TIMEOUT;
+ 15711              		.loc 1 847 0
+ 15712 003c 002C     		cmp	r4, #0
+ 15713 003e 08BF     		it	eq
+ 15714 0040 0520     		moveq	r0, #5
+ 15715              	.LVL38:
+ 15716              	.LVL39:
+ 851:stm32f10x_flash.c **** }
+ 15717              		.loc 1 851 0
+ 15718 0042 7CBD     		pop	{r2, r3, r4, r5, r6, pc}
+ 15719              	.LFE49:
+ 15721              		.section	.text.FLASH_UserOptionByteConfig,"ax",%progbits
+ 15722              		.align	1
+ 15723              		.global	FLASH_UserOptionByteConfig
+ 15724              		.thumb
+ 15725              		.thumb_func
+ 15727              	FLASH_UserOptionByteConfig:
+ 15728              	.LFB40:
+ 606:stm32f10x_flash.c **** {
+ 15729              		.loc 1 606 0
+ 15730              		@ args = 0, pretend = 0, frame = 0
+ 15731              		@ frame_needed = 0, uses_anonymous_args = 0
+ 15732              	.LVL40:
+ 15733 0000 F8B5     		push	{r3, r4, r5, r6, r7, lr}
+ 15734              	.LCFI1:
+ 606:stm32f10x_flash.c **** {
+ 15735              		.loc 1 606 0
+ 15736 0002 0446     		mov	r4, r0
+ 615:stm32f10x_flash.c ****   FLASH->OPTKEYR = FLASH_KEY1;
+ 15737              		.loc 1 615 0
+ 15738 0004 1248     		ldr	r0, .L59
+ 15739              	.LVL41:
+ 15740 0006 134E     		ldr	r6, .L59+4
+ 616:stm32f10x_flash.c ****   FLASH->OPTKEYR = FLASH_KEY2;
+ 15741              		.loc 1 616 0
+ 15742 0008 00F18833 		add	r3, r0, #-2004318072
+ 615:stm32f10x_flash.c ****   FLASH->OPTKEYR = FLASH_KEY1;
+ 15743              		.loc 1 615 0
+ 15744 000c B060     		str	r0, [r6, #8]
+ 619:stm32f10x_flash.c ****   status = FLASH_WaitForLastOperation(ProgramTimeout);
+ 15745              		.loc 1 619 0
+ 15746 000e 0F20     		movs	r0, #15
+ 616:stm32f10x_flash.c ****   FLASH->OPTKEYR = FLASH_KEY2;
+ 15747              		.loc 1 616 0
+ 15748 0010 B360     		str	r3, [r6, #8]
+ 606:stm32f10x_flash.c **** {
+ 15749              		.loc 1 606 0
+ 15750 0012 0D46     		mov	r5, r1
+ 15751 0014 1746     		mov	r7, r2
+ 619:stm32f10x_flash.c ****   status = FLASH_WaitForLastOperation(ProgramTimeout);
+ 15752              		.loc 1 619 0
+ 15753 0016 FFF7FEFF 		bl	FLASH_WaitForLastOperation
+ 15754              	.LVL42:
+ 621:stm32f10x_flash.c ****   if(status == FLASH_COMPLETE)
+ 15755              		.loc 1 621 0
+ 15756 001a 0428     		cmp	r0, #4
+ 15757 001c 16D1     		bne	.L58
+ 624:stm32f10x_flash.c ****     FLASH->CR |= CR_OPTPG_Set; 
+ 15758              		.loc 1 624 0
+ 15759 001e 3369     		ldr	r3, [r6, #16]
+ 626:stm32f10x_flash.c ****     OB->USER = OB_IWDG | (uint16_t)(OB_STOP | (uint16_t)(OB_STDBY | ((uint16_t)0xF8))); 
+ 15760              		.loc 1 626 0
+ 15761 0020 44F0F804 		orr	r4, r4, #248
+ 15762 0024 2543     		orrs	r5, r5, r4
+ 15763 0026 DFF830C0 		ldr	ip, .L59+8
+ 624:stm32f10x_flash.c ****     FLASH->CR |= CR_OPTPG_Set; 
+ 15764              		.loc 1 624 0
+ 15765 002a 43F0100E 		orr	lr, r3, #16
+ 626:stm32f10x_flash.c ****     OB->USER = OB_IWDG | (uint16_t)(OB_STOP | (uint16_t)(OB_STDBY | ((uint16_t)0xF8))); 
+ 15766              		.loc 1 626 0
+ 15767 002e 2F43     		orrs	r7, r7, r5
+ 624:stm32f10x_flash.c ****     FLASH->CR |= CR_OPTPG_Set; 
+ 15768              		.loc 1 624 0
+ 15769 0030 C6F810E0 		str	lr, [r6, #16]
+ 15770              	.LVL43:
+ 629:stm32f10x_flash.c ****     status = FLASH_WaitForLastOperation(ProgramTimeout);
+ 15771              		.loc 1 629 0
+ 15772 0034 0B30     		adds	r0, r0, #11
+ 15773              	.LVL44:
+ 626:stm32f10x_flash.c ****     OB->USER = OB_IWDG | (uint16_t)(OB_STOP | (uint16_t)(OB_STDBY | ((uint16_t)0xF8))); 
+ 15774              		.loc 1 626 0
+ 15775 0036 ACF80270 		strh	r7, [ip, #2]	@ movhi
+ 629:stm32f10x_flash.c ****     status = FLASH_WaitForLastOperation(ProgramTimeout);
+ 15776              		.loc 1 629 0
+ 15777 003a FFF7FEFF 		bl	FLASH_WaitForLastOperation
+ 15778              	.LVL45:
+ 630:stm32f10x_flash.c ****     if(status != FLASH_TIMEOUT)
+ 15779              		.loc 1 630 0
+ 15780 003e 0528     		cmp	r0, #5
+ 633:stm32f10x_flash.c ****       FLASH->CR &= CR_OPTPG_Reset;
+ 15781              		.loc 1 633 0
+ 15782 0040 1FBF     		itttt	ne
+ 15783 0042 3269     		ldrne	r2, [r6, #16]
+ 15784 0044 41F6EF71 		movwne	r1, #8175
+ 15785 0048 1140     		andne	r1, r2, r1
+ 15786 004a 3161     		strne	r1, [r6, #16]
+ 15787              	.LVL46:
+ 15788              	.L58:
+ 15789              	.LVL47:
+ 638:stm32f10x_flash.c **** }
+ 15790              		.loc 1 638 0
+ 15791 004c F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+ 15792              	.L60:
+ 15793 004e 00BF     		.align	2
+ 15794              	.L59:
+ 15795 0050 23016745 		.word	1164378403
+ 15796 0054 00200240 		.word	1073881088
+ 15797 0058 00F8FF1F 		.word	536868864
+ 15798              	.LFE40:
+ 15800              		.section	.text.FLASH_ReadOutProtection,"ax",%progbits
+ 15801              		.align	1
+ 15802              		.global	FLASH_ReadOutProtection
+ 15803              		.thumb
+ 15804              		.thumb_func
+ 15806              	FLASH_ReadOutProtection:
+ 15807              	.LFB39:
+ 538:stm32f10x_flash.c **** {
+ 15808              		.loc 1 538 0
+ 15809              		@ args = 0, pretend = 0, frame = 0
+ 15810              		@ frame_needed = 0, uses_anonymous_args = 0
+ 15811              	.LVL48:
+ 15812 0000 38B5     		push	{r3, r4, r5, lr}
+ 15813              	.LCFI2:
+ 538:stm32f10x_flash.c **** {
+ 15814              		.loc 1 538 0
+ 15815 0002 0546     		mov	r5, r0
+ 542:stm32f10x_flash.c ****   status = FLASH_WaitForLastOperation(EraseTimeout);
+ 15816              		.loc 1 542 0
+ 15817 0004 40F6FF70 		movw	r0, #4095
+ 15818              	.LVL49:
+ 15819 0008 FFF7FEFF 		bl	FLASH_WaitForLastOperation
+ 15820              	.LVL50:
+ 543:stm32f10x_flash.c ****   if(status == FLASH_COMPLETE)
+ 15821              		.loc 1 543 0
+ 15822 000c 0428     		cmp	r0, #4
+ 15823 000e 3FD1     		bne	.L62
+ 546:stm32f10x_flash.c ****     FLASH->OPTKEYR = FLASH_KEY1;
+ 15824              		.loc 1 546 0
+ 15825 0010 DFF880E0 		ldr	lr, .L67
+ 15826 0014 204C     		ldr	r4, .L67+4
+ 547:stm32f10x_flash.c ****     FLASH->OPTKEYR = FLASH_KEY2;
+ 15827              		.loc 1 547 0
+ 15828 0016 0EF1883C 		add	ip, lr, #-2004318072
+ 546:stm32f10x_flash.c ****     FLASH->OPTKEYR = FLASH_KEY1;
+ 15829              		.loc 1 546 0
+ 15830 001a C4F808E0 		str	lr, [r4, #8]
+ 547:stm32f10x_flash.c ****     FLASH->OPTKEYR = FLASH_KEY2;
+ 15831              		.loc 1 547 0
+ 15832 001e C4F808C0 		str	ip, [r4, #8]
+ 548:stm32f10x_flash.c ****     FLASH->CR |= CR_OPTER_Set;
+ 15833              		.loc 1 548 0
+ 15834 0022 2269     		ldr	r2, [r4, #16]
+ 15835 0024 42F02001 		orr	r1, r2, #32
+ 15836 0028 2161     		str	r1, [r4, #16]
+ 549:stm32f10x_flash.c ****     FLASH->CR |= CR_STRT_Set;
+ 15837              		.loc 1 549 0
+ 15838 002a 2069     		ldr	r0, [r4, #16]
+ 15839              	.LVL51:
+ 15840 002c 40F04003 		orr	r3, r0, #64
+ 15841 0030 2361     		str	r3, [r4, #16]
+ 551:stm32f10x_flash.c ****     status = FLASH_WaitForLastOperation(EraseTimeout);
+ 15842              		.loc 1 551 0
+ 15843 0032 40F6FF70 		movw	r0, #4095
+ 15844 0036 FFF7FEFF 		bl	FLASH_WaitForLastOperation
+ 15845              	.LVL52:
+ 552:stm32f10x_flash.c ****     if(status == FLASH_COMPLETE)
+ 15846              		.loc 1 552 0
+ 15847 003a 0428     		cmp	r0, #4
+ 15848 003c 21D1     		bne	.L63
+ 555:stm32f10x_flash.c ****       FLASH->CR &= CR_OPTER_Reset;
+ 15849              		.loc 1 555 0
+ 15850 003e 2269     		ldr	r2, [r4, #16]
+ 15851 0040 41F6DF7C 		movw	ip, #8159
+ 15852 0044 02EA0C01 		and	r1, r2, ip
+ 15853 0048 2161     		str	r1, [r4, #16]
+ 557:stm32f10x_flash.c ****       FLASH->CR |= CR_OPTPG_Set; 
+ 15854              		.loc 1 557 0
+ 15855 004a 2069     		ldr	r0, [r4, #16]
+ 15856              	.LVL53:
+ 15857 004c 40F01003 		orr	r3, r0, #16
+ 15858 0050 2361     		str	r3, [r4, #16]
+ 558:stm32f10x_flash.c ****       if(NewState != DISABLE)
+ 15859              		.loc 1 558 0
+ 15860 0052 15B1     		cbz	r5, .L64
+ 560:stm32f10x_flash.c ****         OB->RDP = 0x00;
+ 15861              		.loc 1 560 0
+ 15862 0054 114B     		ldr	r3, .L67+8
+ 15863 0056 0022     		movs	r2, #0
+ 15864 0058 01E0     		b	.L66
+ 15865              	.L64:
+ 564:stm32f10x_flash.c ****         OB->RDP = RDP_Key;  
+ 15866              		.loc 1 564 0
+ 15867 005a 104B     		ldr	r3, .L67+8
+ 15868 005c A522     		movs	r2, #165
+ 15869              	.L66:
+ 15870 005e 1A80     		strh	r2, [r3, #0]	@ movhi
+ 567:stm32f10x_flash.c ****       status = FLASH_WaitForLastOperation(EraseTimeout); 
+ 15871              		.loc 1 567 0
+ 15872 0060 40F6FF70 		movw	r0, #4095
+ 15873 0064 FFF7FEFF 		bl	FLASH_WaitForLastOperation
+ 15874              	.LVL54:
+ 569:stm32f10x_flash.c ****       if(status != FLASH_TIMEOUT)
+ 15875              		.loc 1 569 0
+ 15876 0068 0528     		cmp	r0, #5
+ 15877 006a 11D0     		beq	.L62
+ 572:stm32f10x_flash.c ****         FLASH->CR &= CR_OPTPG_Reset;
+ 15878              		.loc 1 572 0
+ 15879 006c DFF828E0 		ldr	lr, .L67+4
+ 15880 0070 41F6EF7C 		movw	ip, #8175
+ 15881 0074 DEF81010 		ldr	r1, [lr, #16]
+ 15882 0078 01EA0C03 		and	r3, r1, ip
+ 15883 007c CEF81030 		str	r3, [lr, #16]
+ 15884 0080 06E0     		b	.L62
+ 15885              	.LVL55:
+ 15886              	.L63:
+ 577:stm32f10x_flash.c ****       if(status != FLASH_TIMEOUT)
+ 15887              		.loc 1 577 0
+ 15888 0082 0528     		cmp	r0, #5
+ 580:stm32f10x_flash.c ****         FLASH->CR &= CR_OPTER_Reset;
+ 15889              		.loc 1 580 0
+ 15890 0084 1FBF     		itttt	ne
+ 15891 0086 2269     		ldrne	r2, [r4, #16]
+ 15892 0088 41F6DF73 		movwne	r3, #8159
+ 15893 008c 1340     		andne	r3, r2, r3
+ 15894 008e 2361     		strne	r3, [r4, #16]
+ 15895              	.LVL56:
+ 15896              	.L62:
+ 15897              	.LVL57:
+ 586:stm32f10x_flash.c **** }
+ 15898              		.loc 1 586 0
+ 15899 0090 38BD     		pop	{r3, r4, r5, pc}
+ 15900              	.L68:
+ 15901 0092 00BF     		.align	2
+ 15902              	.L67:
+ 15903 0094 23016745 		.word	1164378403
+ 15904 0098 00200240 		.word	1073881088
+ 15905 009c 00F8FF1F 		.word	536868864
+ 15906              	.LFE39:
+ 15908              		.section	.text.FLASH_EnableWriteProtection,"ax",%progbits
+ 15909              		.align	1
+ 15910              		.global	FLASH_EnableWriteProtection
+ 15911              		.thumb
+ 15912              		.thumb_func
+ 15914              	FLASH_EnableWriteProtection:
+ 15915              	.LFB38:
+ 465:stm32f10x_flash.c **** {
+ 15916              		.loc 1 465 0
+ 15917              		@ args = 0, pretend = 0, frame = 0
+ 15918              		@ frame_needed = 0, uses_anonymous_args = 0
+ 15919              	.LVL58:
+ 15920 0000 10B5     		push	{r4, lr}
+ 15921              	.LCFI3:
+ 465:stm32f10x_flash.c **** {
+ 15922              		.loc 1 465 0
+ 15923 0002 0446     		mov	r4, r0
+ 480:stm32f10x_flash.c ****   status = FLASH_WaitForLastOperation(ProgramTimeout);
+ 15924              		.loc 1 480 0
+ 15925 0004 0F20     		movs	r0, #15
+ 15926 0006 FFF7FEFF 		bl	FLASH_WaitForLastOperation
+ 15927              	.LVL59:
+ 482:stm32f10x_flash.c ****   if(status == FLASH_COMPLETE)
+ 15928              		.loc 1 482 0
+ 15929 000a 0428     		cmp	r0, #4
+ 15930 000c 52D1     		bne	.L70
+ 485:stm32f10x_flash.c ****     FLASH->OPTKEYR = FLASH_KEY1;
+ 15931              		.loc 1 485 0
+ 15932 000e DFF8A8E0 		ldr	lr, .L75
+ 15933 0012 2A4B     		ldr	r3, .L75+4
+ 486:stm32f10x_flash.c ****     FLASH->OPTKEYR = FLASH_KEY2;
+ 15934              		.loc 1 486 0
+ 15935 0014 0EF1883C 		add	ip, lr, #-2004318072
+ 485:stm32f10x_flash.c ****     FLASH->OPTKEYR = FLASH_KEY1;
+ 15936              		.loc 1 485 0
+ 15937 0018 C3F808E0 		str	lr, [r3, #8]
+ 486:stm32f10x_flash.c ****     FLASH->OPTKEYR = FLASH_KEY2;
+ 15938              		.loc 1 486 0
+ 15939 001c C3F808C0 		str	ip, [r3, #8]
+ 473:stm32f10x_flash.c ****   FLASH_Pages = (uint32_t)(~FLASH_Pages);
+ 15940              		.loc 1 473 0
+ 15941 0020 E443     		mvns	r4, r4
+ 487:stm32f10x_flash.c ****     FLASH->CR |= CR_OPTPG_Set;
+ 15942              		.loc 1 487 0
+ 15943 0022 1969     		ldr	r1, [r3, #16]
+ 474:stm32f10x_flash.c ****   WRP0_Data = (uint16_t)(FLASH_Pages & WRP0_Mask);
+ 15944              		.loc 1 474 0
+ 15945 0024 E2B2     		uxtb	r2, r4
+ 487:stm32f10x_flash.c ****     FLASH->CR |= CR_OPTPG_Set;
+ 15946              		.loc 1 487 0
+ 15947 0026 41F01001 		orr	r1, r1, #16
+ 488:stm32f10x_flash.c ****     if(WRP0_Data != 0xFF)
+ 15948              		.loc 1 488 0
+ 15949 002a FF2A     		cmp	r2, #255
+ 487:stm32f10x_flash.c ****     FLASH->CR |= CR_OPTPG_Set;
+ 15950              		.loc 1 487 0
+ 15951 002c 1961     		str	r1, [r3, #16]
+ 488:stm32f10x_flash.c ****     if(WRP0_Data != 0xFF)
+ 15952              		.loc 1 488 0
+ 15953 002e 04D0     		beq	.L71
+ 490:stm32f10x_flash.c ****       OB->WRP0 = WRP0_Data;
+ 15954              		.loc 1 490 0
+ 15955 0030 234B     		ldr	r3, .L75+8
+ 15956              	.LVL60:
+ 493:stm32f10x_flash.c ****       status = FLASH_WaitForLastOperation(ProgramTimeout);
+ 15957              		.loc 1 493 0
+ 15958 0032 0B30     		adds	r0, r0, #11
+ 15959              	.LVL61:
+ 490:stm32f10x_flash.c ****       OB->WRP0 = WRP0_Data;
+ 15960              		.loc 1 490 0
+ 15961 0034 1A81     		strh	r2, [r3, #8]	@ movhi
+ 493:stm32f10x_flash.c ****       status = FLASH_WaitForLastOperation(ProgramTimeout);
+ 15962              		.loc 1 493 0
+ 15963 0036 FFF7FEFF 		bl	FLASH_WaitForLastOperation
+ 15964              	.LVL62:
+ 15965              	.L71:
+ 475:stm32f10x_flash.c ****   WRP1_Data = (uint16_t)((FLASH_Pages & WRP1_Mask) >> 8);
+ 15966              		.loc 1 475 0
+ 15967 003a C4F30723 		ubfx	r3, r4, #8, #8
+ 15968              	.LVL63:
+ 495:stm32f10x_flash.c ****     if((status == FLASH_COMPLETE) && (WRP1_Data != 0xFF))
+ 15969              		.loc 1 495 0
+ 15970 003e B3F1FF02 		subs	r2, r3, #255
+ 15971 0042 18BF     		it	ne
+ 15972 0044 0122     		movne	r2, #1
+ 15973 0046 0428     		cmp	r0, #4
+ 15974 0048 14BF     		ite	ne
+ 15975 004a 0022     		movne	r2, #0
+ 15976 004c 02F00102 		andeq	r2, r2, #1
+ 15977 0050 22B1     		cbz	r2, .L72
+ 497:stm32f10x_flash.c ****       OB->WRP1 = WRP1_Data;
+ 15978              		.loc 1 497 0
+ 15979 0052 1B48     		ldr	r0, .L75+8
+ 15980              	.LVL64:
+ 15981 0054 4381     		strh	r3, [r0, #10]	@ movhi
+ 500:stm32f10x_flash.c ****       status = FLASH_WaitForLastOperation(ProgramTimeout);
+ 15982              		.loc 1 500 0
+ 15983 0056 0F20     		movs	r0, #15
+ 15984 0058 FFF7FEFF 		bl	FLASH_WaitForLastOperation
+ 15985              	.LVL65:
+ 15986              	.L72:
+ 476:stm32f10x_flash.c ****   WRP2_Data = (uint16_t)((FLASH_Pages & WRP2_Mask) >> 16);
+ 15987              		.loc 1 476 0
+ 15988 005c C4F30743 		ubfx	r3, r4, #16, #8
+ 15989              	.LVL66:
+ 502:stm32f10x_flash.c ****     if((status == FLASH_COMPLETE) && (WRP2_Data != 0xFF))
+ 15990              		.loc 1 502 0
+ 15991 0060 B3F1FF02 		subs	r2, r3, #255
+ 15992 0064 18BF     		it	ne
+ 15993 0066 0122     		movne	r2, #1
+ 15994 0068 0428     		cmp	r0, #4
+ 15995 006a 14BF     		ite	ne
+ 15996 006c 0022     		movne	r2, #0
+ 15997 006e 02F00102 		andeq	r2, r2, #1
+ 15998 0072 22B1     		cbz	r2, .L73
+ 504:stm32f10x_flash.c ****       OB->WRP2 = WRP2_Data;
+ 15999              		.loc 1 504 0
+ 16000 0074 1249     		ldr	r1, .L75+8
+ 507:stm32f10x_flash.c ****       status = FLASH_WaitForLastOperation(ProgramTimeout);
+ 16001              		.loc 1 507 0
+ 16002 0076 0F20     		movs	r0, #15
+ 16003              	.LVL67:
+ 504:stm32f10x_flash.c ****       OB->WRP2 = WRP2_Data;
+ 16004              		.loc 1 504 0
+ 16005 0078 8B81     		strh	r3, [r1, #12]	@ movhi
+ 507:stm32f10x_flash.c ****       status = FLASH_WaitForLastOperation(ProgramTimeout);
+ 16006              		.loc 1 507 0
+ 16007 007a FFF7FEFF 		bl	FLASH_WaitForLastOperation
+ 16008              	.LVL68:
+ 16009              	.L73:
+ 477:stm32f10x_flash.c ****   WRP3_Data = (uint16_t)((FLASH_Pages & WRP3_Mask) >> 24);
+ 16010              		.loc 1 477 0
+ 16011 007e 240E     		lsrs	r4, r4, #24
+ 16012              	.LVL69:
+ 510:stm32f10x_flash.c ****     if((status == FLASH_COMPLETE)&& (WRP3_Data != 0xFF))
+ 16013              		.loc 1 510 0
+ 16014 0080 B4F1FF03 		subs	r3, r4, #255
+ 16015 0084 18BF     		it	ne
+ 16016 0086 0123     		movne	r3, #1
+ 16017 0088 0428     		cmp	r0, #4
+ 16018 008a 14BF     		ite	ne
+ 16019 008c 0023     		movne	r3, #0
+ 16020 008e 03F00103 		andeq	r3, r3, #1
+ 16021 0092 33B1     		cbz	r3, .L74
+ 512:stm32f10x_flash.c ****       OB->WRP3 = WRP3_Data;
+ 16022              		.loc 1 512 0
+ 16023 0094 DFF828C0 		ldr	ip, .L75+8
+ 515:stm32f10x_flash.c ****       status = FLASH_WaitForLastOperation(ProgramTimeout);
+ 16024              		.loc 1 515 0
+ 16025 0098 0F20     		movs	r0, #15
+ 16026              	.LVL70:
+ 512:stm32f10x_flash.c ****       OB->WRP3 = WRP3_Data;
+ 16027              		.loc 1 512 0
+ 16028 009a ACF80E40 		strh	r4, [ip, #14]	@ movhi
+ 515:stm32f10x_flash.c ****       status = FLASH_WaitForLastOperation(ProgramTimeout);
+ 16029              		.loc 1 515 0
+ 16030 009e FFF7FEFF 		bl	FLASH_WaitForLastOperation
+ 16031              	.LVL71:
+ 16032              	.L74:
+ 518:stm32f10x_flash.c ****     if(status != FLASH_TIMEOUT)
+ 16033              		.loc 1 518 0
+ 16034 00a2 0528     		cmp	r0, #5
+ 521:stm32f10x_flash.c ****       FLASH->CR &= CR_OPTPG_Reset;
+ 16035              		.loc 1 521 0
+ 16036 00a4 1FBF     		itttt	ne
+ 16037 00a6 054A     		ldrne	r2, .L75+4
+ 16038 00a8 41F6EF73 		movwne	r3, #8175
+ 16039 00ac 1169     		ldrne	r1, [r2, #16]
+ 16040 00ae 0B40     		andne	r3, r1, r3
+ 16041 00b0 18BF     		it	ne
+ 16042 00b2 1361     		strne	r3, [r2, #16]
+ 16043              	.LVL72:
+ 16044              	.L70:
+ 16045              	.LVL73:
+ 526:stm32f10x_flash.c **** }
+ 16046              		.loc 1 526 0
+ 16047 00b4 10BD     		pop	{r4, pc}
+ 16048              	.L76:
+ 16049 00b6 00BF     		.align	2
+ 16050              	.L75:
+ 16051 00b8 23016745 		.word	1164378403
+ 16052 00bc 00200240 		.word	1073881088
+ 16053 00c0 00F8FF1F 		.word	536868864
+ 16054              	.LFE38:
+ 16056              		.section	.text.FLASH_ProgramOptionByteData,"ax",%progbits
+ 16057              		.align	1
+ 16058              		.global	FLASH_ProgramOptionByteData
+ 16059              		.thumb
+ 16060              		.thumb_func
+ 16062              	FLASH_ProgramOptionByteData:
+ 16063              	.LFB37:
+ 423:stm32f10x_flash.c **** {
+ 16064              		.loc 1 423 0
+ 16065              		@ args = 0, pretend = 0, frame = 0
+ 16066              		@ frame_needed = 0, uses_anonymous_args = 0
+ 16067              	.LVL74:
+ 16068 0000 70B5     		push	{r4, r5, r6, lr}
+ 16069              	.LCFI4:
+ 16070              	.LVL75:
+ 423:stm32f10x_flash.c **** {
+ 16071              		.loc 1 423 0
+ 16072 0002 0446     		mov	r4, r0
+ 427:stm32f10x_flash.c ****   status = FLASH_WaitForLastOperation(ProgramTimeout);
+ 16073              		.loc 1 427 0
+ 16074 0004 0F20     		movs	r0, #15
+ 16075              	.LVL76:
+ 423:stm32f10x_flash.c **** {
+ 16076              		.loc 1 423 0
+ 16077 0006 0E46     		mov	r6, r1
+ 427:stm32f10x_flash.c ****   status = FLASH_WaitForLastOperation(ProgramTimeout);
+ 16078              		.loc 1 427 0
+ 16079 0008 FFF7FEFF 		bl	FLASH_WaitForLastOperation
+ 16080              	.LVL77:
+ 428:stm32f10x_flash.c ****   if(status == FLASH_COMPLETE)
+ 16081              		.loc 1 428 0
+ 16082 000c 0428     		cmp	r0, #4
+ 16083 000e 16D1     		bne	.L78
+ 431:stm32f10x_flash.c ****     FLASH->OPTKEYR = FLASH_KEY1;
+ 16084              		.loc 1 431 0
+ 16085 0010 0B4B     		ldr	r3, .L79
+ 16086 0012 0C4D     		ldr	r5, .L79+4
+ 432:stm32f10x_flash.c ****     FLASH->OPTKEYR = FLASH_KEY2;
+ 16087              		.loc 1 432 0
+ 16088 0014 03F1883E 		add	lr, r3, #-2004318072
+ 431:stm32f10x_flash.c ****     FLASH->OPTKEYR = FLASH_KEY1;
+ 16089              		.loc 1 431 0
+ 16090 0018 AB60     		str	r3, [r5, #8]
+ 432:stm32f10x_flash.c ****     FLASH->OPTKEYR = FLASH_KEY2;
+ 16091              		.loc 1 432 0
+ 16092 001a C5F808E0 		str	lr, [r5, #8]
+ 434:stm32f10x_flash.c ****     FLASH->CR |= CR_OPTPG_Set; 
+ 16093              		.loc 1 434 0
+ 16094 001e D5F810C0 		ldr	ip, [r5, #16]
+ 16095              	.LVL78:
+ 438:stm32f10x_flash.c ****     status = FLASH_WaitForLastOperation(ProgramTimeout);
+ 16096              		.loc 1 438 0
+ 16097 0022 0B30     		adds	r0, r0, #11
+ 16098              	.LVL79:
+ 434:stm32f10x_flash.c ****     FLASH->CR |= CR_OPTPG_Set; 
+ 16099              		.loc 1 434 0
+ 16100 0024 4CF01001 		orr	r1, ip, #16
+ 16101 0028 2961     		str	r1, [r5, #16]
+ 16102              	.LVL80:
+ 435:stm32f10x_flash.c ****     *(__IO uint16_t*)Address = Data;
+ 16103              		.loc 1 435 0
+ 16104 002a 2680     		strh	r6, [r4, #0]	@ movhi
+ 438:stm32f10x_flash.c ****     status = FLASH_WaitForLastOperation(ProgramTimeout);
+ 16105              		.loc 1 438 0
+ 16106 002c FFF7FEFF 		bl	FLASH_WaitForLastOperation
+ 16107              	.LVL81:
+ 439:stm32f10x_flash.c ****     if(status != FLASH_TIMEOUT)
+ 16108              		.loc 1 439 0
+ 16109 0030 0528     		cmp	r0, #5
+ 442:stm32f10x_flash.c ****       FLASH->CR &= CR_OPTPG_Reset;
+ 16110              		.loc 1 442 0
+ 16111 0032 1FBF     		itttt	ne
+ 16112 0034 2A69     		ldrne	r2, [r5, #16]
+ 16113 0036 41F6EF73 		movwne	r3, #8175
+ 16114 003a 1340     		andne	r3, r2, r3
+ 16115 003c 2B61     		strne	r3, [r5, #16]
+ 16116              	.LVL82:
+ 16117              	.L78:
+ 16118              	.LVL83:
+ 447:stm32f10x_flash.c **** }
+ 16119              		.loc 1 447 0
+ 16120 003e 70BD     		pop	{r4, r5, r6, pc}
+ 16121              	.L80:
+ 16122              		.align	2
+ 16123              	.L79:
+ 16124 0040 23016745 		.word	1164378403
+ 16125 0044 00200240 		.word	1073881088
+ 16126              	.LFE37:
+ 16128              		.section	.text.FLASH_ProgramHalfWord,"ax",%progbits
+ 16129              		.align	1
+ 16130              		.global	FLASH_ProgramHalfWord
+ 16131              		.thumb
+ 16132              		.thumb_func
+ 16134              	FLASH_ProgramHalfWord:
+ 16135              	.LFB36:
+ 389:stm32f10x_flash.c **** {
+ 16136              		.loc 1 389 0
+ 16137              		@ args = 0, pretend = 0, frame = 0
+ 16138              		@ frame_needed = 0, uses_anonymous_args = 0
+ 16139              	.LVL84:
+ 16140 0000 70B5     		push	{r4, r5, r6, lr}
+ 16141              	.LCFI5:
+ 16142              	.LVL85:
+ 389:stm32f10x_flash.c **** {
+ 16143              		.loc 1 389 0
+ 16144 0002 0446     		mov	r4, r0
+ 394:stm32f10x_flash.c ****   status = FLASH_WaitForLastOperation(ProgramTimeout);
+ 16145              		.loc 1 394 0
+ 16146 0004 0F20     		movs	r0, #15
+ 16147              	.LVL86:
+ 389:stm32f10x_flash.c **** {
+ 16148              		.loc 1 389 0
+ 16149 0006 0E46     		mov	r6, r1
+ 394:stm32f10x_flash.c ****   status = FLASH_WaitForLastOperation(ProgramTimeout);
+ 16150              		.loc 1 394 0
+ 16151 0008 FFF7FEFF 		bl	FLASH_WaitForLastOperation
+ 16152              	.LVL87:
+ 396:stm32f10x_flash.c ****   if(status == FLASH_COMPLETE)
+ 16153              		.loc 1 396 0
+ 16154 000c 0428     		cmp	r0, #4
+ 16155 000e 10D1     		bne	.L82
+ 399:stm32f10x_flash.c ****     FLASH->CR |= CR_PG_Set;
+ 16156              		.loc 1 399 0
+ 16157 0010 084D     		ldr	r5, .L83
+ 16158              	.LVL88:
+ 403:stm32f10x_flash.c ****     status = FLASH_WaitForLastOperation(ProgramTimeout);
+ 16159              		.loc 1 403 0
+ 16160 0012 0B30     		adds	r0, r0, #11
+ 16161              	.LVL89:
+ 399:stm32f10x_flash.c ****     FLASH->CR |= CR_PG_Set;
+ 16162              		.loc 1 399 0
+ 16163 0014 D5F810C0 		ldr	ip, [r5, #16]
+ 16164 0018 4CF00101 		orr	r1, ip, #1
+ 16165 001c 2961     		str	r1, [r5, #16]
+ 16166              	.LVL90:
+ 401:stm32f10x_flash.c ****     *(__IO uint16_t*)Address = Data;
+ 16167              		.loc 1 401 0
+ 16168 001e 2680     		strh	r6, [r4, #0]	@ movhi
+ 403:stm32f10x_flash.c ****     status = FLASH_WaitForLastOperation(ProgramTimeout);
+ 16169              		.loc 1 403 0
+ 16170 0020 FFF7FEFF 		bl	FLASH_WaitForLastOperation
+ 16171              	.LVL91:
+ 404:stm32f10x_flash.c ****     if(status != FLASH_TIMEOUT)
+ 16172              		.loc 1 404 0
+ 16173 0024 0528     		cmp	r0, #5
+ 407:stm32f10x_flash.c ****       FLASH->CR &= CR_PG_Reset;
+ 16174              		.loc 1 407 0
+ 16175 0026 1FBF     		itttt	ne
+ 16176 0028 2A69     		ldrne	r2, [r5, #16]
+ 16177 002a 41F6FE73 		movwne	r3, #8190
+ 16178 002e 1340     		andne	r3, r2, r3
+ 16179 0030 2B61     		strne	r3, [r5, #16]
+ 16180              	.LVL92:
+ 16181              	.L82:
+ 16182              	.LVL93:
+ 412:stm32f10x_flash.c **** }
+ 16183              		.loc 1 412 0
+ 16184 0032 70BD     		pop	{r4, r5, r6, pc}
+ 16185              	.L84:
+ 16186              		.align	2
+ 16187              	.L83:
+ 16188 0034 00200240 		.word	1073881088
+ 16189              	.LFE36:
+ 16191              		.section	.text.FLASH_ProgramWord,"ax",%progbits
+ 16192              		.align	1
+ 16193              		.global	FLASH_ProgramWord
+ 16194              		.thumb
+ 16195              		.thumb_func
+ 16197              	FLASH_ProgramWord:
+ 16198              	.LFB35:
+ 332:stm32f10x_flash.c **** {
+ 16199              		.loc 1 332 0
+ 16200              		@ args = 0, pretend = 0, frame = 8
+ 16201              		@ frame_needed = 0, uses_anonymous_args = 0
+ 16202              	.LVL94:
+ 16203 0000 73B5     		push	{r0, r1, r4, r5, r6, lr}
+ 16204              	.LCFI6:
+ 16205              	.LVL95:
+ 334:stm32f10x_flash.c ****   __IO uint32_t tmp = 0;
+ 16206              		.loc 1 334 0
+ 16207 0002 0023     		movs	r3, #0
+ 332:stm32f10x_flash.c **** {
+ 16208              		.loc 1 332 0
+ 16209 0004 0446     		mov	r4, r0
+ 339:stm32f10x_flash.c ****   status = FLASH_WaitForLastOperation(ProgramTimeout);
+ 16210              		.loc 1 339 0
+ 16211 0006 0F20     		movs	r0, #15
+ 16212              	.LVL96:
+ 332:stm32f10x_flash.c **** {
+ 16213              		.loc 1 332 0
+ 16214 0008 0E46     		mov	r6, r1
+ 334:stm32f10x_flash.c ****   __IO uint32_t tmp = 0;
+ 16215              		.loc 1 334 0
+ 16216 000a 0193     		str	r3, [sp, #4]
+ 16217              	.LVL97:
+ 339:stm32f10x_flash.c ****   status = FLASH_WaitForLastOperation(ProgramTimeout);
+ 16218              		.loc 1 339 0
+ 16219 000c FFF7FEFF 		bl	FLASH_WaitForLastOperation
+ 16220              	.LVL98:
+ 341:stm32f10x_flash.c ****   if(status == FLASH_COMPLETE)
+ 16221              		.loc 1 341 0
+ 16222 0010 0428     		cmp	r0, #4
+ 16223 0012 1DD1     		bne	.L86
+ 345:stm32f10x_flash.c ****     FLASH->CR |= CR_PG_Set;
+ 16224              		.loc 1 345 0
+ 16225 0014 0F4D     		ldr	r5, .L90
+ 347:stm32f10x_flash.c ****     *(__IO uint16_t*)Address = (uint16_t)Data;
+ 16226              		.loc 1 347 0
+ 16227 0016 B1B2     		uxth	r1, r6
+ 345:stm32f10x_flash.c ****     FLASH->CR |= CR_PG_Set;
+ 16228              		.loc 1 345 0
+ 16229 0018 D5F810C0 		ldr	ip, [r5, #16]
+ 16230              	.LVL99:
+ 349:stm32f10x_flash.c ****     status = FLASH_WaitForLastOperation(ProgramTimeout);
+ 16231              		.loc 1 349 0
+ 16232 001c 0B30     		adds	r0, r0, #11
+ 16233              	.LVL100:
+ 345:stm32f10x_flash.c ****     FLASH->CR |= CR_PG_Set;
+ 16234              		.loc 1 345 0
+ 16235 001e 4CF00102 		orr	r2, ip, #1
+ 16236 0022 2A61     		str	r2, [r5, #16]
+ 16237              	.LVL101:
+ 347:stm32f10x_flash.c ****     *(__IO uint16_t*)Address = (uint16_t)Data;
+ 16238              		.loc 1 347 0
+ 16239 0024 2180     		strh	r1, [r4, #0]	@ movhi
+ 349:stm32f10x_flash.c ****     status = FLASH_WaitForLastOperation(ProgramTimeout);
+ 16240              		.loc 1 349 0
+ 16241 0026 FFF7FEFF 		bl	FLASH_WaitForLastOperation
+ 16242              	.LVL102:
+ 351:stm32f10x_flash.c ****     if(status == FLASH_COMPLETE)
+ 16243              		.loc 1 351 0
+ 16244 002a 0428     		cmp	r0, #4
+ 16245 002c 09D1     		bne	.L87
+ 16246              	.LVL103:
+ 355:stm32f10x_flash.c ****       tmp = Address + 2;
+ 16247              		.loc 1 355 0
+ 16248 002e 0234     		adds	r4, r4, #2
+ 16249              	.LVL104:
+ 16250 0030 0194     		str	r4, [sp, #4]
+ 16251              	.LVL105:
+ 357:stm32f10x_flash.c ****       *(__IO uint16_t*) tmp = Data >> 16;
+ 16252              		.loc 1 357 0
+ 16253 0032 DDF804E0 		ldr	lr, [sp, #4]
+ 16254 0036 360C     		lsrs	r6, r6, #16
+ 16255 0038 AEF80060 		strh	r6, [lr, #0]	@ movhi
+ 16256              	.LVL106:
+ 360:stm32f10x_flash.c ****       status = FLASH_WaitForLastOperation(ProgramTimeout);
+ 16257              		.loc 1 360 0
+ 16258 003c 0B30     		adds	r0, r0, #11
+ 16259              	.LVL107:
+ 16260 003e FFF7FEFF 		bl	FLASH_WaitForLastOperation
+ 16261              	.LVL108:
+ 16262              	.L87:
+ 370:stm32f10x_flash.c ****       if (status != FLASH_TIMEOUT)
+ 16263              		.loc 1 370 0
+ 16264 0042 0528     		cmp	r0, #5
+ 373:stm32f10x_flash.c ****         FLASH->CR &= CR_PG_Reset;
+ 16265              		.loc 1 373 0
+ 16266 0044 1FBF     		itttt	ne
+ 16267 0046 2969     		ldrne	r1, [r5, #16]
+ 16268 0048 41F6FE73 		movwne	r3, #8190
+ 16269 004c 0B40     		andne	r3, r1, r3
+ 16270 004e 2B61     		strne	r3, [r5, #16]
+ 16271              	.LVL109:
+ 16272              	.L86:
+ 16273              	.LVL110:
+ 379:stm32f10x_flash.c **** }
+ 16274              		.loc 1 379 0
+ 16275 0050 7CBD     		pop	{r2, r3, r4, r5, r6, pc}
+ 16276              	.L91:
+ 16277 0052 00BF     		.align	2
+ 16278              	.L90:
+ 16279 0054 00200240 		.word	1073881088
+ 16280              	.LFE35:
+ 16282              		.section	.text.FLASH_EraseOptionBytes,"ax",%progbits
+ 16283              		.align	1
+ 16284              		.global	FLASH_EraseOptionBytes
+ 16285              		.thumb
+ 16286              		.thumb_func
+ 16288              	FLASH_EraseOptionBytes:
+ 16289              	.LFB34:
+ 276:stm32f10x_flash.c **** {
+ 16290              		.loc 1 276 0
+ 16291              		@ args = 0, pretend = 0, frame = 0
+ 16292              		@ frame_needed = 0, uses_anonymous_args = 0
+ 16293              	.LVL111:
+ 16294 0000 10B5     		push	{r4, lr}
+ 16295              	.LCFI7:
+ 280:stm32f10x_flash.c ****   status = FLASH_WaitForLastOperation(EraseTimeout);
+ 16296              		.loc 1 280 0
+ 16297 0002 40F6FF70 		movw	r0, #4095
+ 16298 0006 FFF7FEFF 		bl	FLASH_WaitForLastOperation
+ 16299              	.LVL112:
+ 281:stm32f10x_flash.c ****   if(status == FLASH_COMPLETE)
+ 16300              		.loc 1 281 0
+ 16301 000a 0428     		cmp	r0, #4
+ 16302 000c 2FD1     		bne	.L93
+ 284:stm32f10x_flash.c ****     FLASH->OPTKEYR = FLASH_KEY1;
+ 16303              		.loc 1 284 0
+ 16304 000e DFF860E0 		ldr	lr, .L97
+ 16305 0012 184C     		ldr	r4, .L97+4
+ 285:stm32f10x_flash.c ****     FLASH->OPTKEYR = FLASH_KEY2;
+ 16306              		.loc 1 285 0
+ 16307 0014 0EF1883C 		add	ip, lr, #-2004318072
+ 284:stm32f10x_flash.c ****     FLASH->OPTKEYR = FLASH_KEY1;
+ 16308              		.loc 1 284 0
+ 16309 0018 C4F808E0 		str	lr, [r4, #8]
+ 285:stm32f10x_flash.c ****     FLASH->OPTKEYR = FLASH_KEY2;
+ 16310              		.loc 1 285 0
+ 16311 001c C4F808C0 		str	ip, [r4, #8]
+ 288:stm32f10x_flash.c ****     FLASH->CR |= CR_OPTER_Set;
+ 16312              		.loc 1 288 0
+ 16313 0020 2269     		ldr	r2, [r4, #16]
+ 16314 0022 42F02001 		orr	r1, r2, #32
+ 16315 0026 2161     		str	r1, [r4, #16]
+ 289:stm32f10x_flash.c ****     FLASH->CR |= CR_STRT_Set;
+ 16316              		.loc 1 289 0
+ 16317 0028 2069     		ldr	r0, [r4, #16]
+ 16318              	.LVL113:
+ 16319 002a 40F04003 		orr	r3, r0, #64
+ 16320 002e 2361     		str	r3, [r4, #16]
+ 291:stm32f10x_flash.c ****     status = FLASH_WaitForLastOperation(EraseTimeout);
+ 16321              		.loc 1 291 0
+ 16322 0030 40F6FF70 		movw	r0, #4095
+ 16323 0034 FFF7FEFF 		bl	FLASH_WaitForLastOperation
+ 16324              	.LVL114:
+ 293:stm32f10x_flash.c ****     if(status == FLASH_COMPLETE)
+ 16325              		.loc 1 293 0
+ 16326 0038 0428     		cmp	r0, #4
+ 16327 003a 11D1     		bne	.L94
+ 296:stm32f10x_flash.c ****       FLASH->CR &= CR_OPTER_Reset;
+ 16328              		.loc 1 296 0
+ 16329 003c 2369     		ldr	r3, [r4, #16]
+ 16330 003e 41F6DF71 		movw	r1, #8159
+ 16331 0042 03EA010E 		and	lr, r3, r1
+ 16332 0046 C4F810E0 		str	lr, [r4, #16]
+ 299:stm32f10x_flash.c ****       FLASH->CR |= CR_OPTPG_Set;
+ 16333              		.loc 1 299 0
+ 16334 004a D4F810C0 		ldr	ip, [r4, #16]
+ 301:stm32f10x_flash.c ****       OB->RDP= RDP_Key; 
+ 16335              		.loc 1 301 0
+ 16336 004e 0A4B     		ldr	r3, .L97+8
+ 299:stm32f10x_flash.c ****       FLASH->CR |= CR_OPTPG_Set;
+ 16337              		.loc 1 299 0
+ 16338 0050 4CF01002 		orr	r2, ip, #16
+ 301:stm32f10x_flash.c ****       OB->RDP= RDP_Key; 
+ 16339              		.loc 1 301 0
+ 16340 0054 A521     		movs	r1, #165
+ 299:stm32f10x_flash.c ****       FLASH->CR |= CR_OPTPG_Set;
+ 16341              		.loc 1 299 0
+ 16342 0056 2261     		str	r2, [r4, #16]
+ 16343              	.LVL115:
+ 303:stm32f10x_flash.c ****       status = FLASH_WaitForLastOperation(ProgramTimeout);
+ 16344              		.loc 1 303 0
+ 16345 0058 0B30     		adds	r0, r0, #11
+ 16346              	.LVL116:
+ 301:stm32f10x_flash.c ****       OB->RDP= RDP_Key; 
+ 16347              		.loc 1 301 0
+ 16348 005a 1980     		strh	r1, [r3, #0]	@ movhi
+ 303:stm32f10x_flash.c ****       status = FLASH_WaitForLastOperation(ProgramTimeout);
+ 16349              		.loc 1 303 0
+ 16350 005c FFF7FEFF 		bl	FLASH_WaitForLastOperation
+ 16351              	.LVL117:
+ 16352              	.L94:
+ 313:stm32f10x_flash.c ****       if (status != FLASH_TIMEOUT)
+ 16353              		.loc 1 313 0
+ 16354 0060 0528     		cmp	r0, #5
+ 316:stm32f10x_flash.c ****         FLASH->CR &= CR_OPTPG_Reset;
+ 16355              		.loc 1 316 0
+ 16356 0062 1FBF     		itttt	ne
+ 16357 0064 2269     		ldrne	r2, [r4, #16]
+ 16358 0066 41F6EF73 		movwne	r3, #8175
+ 16359 006a 1340     		andne	r3, r2, r3
+ 16360 006c 2361     		strne	r3, [r4, #16]
+ 16361              	.L93:
+ 16362              	.LVL118:
+ 16363              	.LVL119:
+ 322:stm32f10x_flash.c **** }
+ 16364              		.loc 1 322 0
+ 16365 006e 10BD     		pop	{r4, pc}
+ 16366              	.L98:
+ 16367              		.align	2
+ 16368              	.L97:
+ 16369 0070 23016745 		.word	1164378403
+ 16370 0074 00200240 		.word	1073881088
+ 16371 0078 00F8FF1F 		.word	536868864
+ 16372              	.LFE34:
+ 16374              		.section	.text.FLASH_EraseAllPages,"ax",%progbits
+ 16375              		.align	1
+ 16376              		.global	FLASH_EraseAllPages
+ 16377              		.thumb
+ 16378              		.thumb_func
+ 16380              	FLASH_EraseAllPages:
+ 16381              	.LFB33:
+ 242:stm32f10x_flash.c **** {
+ 16382              		.loc 1 242 0
+ 16383              		@ args = 0, pretend = 0, frame = 0
+ 16384              		@ frame_needed = 0, uses_anonymous_args = 0
+ 16385              	.LVL120:
+ 16386 0000 10B5     		push	{r4, lr}
+ 16387              	.LCFI8:
+ 245:stm32f10x_flash.c ****   status = FLASH_WaitForLastOperation(EraseTimeout);
+ 16388              		.loc 1 245 0
+ 16389 0002 40F6FF70 		movw	r0, #4095
+ 16390 0006 FFF7FEFF 		bl	FLASH_WaitForLastOperation
+ 16391              	.LVL121:
+ 247:stm32f10x_flash.c ****   if(status == FLASH_COMPLETE)
+ 16392              		.loc 1 247 0
+ 16393 000a 0428     		cmp	r0, #4
+ 16394 000c 15D1     		bne	.L100
+ 250:stm32f10x_flash.c ****      FLASH->CR |= CR_MER_Set;
+ 16395              		.loc 1 250 0
+ 16396 000e 0B4C     		ldr	r4, .L101
+ 16397 0010 D4F810E0 		ldr	lr, [r4, #16]
+ 16398 0014 4EF0040C 		orr	ip, lr, #4
+ 16399 0018 C4F810C0 		str	ip, [r4, #16]
+ 251:stm32f10x_flash.c ****      FLASH->CR |= CR_STRT_Set;
+ 16400              		.loc 1 251 0
+ 16401 001c 2169     		ldr	r1, [r4, #16]
+ 16402 001e 41F04000 		orr	r0, r1, #64
+ 16403              	.LVL122:
+ 16404 0022 2061     		str	r0, [r4, #16]
+ 254:stm32f10x_flash.c ****     status = FLASH_WaitForLastOperation(EraseTimeout);
+ 16405              		.loc 1 254 0
+ 16406 0024 40F6FF70 		movw	r0, #4095
+ 16407 0028 FFF7FEFF 		bl	FLASH_WaitForLastOperation
+ 16408              	.LVL123:
+ 255:stm32f10x_flash.c ****     if(status != FLASH_TIMEOUT)
+ 16409              		.loc 1 255 0
+ 16410 002c 0528     		cmp	r0, #5
+ 258:stm32f10x_flash.c ****       FLASH->CR &= CR_MER_Reset;
+ 16411              		.loc 1 258 0
+ 16412 002e 1FBF     		itttt	ne
+ 16413 0030 2269     		ldrne	r2, [r4, #16]
+ 16414 0032 41F6FB73 		movwne	r3, #8187
+ 16415 0036 1340     		andne	r3, r2, r3
+ 16416 0038 2361     		strne	r3, [r4, #16]
+ 16417              	.LVL124:
+ 16418              	.L100:
+ 16419              	.LVL125:
+ 263:stm32f10x_flash.c **** }
+ 16420              		.loc 1 263 0
+ 16421 003a 10BD     		pop	{r4, pc}
+ 16422              	.L102:
+ 16423              		.align	2
+ 16424              	.L101:
+ 16425 003c 00200240 		.word	1073881088
+ 16426              	.LFE33:
+ 16428              		.section	.text.FLASH_ErasePage,"ax",%progbits
+ 16429              		.align	1
+ 16430              		.global	FLASH_ErasePage
+ 16431              		.thumb
+ 16432              		.thumb_func
+ 16434              	FLASH_ErasePage:
+ 16435              	.LFB32:
+ 209:stm32f10x_flash.c **** {
+ 16436              		.loc 1 209 0
+ 16437              		@ args = 0, pretend = 0, frame = 0
+ 16438              		@ frame_needed = 0, uses_anonymous_args = 0
+ 16439              	.LVL126:
+ 16440 0000 38B5     		push	{r3, r4, r5, lr}
+ 16441              	.LCFI9:
+ 16442              	.LVL127:
+ 209:stm32f10x_flash.c **** {
+ 16443              		.loc 1 209 0
+ 16444 0002 0546     		mov	r5, r0
+ 214:stm32f10x_flash.c ****   status = FLASH_WaitForLastOperation(EraseTimeout);
+ 16445              		.loc 1 214 0
+ 16446 0004 40F6FF70 		movw	r0, #4095
+ 16447              	.LVL128:
+ 16448 0008 FFF7FEFF 		bl	FLASH_WaitForLastOperation
+ 16449              	.LVL129:
+ 216:stm32f10x_flash.c ****   if(status == FLASH_COMPLETE)
+ 16450              		.loc 1 216 0
+ 16451 000c 0428     		cmp	r0, #4
+ 16452 000e 16D1     		bne	.L104
+ 219:stm32f10x_flash.c ****     FLASH->CR|= CR_PER_Set;
+ 16453              		.loc 1 219 0
+ 16454 0010 0B4C     		ldr	r4, .L105
+ 16455 0012 D4F810E0 		ldr	lr, [r4, #16]
+ 16456 0016 4EF0020C 		orr	ip, lr, #2
+ 16457 001a C4F810C0 		str	ip, [r4, #16]
+ 16458              	.LVL130:
+ 220:stm32f10x_flash.c ****     FLASH->AR = Page_Address; 
+ 16459              		.loc 1 220 0
+ 16460 001e 6561     		str	r5, [r4, #20]
+ 221:stm32f10x_flash.c ****     FLASH->CR|= CR_STRT_Set;
+ 16461              		.loc 1 221 0
+ 16462 0020 2169     		ldr	r1, [r4, #16]
+ 16463 0022 41F04000 		orr	r0, r1, #64
+ 16464              	.LVL131:
+ 16465 0026 2061     		str	r0, [r4, #16]
+ 224:stm32f10x_flash.c ****     status = FLASH_WaitForLastOperation(EraseTimeout);
+ 16466              		.loc 1 224 0
+ 16467 0028 40F6FF70 		movw	r0, #4095
+ 16468 002c FFF7FEFF 		bl	FLASH_WaitForLastOperation
+ 16469              	.LVL132:
+ 225:stm32f10x_flash.c ****     if(status != FLASH_TIMEOUT)
+ 16470              		.loc 1 225 0
+ 16471 0030 0528     		cmp	r0, #5
+ 228:stm32f10x_flash.c ****       FLASH->CR &= CR_PER_Reset;
+ 16472              		.loc 1 228 0
+ 16473 0032 1FBF     		itttt	ne
+ 16474 0034 2269     		ldrne	r2, [r4, #16]
+ 16475 0036 41F6FD73 		movwne	r3, #8189
+ 16476 003a 1340     		andne	r3, r2, r3
+ 16477 003c 2361     		strne	r3, [r4, #16]
+ 16478              	.LVL133:
+ 16479              	.L104:
+ 16480              	.LVL134:
+ 233:stm32f10x_flash.c **** }
+ 16481              		.loc 1 233 0
+ 16482 003e 38BD     		pop	{r3, r4, r5, pc}
+ 16483              	.L106:
+ 16484              		.align	2
+ 16485              	.L105:
+ 16486 0040 00200240 		.word	1073881088
+ 16487              	.LFE32:
+ 16809              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 stm32f10x_flash.c
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:15231  .text.FLASH_SetLatency:00000000 $t
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:15236  .text.FLASH_SetLatency:00000000 FLASH_SetLatency
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:15260  .text.FLASH_SetLatency:00000010 $d
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:15264  .text.FLASH_HalfCycleAccessCmd:00000000 $t
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:15269  .text.FLASH_HalfCycleAccessCmd:00000000 FLASH_HalfCycleAccessCmd
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:15292  .text.FLASH_HalfCycleAccessCmd:00000014 $d
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:15296  .text.FLASH_PrefetchBufferCmd:00000000 $t
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:15301  .text.FLASH_PrefetchBufferCmd:00000000 FLASH_PrefetchBufferCmd
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:15324  .text.FLASH_PrefetchBufferCmd:00000014 $d
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:15328  .text.FLASH_Unlock:00000000 $t
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:15333  .text.FLASH_Unlock:00000000 FLASH_Unlock
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:15353  .text.FLASH_Unlock:00000010 $d
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:15358  .text.FLASH_Lock:00000000 $t
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:15363  .text.FLASH_Lock:00000000 FLASH_Lock
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:15379  .text.FLASH_Lock:0000000c $d
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:15383  .text.FLASH_GetUserOptionByte:00000000 $t
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:15388  .text.FLASH_GetUserOptionByte:00000000 FLASH_GetUserOptionByte
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:15403  .text.FLASH_GetUserOptionByte:00000008 $d
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:15407  .text.FLASH_GetWriteProtectionOptionByte:00000000 $t
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:15412  .text.FLASH_GetWriteProtectionOptionByte:00000000 FLASH_GetWriteProtectionOptionByte
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:15426  .text.FLASH_GetWriteProtectionOptionByte:00000008 $d
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:15430  .text.FLASH_GetReadOutProtectionStatus:00000000 $t
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:15435  .text.FLASH_GetReadOutProtectionStatus:00000000 FLASH_GetReadOutProtectionStatus
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:15452  .text.FLASH_GetReadOutProtectionStatus:0000000c $d
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:15456  .text.FLASH_GetPrefetchBufferStatus:00000000 $t
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:15461  .text.FLASH_GetPrefetchBufferStatus:00000000 FLASH_GetPrefetchBufferStatus
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:15478  .text.FLASH_GetPrefetchBufferStatus:0000000c $d
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:15482  .text.FLASH_ITConfig:00000000 $t
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:15487  .text.FLASH_ITConfig:00000000 FLASH_ITConfig
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:15517  .text.FLASH_ITConfig:00000018 $d
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:15521  .text.FLASH_GetFlagStatus:00000000 $t
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:15526  .text.FLASH_GetFlagStatus:00000000 FLASH_GetFlagStatus
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:15561  .text.FLASH_GetFlagStatus:0000001c $d
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:15565  .text.FLASH_ClearFlag:00000000 $t
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:15570  .text.FLASH_ClearFlag:00000000 FLASH_ClearFlag
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:15585  .text.FLASH_ClearFlag:00000008 $d
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:15589  .text.FLASH_GetStatus:00000000 $t
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:15594  .text.FLASH_GetStatus:00000000 FLASH_GetStatus
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:15633  .text.FLASH_GetStatus:00000028 $d
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:15637  .text.FLASH_WaitForLastOperation:00000000 $t
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:15642  .text.FLASH_WaitForLastOperation:00000000 FLASH_WaitForLastOperation
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:15722  .text.FLASH_UserOptionByteConfig:00000000 $t
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:15727  .text.FLASH_UserOptionByteConfig:00000000 FLASH_UserOptionByteConfig
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:15795  .text.FLASH_UserOptionByteConfig:00000050 $d
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:15801  .text.FLASH_ReadOutProtection:00000000 $t
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:15806  .text.FLASH_ReadOutProtection:00000000 FLASH_ReadOutProtection
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:15903  .text.FLASH_ReadOutProtection:00000094 $d
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:15909  .text.FLASH_EnableWriteProtection:00000000 $t
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:15914  .text.FLASH_EnableWriteProtection:00000000 FLASH_EnableWriteProtection
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:16051  .text.FLASH_EnableWriteProtection:000000b8 $d
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:16057  .text.FLASH_ProgramOptionByteData:00000000 $t
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:16062  .text.FLASH_ProgramOptionByteData:00000000 FLASH_ProgramOptionByteData
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:16124  .text.FLASH_ProgramOptionByteData:00000040 $d
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:16129  .text.FLASH_ProgramHalfWord:00000000 $t
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:16134  .text.FLASH_ProgramHalfWord:00000000 FLASH_ProgramHalfWord
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:16188  .text.FLASH_ProgramHalfWord:00000034 $d
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:16192  .text.FLASH_ProgramWord:00000000 $t
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:16197  .text.FLASH_ProgramWord:00000000 FLASH_ProgramWord
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:16279  .text.FLASH_ProgramWord:00000054 $d
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:16283  .text.FLASH_EraseOptionBytes:00000000 $t
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:16288  .text.FLASH_EraseOptionBytes:00000000 FLASH_EraseOptionBytes
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:16369  .text.FLASH_EraseOptionBytes:00000070 $d
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:16375  .text.FLASH_EraseAllPages:00000000 $t
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:16380  .text.FLASH_EraseAllPages:00000000 FLASH_EraseAllPages
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:16425  .text.FLASH_EraseAllPages:0000003c $d
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:16429  .text.FLASH_ErasePage:00000000 $t
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:16434  .text.FLASH_ErasePage:00000000 FLASH_ErasePage
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:16486  .text.FLASH_ErasePage:00000040 $d
+C:\Users\ts\AppData\Local\Temp\cc8UtGaL.s:16502  .debug_frame:00000010 $d
+
+NO UNDEFINED SYMBOLS

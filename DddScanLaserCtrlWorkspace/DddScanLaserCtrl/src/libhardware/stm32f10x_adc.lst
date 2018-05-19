@@ -1,0 +1,2641 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 4
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"stm32f10x_adc.c"
+  23              	.Ltext0:
+  24              		.file 1 "stm32f10x_adc.c"
+ 15833              		.align	1
+ 15834              		.global	ADC_DeInit
+ 15835              		.thumb
+ 15836              		.thumb_func
+ 15838              	ADC_DeInit:
+ 15839              	.LFB27:
+   0:stm32f10x_adc.c **** /**
+   1:stm32f10x_adc.c ****   ******************************************************************************
+   2:stm32f10x_adc.c ****   * @file    stm32f10x_adc.c
+   3:stm32f10x_adc.c ****   * @author  MCD Application Team
+   4:stm32f10x_adc.c ****   * @version V3.1.2
+   5:stm32f10x_adc.c ****   * @date    09/28/2009
+   6:stm32f10x_adc.c ****   * @brief   This file provides all the ADC firmware functions.
+   7:stm32f10x_adc.c ****   ******************************************************************************
+   8:stm32f10x_adc.c ****   * @copy
+   9:stm32f10x_adc.c ****   *
+  10:stm32f10x_adc.c ****   * THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
+  11:stm32f10x_adc.c ****   * WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE
+  12:stm32f10x_adc.c ****   * TIME. AS A RESULT, STMICROELECTRONICS SHALL NOT BE HELD LIABLE FOR ANY
+  13:stm32f10x_adc.c ****   * DIRECT, INDIRECT OR CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY CLAIMS ARISING
+  14:stm32f10x_adc.c ****   * FROM THE CONTENT OF SUCH FIRMWARE AND/OR THE USE MADE BY CUSTOMERS OF THE
+  15:stm32f10x_adc.c ****   * CODING INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
+  16:stm32f10x_adc.c ****   *
+  17:stm32f10x_adc.c ****   * <h2><center>&copy; COPYRIGHT 2009 STMicroelectronics</center></h2>
+  18:stm32f10x_adc.c ****   */ 
+  19:stm32f10x_adc.c **** 
+  20:stm32f10x_adc.c **** /* Includes ------------------------------------------------------------------*/
+  21:stm32f10x_adc.c **** #include "stm32f10x_adc.h"
+  22:stm32f10x_adc.c **** #include "stm32f10x_rcc.h"
+  23:stm32f10x_adc.c **** 
+  24:stm32f10x_adc.c **** /** @addtogroup STM32F10x_StdPeriph_Driver
+  25:stm32f10x_adc.c ****   * @{
+  26:stm32f10x_adc.c ****   */
+  27:stm32f10x_adc.c **** 
+  28:stm32f10x_adc.c **** /** @defgroup ADC 
+  29:stm32f10x_adc.c ****   * @brief ADC driver modules
+  30:stm32f10x_adc.c ****   * @{
+  31:stm32f10x_adc.c ****   */
+  32:stm32f10x_adc.c **** 
+  33:stm32f10x_adc.c **** /** @defgroup ADC_Private_TypesDefinitions
+  34:stm32f10x_adc.c ****   * @{
+  35:stm32f10x_adc.c ****   */
+  36:stm32f10x_adc.c **** 
+  37:stm32f10x_adc.c **** /**
+  38:stm32f10x_adc.c ****   * @}
+  39:stm32f10x_adc.c ****   */
+  40:stm32f10x_adc.c **** 
+  41:stm32f10x_adc.c **** /** @defgroup ADC_Private_Defines
+  42:stm32f10x_adc.c ****   * @{
+  43:stm32f10x_adc.c ****   */
+  44:stm32f10x_adc.c **** 
+  45:stm32f10x_adc.c **** /* ADC DISCNUM mask */
+  46:stm32f10x_adc.c **** #define CR1_DISCNUM_Reset           ((uint32_t)0xFFFF1FFF)
+  47:stm32f10x_adc.c **** 
+  48:stm32f10x_adc.c **** /* ADC DISCEN mask */
+  49:stm32f10x_adc.c **** #define CR1_DISCEN_Set              ((uint32_t)0x00000800)
+  50:stm32f10x_adc.c **** #define CR1_DISCEN_Reset            ((uint32_t)0xFFFFF7FF)
+  51:stm32f10x_adc.c **** 
+  52:stm32f10x_adc.c **** /* ADC JAUTO mask */
+  53:stm32f10x_adc.c **** #define CR1_JAUTO_Set               ((uint32_t)0x00000400)
+  54:stm32f10x_adc.c **** #define CR1_JAUTO_Reset             ((uint32_t)0xFFFFFBFF)
+  55:stm32f10x_adc.c **** 
+  56:stm32f10x_adc.c **** /* ADC JDISCEN mask */
+  57:stm32f10x_adc.c **** #define CR1_JDISCEN_Set             ((uint32_t)0x00001000)
+  58:stm32f10x_adc.c **** #define CR1_JDISCEN_Reset           ((uint32_t)0xFFFFEFFF)
+  59:stm32f10x_adc.c **** 
+  60:stm32f10x_adc.c **** /* ADC AWDCH mask */
+  61:stm32f10x_adc.c **** #define CR1_AWDCH_Reset             ((uint32_t)0xFFFFFFE0)
+  62:stm32f10x_adc.c **** 
+  63:stm32f10x_adc.c **** /* ADC Analog watchdog enable mode mask */
+  64:stm32f10x_adc.c **** #define CR1_AWDMode_Reset           ((uint32_t)0xFF3FFDFF)
+  65:stm32f10x_adc.c **** 
+  66:stm32f10x_adc.c **** /* CR1 register Mask */
+  67:stm32f10x_adc.c **** #define CR1_CLEAR_Mask              ((uint32_t)0xFFF0FEFF)
+  68:stm32f10x_adc.c **** 
+  69:stm32f10x_adc.c **** /* ADC ADON mask */
+  70:stm32f10x_adc.c **** #define CR2_ADON_Set                ((uint32_t)0x00000001)
+  71:stm32f10x_adc.c **** #define CR2_ADON_Reset              ((uint32_t)0xFFFFFFFE)
+  72:stm32f10x_adc.c **** 
+  73:stm32f10x_adc.c **** /* ADC DMA mask */
+  74:stm32f10x_adc.c **** #define CR2_DMA_Set                 ((uint32_t)0x00000100)
+  75:stm32f10x_adc.c **** #define CR2_DMA_Reset               ((uint32_t)0xFFFFFEFF)
+  76:stm32f10x_adc.c **** 
+  77:stm32f10x_adc.c **** /* ADC RSTCAL mask */
+  78:stm32f10x_adc.c **** #define CR2_RSTCAL_Set              ((uint32_t)0x00000008)
+  79:stm32f10x_adc.c **** 
+  80:stm32f10x_adc.c **** /* ADC CAL mask */
+  81:stm32f10x_adc.c **** #define CR2_CAL_Set                 ((uint32_t)0x00000004)
+  82:stm32f10x_adc.c **** 
+  83:stm32f10x_adc.c **** /* ADC SWSTART mask */
+  84:stm32f10x_adc.c **** #define CR2_SWSTART_Set             ((uint32_t)0x00400000)
+  85:stm32f10x_adc.c **** 
+  86:stm32f10x_adc.c **** /* ADC EXTTRIG mask */
+  87:stm32f10x_adc.c **** #define CR2_EXTTRIG_Set             ((uint32_t)0x00100000)
+  88:stm32f10x_adc.c **** #define CR2_EXTTRIG_Reset           ((uint32_t)0xFFEFFFFF)
+  89:stm32f10x_adc.c **** 
+  90:stm32f10x_adc.c **** /* ADC Software start mask */
+  91:stm32f10x_adc.c **** #define CR2_EXTTRIG_SWSTART_Set     ((uint32_t)0x00500000)
+  92:stm32f10x_adc.c **** #define CR2_EXTTRIG_SWSTART_Reset   ((uint32_t)0xFFAFFFFF)
+  93:stm32f10x_adc.c **** 
+  94:stm32f10x_adc.c **** /* ADC JEXTSEL mask */
+  95:stm32f10x_adc.c **** #define CR2_JEXTSEL_Reset           ((uint32_t)0xFFFF8FFF)
+  96:stm32f10x_adc.c **** 
+  97:stm32f10x_adc.c **** /* ADC JEXTTRIG mask */
+  98:stm32f10x_adc.c **** #define CR2_JEXTTRIG_Set            ((uint32_t)0x00008000)
+  99:stm32f10x_adc.c **** #define CR2_JEXTTRIG_Reset          ((uint32_t)0xFFFF7FFF)
+ 100:stm32f10x_adc.c **** 
+ 101:stm32f10x_adc.c **** /* ADC JSWSTART mask */
+ 102:stm32f10x_adc.c **** #define CR2_JSWSTART_Set            ((uint32_t)0x00200000)
+ 103:stm32f10x_adc.c **** 
+ 104:stm32f10x_adc.c **** /* ADC injected software start mask */
+ 105:stm32f10x_adc.c **** #define CR2_JEXTTRIG_JSWSTART_Set   ((uint32_t)0x00208000)
+ 106:stm32f10x_adc.c **** #define CR2_JEXTTRIG_JSWSTART_Reset ((uint32_t)0xFFDF7FFF)
+ 107:stm32f10x_adc.c **** 
+ 108:stm32f10x_adc.c **** /* ADC TSPD mask */
+ 109:stm32f10x_adc.c **** #define CR2_TSVREFE_Set             ((uint32_t)0x00800000)
+ 110:stm32f10x_adc.c **** #define CR2_TSVREFE_Reset           ((uint32_t)0xFF7FFFFF)
+ 111:stm32f10x_adc.c **** 
+ 112:stm32f10x_adc.c **** /* CR2 register Mask */
+ 113:stm32f10x_adc.c **** #define CR2_CLEAR_Mask              ((uint32_t)0xFFF1F7FD)
+ 114:stm32f10x_adc.c **** 
+ 115:stm32f10x_adc.c **** /* ADC SQx mask */
+ 116:stm32f10x_adc.c **** #define SQR3_SQ_Set                 ((uint32_t)0x0000001F)
+ 117:stm32f10x_adc.c **** #define SQR2_SQ_Set                 ((uint32_t)0x0000001F)
+ 118:stm32f10x_adc.c **** #define SQR1_SQ_Set                 ((uint32_t)0x0000001F)
+ 119:stm32f10x_adc.c **** 
+ 120:stm32f10x_adc.c **** /* SQR1 register Mask */
+ 121:stm32f10x_adc.c **** #define SQR1_CLEAR_Mask             ((uint32_t)0xFF0FFFFF)
+ 122:stm32f10x_adc.c **** 
+ 123:stm32f10x_adc.c **** /* ADC JSQx mask */
+ 124:stm32f10x_adc.c **** #define JSQR_JSQ_Set                ((uint32_t)0x0000001F)
+ 125:stm32f10x_adc.c **** 
+ 126:stm32f10x_adc.c **** /* ADC JL mask */
+ 127:stm32f10x_adc.c **** #define JSQR_JL_Set                 ((uint32_t)0x00300000)
+ 128:stm32f10x_adc.c **** #define JSQR_JL_Reset               ((uint32_t)0xFFCFFFFF)
+ 129:stm32f10x_adc.c **** 
+ 130:stm32f10x_adc.c **** /* ADC SMPx mask */
+ 131:stm32f10x_adc.c **** #define SMPR1_SMP_Set               ((uint32_t)0x00000007)
+ 132:stm32f10x_adc.c **** #define SMPR2_SMP_Set               ((uint32_t)0x00000007)
+ 133:stm32f10x_adc.c **** 
+ 134:stm32f10x_adc.c **** /* ADC JDRx registers offset */
+ 135:stm32f10x_adc.c **** #define JDR_Offset                  ((uint8_t)0x28)
+ 136:stm32f10x_adc.c **** 
+ 137:stm32f10x_adc.c **** /* ADC1 DR register base address */
+ 138:stm32f10x_adc.c **** #define DR_ADDRESS                  ((uint32_t)0x4001244C)
+ 139:stm32f10x_adc.c **** 
+ 140:stm32f10x_adc.c **** /**
+ 141:stm32f10x_adc.c ****   * @}
+ 142:stm32f10x_adc.c ****   */
+ 143:stm32f10x_adc.c **** 
+ 144:stm32f10x_adc.c **** /** @defgroup ADC_Private_Macros
+ 145:stm32f10x_adc.c ****   * @{
+ 146:stm32f10x_adc.c ****   */
+ 147:stm32f10x_adc.c **** 
+ 148:stm32f10x_adc.c **** /**
+ 149:stm32f10x_adc.c ****   * @}
+ 150:stm32f10x_adc.c ****   */
+ 151:stm32f10x_adc.c **** 
+ 152:stm32f10x_adc.c **** /** @defgroup ADC_Private_Variables
+ 153:stm32f10x_adc.c ****   * @{
+ 154:stm32f10x_adc.c ****   */
+ 155:stm32f10x_adc.c **** 
+ 156:stm32f10x_adc.c **** /**
+ 157:stm32f10x_adc.c ****   * @}
+ 158:stm32f10x_adc.c ****   */
+ 159:stm32f10x_adc.c **** 
+ 160:stm32f10x_adc.c **** /** @defgroup ADC_Private_FunctionPrototypes
+ 161:stm32f10x_adc.c ****   * @{
+ 162:stm32f10x_adc.c ****   */
+ 163:stm32f10x_adc.c **** 
+ 164:stm32f10x_adc.c **** /**
+ 165:stm32f10x_adc.c ****   * @}
+ 166:stm32f10x_adc.c ****   */
+ 167:stm32f10x_adc.c **** 
+ 168:stm32f10x_adc.c **** /** @defgroup ADC_Private_Functions
+ 169:stm32f10x_adc.c ****   * @{
+ 170:stm32f10x_adc.c ****   */
+ 171:stm32f10x_adc.c **** 
+ 172:stm32f10x_adc.c **** /**
+ 173:stm32f10x_adc.c ****   * @brief  Deinitializes the ADCx peripheral registers to their default reset values.
+ 174:stm32f10x_adc.c ****   * @param  ADCx: where x can be 1, 2 or 3 to select the ADC peripheral.
+ 175:stm32f10x_adc.c ****   * @retval None
+ 176:stm32f10x_adc.c ****   */
+ 177:stm32f10x_adc.c **** void ADC_DeInit(ADC_TypeDef* ADCx)
+ 178:stm32f10x_adc.c **** {
+ 15840              		.loc 1 179 0
+ 15841              		@ args = 0, pretend = 0, frame = 0
+ 15842              		@ frame_needed = 0, uses_anonymous_args = 0
+ 15843              	.LVL0:
+ 15844 0000 08B5     		push	{r3, lr}
+ 15845              	.LCFI0:
+ 179:stm32f10x_adc.c ****   /* Check the parameters */
+ 180:stm32f10x_adc.c ****   assert_param(IS_ADC_ALL_PERIPH(ADCx));
+ 181:stm32f10x_adc.c ****   
+ 182:stm32f10x_adc.c ****   if (ADCx == ADC1)
+ 15846              		.loc 1 183 0
+ 15847 0002 124B     		ldr	r3, .L7
+ 15848              	.LVL1:
+ 15849 0004 9842     		cmp	r0, r3
+ 15850 0006 07D1     		bne	.L2
+ 15851              	.LVL2:
+ 183:stm32f10x_adc.c ****   {
+ 184:stm32f10x_adc.c ****     /* Enable ADC1 reset state */
+ 185:stm32f10x_adc.c ****     RCC_APB2PeriphResetCmd(RCC_APB2Periph_ADC1, ENABLE);
+ 15852              		.loc 1 186 0
+ 15853 0008 4FF40070 		mov	r0, #512
+ 15854              	.LVL3:
+ 15855 000c 0121     		movs	r1, #1
+ 15856 000e FFF7FEFF 		bl	RCC_APB2PeriphResetCmd
+ 186:stm32f10x_adc.c ****     /* Release ADC1 from reset state */
+ 187:stm32f10x_adc.c ****     RCC_APB2PeriphResetCmd(RCC_APB2Periph_ADC1, DISABLE);
+ 15857              		.loc 1 188 0
+ 15858 0012 4FF40070 		mov	r0, #512
+ 15859 0016 14E0     		b	.L5
+ 15860              	.LVL4:
+ 15861              	.L2:
+ 188:stm32f10x_adc.c ****   }
+ 189:stm32f10x_adc.c ****   else if (ADCx == ADC2)
+ 15862              		.loc 1 190 0
+ 15863 0018 0D49     		ldr	r1, .L7+4
+ 15864              	.LVL5:
+ 15865 001a 8842     		cmp	r0, r1
+ 15866 001c 07D1     		bne	.L4
+ 190:stm32f10x_adc.c ****   {
+ 191:stm32f10x_adc.c ****     /* Enable ADC2 reset state */
+ 192:stm32f10x_adc.c ****     RCC_APB2PeriphResetCmd(RCC_APB2Periph_ADC2, ENABLE);
+ 15867              		.loc 1 193 0
+ 15868 001e 4FF48060 		mov	r0, #1024
+ 15869              	.LVL6:
+ 15870 0022 0121     		movs	r1, #1
+ 15871 0024 FFF7FEFF 		bl	RCC_APB2PeriphResetCmd
+ 193:stm32f10x_adc.c ****     /* Release ADC2 from reset state */
+ 194:stm32f10x_adc.c ****     RCC_APB2PeriphResetCmd(RCC_APB2Periph_ADC2, DISABLE);
+ 15872              		.loc 1 195 0
+ 15873 0028 4FF48060 		mov	r0, #1024
+ 15874 002c 09E0     		b	.L5
+ 15875              	.LVL7:
+ 15876              	.L4:
+ 195:stm32f10x_adc.c ****   }
+ 196:stm32f10x_adc.c ****   else
+ 197:stm32f10x_adc.c ****   {
+ 198:stm32f10x_adc.c ****     if (ADCx == ADC3)
+ 15877              		.loc 1 199 0
+ 15878 002e 094A     		ldr	r2, .L7+8
+ 15879              	.LVL8:
+ 15880 0030 9042     		cmp	r0, r2
+ 15881 0032 09D1     		bne	.L1
+ 199:stm32f10x_adc.c ****     {
+ 200:stm32f10x_adc.c ****       /* Enable ADC3 reset state */
+ 201:stm32f10x_adc.c ****       RCC_APB2PeriphResetCmd(RCC_APB2Periph_ADC3, ENABLE);
+ 15882              		.loc 1 202 0
+ 15883 0034 4FF40040 		mov	r0, #32768
+ 15884              	.LVL9:
+ 15885 0038 0121     		movs	r1, #1
+ 15886 003a FFF7FEFF 		bl	RCC_APB2PeriphResetCmd
+ 202:stm32f10x_adc.c ****       /* Release ADC3 from reset state */
+ 203:stm32f10x_adc.c ****       RCC_APB2PeriphResetCmd(RCC_APB2Periph_ADC3, DISABLE);
+ 15887              		.loc 1 204 0
+ 15888 003e 4FF40040 		mov	r0, #32768
+ 15889              	.LVL10:
+ 15890              	.L5:
+ 15891 0042 0021     		movs	r1, #0
+ 15892 0044 FFF7FEFF 		bl	RCC_APB2PeriphResetCmd
+ 15893              	.L1:
+ 204:stm32f10x_adc.c ****     }
+ 205:stm32f10x_adc.c ****   }
+ 206:stm32f10x_adc.c **** }
+ 15894              		.loc 1 207 0
+ 15895 0048 08BD     		pop	{r3, pc}
+ 15896              	.L8:
+ 15897 004a 00BF     		.align	2
+ 15898              	.L7:
+ 15899 004c 00240140 		.word	1073816576
+ 15900 0050 00280140 		.word	1073817600
+ 15901 0054 003C0140 		.word	1073822720
+ 15902              	.LFE27:
+ 15904              		.section	.text.ADC_Init,"ax",%progbits
+ 15905              		.align	1
+ 15906              		.global	ADC_Init
+ 15907              		.thumb
+ 15908              		.thumb_func
+ 15910              	ADC_Init:
+ 15911              	.LFB28:
+ 207:stm32f10x_adc.c **** 
+ 208:stm32f10x_adc.c **** /**
+ 209:stm32f10x_adc.c ****   * @brief  Initializes the ADCx peripheral according to the specified parameters
+ 210:stm32f10x_adc.c ****   *   in the ADC_InitStruct.
+ 211:stm32f10x_adc.c ****   * @param  ADCx: where x can be 1, 2 or 3 to select the ADC peripheral.
+ 212:stm32f10x_adc.c ****   * @param  ADC_InitStruct: pointer to an ADC_InitTypeDef structure that contains
+ 213:stm32f10x_adc.c ****   *   the configuration information for the specified ADC peripheral.
+ 214:stm32f10x_adc.c ****   * @retval None
+ 215:stm32f10x_adc.c ****   */
+ 216:stm32f10x_adc.c **** void ADC_Init(ADC_TypeDef* ADCx, ADC_InitTypeDef* ADC_InitStruct)
+ 217:stm32f10x_adc.c **** {
+ 15912              		.loc 1 218 0
+ 15913              		@ args = 0, pretend = 0, frame = 0
+ 15914              		@ frame_needed = 0, uses_anonymous_args = 0
+ 15915              		@ link register save eliminated.
+ 15916              	.LVL11:
+ 218:stm32f10x_adc.c ****   uint32_t tmpreg1 = 0;
+ 219:stm32f10x_adc.c ****   uint8_t tmpreg2 = 0;
+ 220:stm32f10x_adc.c ****   /* Check the parameters */
+ 221:stm32f10x_adc.c ****   assert_param(IS_ADC_ALL_PERIPH(ADCx));
+ 222:stm32f10x_adc.c ****   assert_param(IS_ADC_MODE(ADC_InitStruct->ADC_Mode));
+ 223:stm32f10x_adc.c ****   assert_param(IS_FUNCTIONAL_STATE(ADC_InitStruct->ADC_ScanConvMode));
+ 224:stm32f10x_adc.c ****   assert_param(IS_FUNCTIONAL_STATE(ADC_InitStruct->ADC_ContinuousConvMode));
+ 225:stm32f10x_adc.c ****   assert_param(IS_ADC_EXT_TRIG(ADC_InitStruct->ADC_ExternalTrigConv));   
+ 226:stm32f10x_adc.c ****   assert_param(IS_ADC_DATA_ALIGN(ADC_InitStruct->ADC_DataAlign)); 
+ 227:stm32f10x_adc.c ****   assert_param(IS_ADC_REGULAR_LENGTH(ADC_InitStruct->ADC_NbrOfChannel));
+ 228:stm32f10x_adc.c **** 
+ 229:stm32f10x_adc.c ****   /*---------------------------- ADCx CR1 Configuration -----------------*/
+ 230:stm32f10x_adc.c ****   /* Get the ADCx CR1 value */
+ 231:stm32f10x_adc.c ****   tmpreg1 = ADCx->CR1;
+ 15917              		.loc 1 232 0
+ 15918 0000 D0F804C0 		ldr	ip, [r0, #4]
+ 15919              	.LVL12:
+ 232:stm32f10x_adc.c ****   /* Clear DUALMOD and SCAN bits */
+ 233:stm32f10x_adc.c ****   tmpreg1 &= CR1_CLEAR_Mask;
+ 234:stm32f10x_adc.c ****   /* Configure ADCx: Dual mode and scan conversion mode */
+ 235:stm32f10x_adc.c ****   /* Set DUALMOD bits according to ADC_Mode value */
+ 236:stm32f10x_adc.c ****   /* Set SCAN bit according to ADC_ScanConvMode value */
+ 237:stm32f10x_adc.c ****   tmpreg1 |= (uint32_t)(ADC_InitStruct->ADC_Mode | ((uint32_t)ADC_InitStruct->ADC_ScanConvMode << 8
+ 15920              		.loc 1 238 0
+ 15921 0004 0A68     		ldr	r2, [r1, #0]
+ 15922 0006 2CF47023 		bic	r3, ip, #983040
+ 15923 000a 23F48073 		bic	r3, r3, #256
+ 15924 000e 91F804C0 		ldrb	ip, [r1, #4]	@ zero_extendqisi2
+ 15925 0012 1343     		orrs	r3, r3, r2
+ 15926 0014 43EA0C22 		orr	r2, r3, ip, lsl #8
+ 15927              	.LVL13:
+ 238:stm32f10x_adc.c ****   /* Write to ADCx CR1 */
+ 239:stm32f10x_adc.c ****   ADCx->CR1 = tmpreg1;
+ 15928              		.loc 1 240 0
+ 15929 0018 4260     		str	r2, [r0, #4]
+ 240:stm32f10x_adc.c **** 
+ 241:stm32f10x_adc.c ****   /*---------------------------- ADCx CR2 Configuration -----------------*/
+ 242:stm32f10x_adc.c ****   /* Get the ADCx CR2 value */
+ 243:stm32f10x_adc.c ****   tmpreg1 = ADCx->CR2;
+ 244:stm32f10x_adc.c ****   /* Clear CONT, ALIGN and EXTSEL bits */
+ 245:stm32f10x_adc.c ****   tmpreg1 &= CR2_CLEAR_Mask;
+ 246:stm32f10x_adc.c ****   /* Configure ADCx: external trigger event and continuous conversion mode */
+ 247:stm32f10x_adc.c ****   /* Set ALIGN bit according to ADC_DataAlign value */
+ 248:stm32f10x_adc.c ****   /* Set EXTSEL bits according to ADC_ExternalTrigConv value */
+ 249:stm32f10x_adc.c ****   /* Set CONT bit according to ADC_ContinuousConvMode value */
+ 250:stm32f10x_adc.c ****   tmpreg1 |= (uint32_t)(ADC_InitStruct->ADC_DataAlign | ADC_InitStruct->ADC_ExternalTrigConv |
+ 15930              		.loc 1 251 0
+ 15931 001a CB68     		ldr	r3, [r1, #12]
+ 15932 001c 8A68     		ldr	r2, [r1, #8]
+ 15933              	.LVL14:
+ 244:stm32f10x_adc.c ****   tmpreg1 = ADCx->CR2;
+ 15934              		.loc 1 244 0
+ 15935 001e D0F808C0 		ldr	ip, [r0, #8]
+ 15936              	.LVL15:
+ 15937              		.loc 1 251 0
+ 15938 0022 1A43     		orrs	r2, r2, r3
+ 15939 0024 0A4B     		ldr	r3, .L10
+ 15940 0026 0CEA0303 		and	r3, ip, r3
+ 251:stm32f10x_adc.c ****             ((uint32_t)ADC_InitStruct->ADC_ContinuousConvMode << 1));
+ 15941              		.loc 1 252 0
+ 15942 002a 91F805C0 		ldrb	ip, [r1, #5]	@ zero_extendqisi2
+ 251:stm32f10x_adc.c ****             ((uint32_t)ADC_InitStruct->ADC_ContinuousConvMode << 1));
+ 15943              		.loc 1 251 0
+ 15944 002e 42EA0303 		orr	r3, r2, r3
+ 15945              		.loc 1 252 0
+ 15946 0032 43EA4C02 		orr	r2, r3, ip, lsl #1
+ 15947              	.LVL16:
+ 252:stm32f10x_adc.c ****   /* Write to ADCx CR2 */
+ 253:stm32f10x_adc.c ****   ADCx->CR2 = tmpreg1;
+ 15948              		.loc 1 254 0
+ 15949 0036 8260     		str	r2, [r0, #8]
+ 254:stm32f10x_adc.c **** 
+ 255:stm32f10x_adc.c ****   /*---------------------------- ADCx SQR1 Configuration -----------------*/
+ 256:stm32f10x_adc.c ****   /* Get the ADCx SQR1 value */
+ 257:stm32f10x_adc.c ****   tmpreg1 = ADCx->SQR1;
+ 258:stm32f10x_adc.c ****   /* Clear L bits */
+ 259:stm32f10x_adc.c ****   tmpreg1 &= SQR1_CLEAR_Mask;
+ 260:stm32f10x_adc.c ****   /* Configure ADCx: regular channel sequence length */
+ 261:stm32f10x_adc.c ****   /* Set L bits according to ADC_NbrOfChannel value */
+ 262:stm32f10x_adc.c ****   tmpreg2 |= (uint8_t) (ADC_InitStruct->ADC_NbrOfChannel - (uint8_t)1);
+ 15950              		.loc 1 263 0
+ 15951 0038 097C     		ldrb	r1, [r1, #16]	@ zero_extendqisi2
+ 15952              	.LVL17:
+ 258:stm32f10x_adc.c ****   tmpreg1 = ADCx->SQR1;
+ 15953              		.loc 1 258 0
+ 15954 003a D0F82CC0 		ldr	ip, [r0, #44]
+ 15955              	.LVL18:
+ 15956              		.loc 1 263 0
+ 15957 003e 4B1E     		subs	r3, r1, #1
+ 260:stm32f10x_adc.c ****   tmpreg1 &= SQR1_CLEAR_Mask;
+ 15958              		.loc 1 260 0
+ 15959 0040 2CF47002 		bic	r2, ip, #15728640
+ 15960              	.LVL19:
+ 15961              		.loc 1 263 0
+ 15962 0044 D9B2     		uxtb	r1, r3
+ 15963 0046 42EA0153 		orr	r3, r2, r1, lsl #20
+ 15964              	.LVL20:
+ 263:stm32f10x_adc.c ****   tmpreg1 |= (uint32_t)tmpreg2 << 20;
+ 264:stm32f10x_adc.c ****   /* Write to ADCx SQR1 */
+ 265:stm32f10x_adc.c ****   ADCx->SQR1 = tmpreg1;
+ 15965              		.loc 1 266 0
+ 15966 004a C362     		str	r3, [r0, #44]
+ 266:stm32f10x_adc.c **** }
+ 15967              		.loc 1 267 0
+ 15968 004c 7047     		bx	lr
+ 15969              	.L11:
+ 15970 004e 00BF     		.align	2
+ 15971              	.L10:
+ 15972 0050 FDF7F1FF 		.word	-919555
+ 15973              	.LFE28:
+ 15975              		.section	.text.ADC_StructInit,"ax",%progbits
+ 15976              		.align	1
+ 15977              		.global	ADC_StructInit
+ 15978              		.thumb
+ 15979              		.thumb_func
+ 15981              	ADC_StructInit:
+ 15982              	.LFB29:
+ 267:stm32f10x_adc.c **** 
+ 268:stm32f10x_adc.c **** /**
+ 269:stm32f10x_adc.c ****   * @brief  Fills each ADC_InitStruct member with its default value.
+ 270:stm32f10x_adc.c ****   * @param  ADC_InitStruct : pointer to an ADC_InitTypeDef structure which will be initialized.
+ 271:stm32f10x_adc.c ****   * @retval None
+ 272:stm32f10x_adc.c ****   */
+ 273:stm32f10x_adc.c **** void ADC_StructInit(ADC_InitTypeDef* ADC_InitStruct)
+ 274:stm32f10x_adc.c **** {
+ 15983              		.loc 1 275 0
+ 15984              		@ args = 0, pretend = 0, frame = 0
+ 15985              		@ frame_needed = 0, uses_anonymous_args = 0
+ 15986              		@ link register save eliminated.
+ 15987              	.LVL21:
+ 275:stm32f10x_adc.c ****   /* Reset ADC init structure parameters values */
+ 276:stm32f10x_adc.c ****   /* Initialize the ADC_Mode member */
+ 277:stm32f10x_adc.c ****   ADC_InitStruct->ADC_Mode = ADC_Mode_Independent;
+ 15988              		.loc 1 278 0
+ 15989 0000 0021     		movs	r1, #0
+ 278:stm32f10x_adc.c ****   /* initialize the ADC_ScanConvMode member */
+ 279:stm32f10x_adc.c ****   ADC_InitStruct->ADC_ScanConvMode = DISABLE;
+ 280:stm32f10x_adc.c ****   /* Initialize the ADC_ContinuousConvMode member */
+ 281:stm32f10x_adc.c ****   ADC_InitStruct->ADC_ContinuousConvMode = DISABLE;
+ 282:stm32f10x_adc.c ****   /* Initialize the ADC_ExternalTrigConv member */
+ 283:stm32f10x_adc.c ****   ADC_InitStruct->ADC_ExternalTrigConv = ADC_ExternalTrigConv_T1_CC1;
+ 284:stm32f10x_adc.c ****   /* Initialize the ADC_DataAlign member */
+ 285:stm32f10x_adc.c ****   ADC_InitStruct->ADC_DataAlign = ADC_DataAlign_Right;
+ 286:stm32f10x_adc.c ****   /* Initialize the ADC_NbrOfChannel member */
+ 287:stm32f10x_adc.c ****   ADC_InitStruct->ADC_NbrOfChannel = 1;
+ 15990              		.loc 1 288 0
+ 15991 0002 4B1C     		adds	r3, r1, #1
+ 15992              	.LVL22:
+ 278:stm32f10x_adc.c ****   /* initialize the ADC_ScanConvMode member */
+ 15993              		.loc 1 278 0
+ 15994 0004 0160     		str	r1, [r0, #0]
+ 280:stm32f10x_adc.c ****   ADC_InitStruct->ADC_ScanConvMode = DISABLE;
+ 15995              		.loc 1 280 0
+ 15996 0006 0171     		strb	r1, [r0, #4]
+ 282:stm32f10x_adc.c ****   ADC_InitStruct->ADC_ContinuousConvMode = DISABLE;
+ 15997              		.loc 1 282 0
+ 15998 0008 4171     		strb	r1, [r0, #5]
+ 284:stm32f10x_adc.c ****   ADC_InitStruct->ADC_ExternalTrigConv = ADC_ExternalTrigConv_T1_CC1;
+ 15999              		.loc 1 284 0
+ 16000 000a 8160     		str	r1, [r0, #8]
+ 286:stm32f10x_adc.c ****   ADC_InitStruct->ADC_DataAlign = ADC_DataAlign_Right;
+ 16001              		.loc 1 286 0
+ 16002 000c C160     		str	r1, [r0, #12]
+ 16003              		.loc 1 288 0
+ 16004 000e 0374     		strb	r3, [r0, #16]
+ 288:stm32f10x_adc.c **** }
+ 16005              		.loc 1 289 0
+ 16006 0010 7047     		bx	lr
+ 16007              	.LFE29:
+ 16009              		.section	.text.ADC_Cmd,"ax",%progbits
+ 16010              		.align	1
+ 16011              		.global	ADC_Cmd
+ 16012              		.thumb
+ 16013              		.thumb_func
+ 16015              	ADC_Cmd:
+ 16016              	.LFB30:
+ 289:stm32f10x_adc.c **** 
+ 290:stm32f10x_adc.c **** /**
+ 291:stm32f10x_adc.c ****   * @brief  Enables or disables the specified ADC peripheral.
+ 292:stm32f10x_adc.c ****   * @param  ADCx: where x can be 1, 2 or 3 to select the ADC peripheral.
+ 293:stm32f10x_adc.c ****   * @param  NewState: new state of the ADCx peripheral.
+ 294:stm32f10x_adc.c ****   *   This parameter can be: ENABLE or DISABLE.
+ 295:stm32f10x_adc.c ****   * @retval None
+ 296:stm32f10x_adc.c ****   */
+ 297:stm32f10x_adc.c **** void ADC_Cmd(ADC_TypeDef* ADCx, FunctionalState NewState)
+ 298:stm32f10x_adc.c **** {
+ 16017              		.loc 1 299 0
+ 16018              		@ args = 0, pretend = 0, frame = 0
+ 16019              		@ frame_needed = 0, uses_anonymous_args = 0
+ 16020              		@ link register save eliminated.
+ 16021              	.LVL23:
+ 299:stm32f10x_adc.c ****   /* Check the parameters */
+ 300:stm32f10x_adc.c ****   assert_param(IS_ADC_ALL_PERIPH(ADCx));
+ 301:stm32f10x_adc.c ****   assert_param(IS_FUNCTIONAL_STATE(NewState));
+ 302:stm32f10x_adc.c ****   if (NewState != DISABLE)
+ 16022              		.loc 1 303 0
+ 16023 0000 19B1     		cbz	r1, .L14
+ 303:stm32f10x_adc.c ****   {
+ 304:stm32f10x_adc.c ****     /* Set the ADON bit to wake up the ADC from power down mode */
+ 305:stm32f10x_adc.c ****     ADCx->CR2 |= CR2_ADON_Set;
+ 16024              		.loc 1 306 0
+ 16025 0002 8368     		ldr	r3, [r0, #8]
+ 16026 0004 43F00103 		orr	r3, r3, #1
+ 16027 0008 02E0     		b	.L16
+ 16028              	.L14:
+ 306:stm32f10x_adc.c ****   }
+ 307:stm32f10x_adc.c ****   else
+ 308:stm32f10x_adc.c ****   {
+ 309:stm32f10x_adc.c ****     /* Disable the selected ADC peripheral */
+ 310:stm32f10x_adc.c ****     ADCx->CR2 &= CR2_ADON_Reset;
+ 16029              		.loc 1 311 0
+ 16030 000a 8168     		ldr	r1, [r0, #8]
+ 16031              	.LVL24:
+ 16032 000c 21F00103 		bic	r3, r1, #1
+ 16033              	.L16:
+ 16034              	.LVL25:
+ 16035 0010 8360     		str	r3, [r0, #8]
+ 311:stm32f10x_adc.c ****   }
+ 312:stm32f10x_adc.c **** }
+ 16036              		.loc 1 313 0
+ 16037 0012 7047     		bx	lr
+ 16038              	.LFE30:
+ 16040              		.section	.text.ADC_DMACmd,"ax",%progbits
+ 16041              		.align	1
+ 16042              		.global	ADC_DMACmd
+ 16043              		.thumb
+ 16044              		.thumb_func
+ 16046              	ADC_DMACmd:
+ 16047              	.LFB31:
+ 313:stm32f10x_adc.c **** 
+ 314:stm32f10x_adc.c **** /**
+ 315:stm32f10x_adc.c ****   * @brief  Enables or disables the specified ADC DMA request.
+ 316:stm32f10x_adc.c ****   * @param  ADCx: where x can be 1 or 3 to select the ADC peripheral.
+ 317:stm32f10x_adc.c ****   *   Note: ADC2 hasn't a DMA capability.
+ 318:stm32f10x_adc.c ****   * @param  NewState: new state of the selected ADC DMA transfer.
+ 319:stm32f10x_adc.c ****   *   This parameter can be: ENABLE or DISABLE.
+ 320:stm32f10x_adc.c ****   * @retval None
+ 321:stm32f10x_adc.c ****   */
+ 322:stm32f10x_adc.c **** void ADC_DMACmd(ADC_TypeDef* ADCx, FunctionalState NewState)
+ 323:stm32f10x_adc.c **** {
+ 16048              		.loc 1 324 0
+ 16049              		@ args = 0, pretend = 0, frame = 0
+ 16050              		@ frame_needed = 0, uses_anonymous_args = 0
+ 16051              		@ link register save eliminated.
+ 16052              	.LVL26:
+ 324:stm32f10x_adc.c ****   /* Check the parameters */
+ 325:stm32f10x_adc.c ****   assert_param(IS_ADC_DMA_PERIPH(ADCx));
+ 326:stm32f10x_adc.c ****   assert_param(IS_FUNCTIONAL_STATE(NewState));
+ 327:stm32f10x_adc.c ****   if (NewState != DISABLE)
+ 16053              		.loc 1 328 0
+ 16054 0000 19B1     		cbz	r1, .L18
+ 328:stm32f10x_adc.c ****   {
+ 329:stm32f10x_adc.c ****     /* Enable the selected ADC DMA request */
+ 330:stm32f10x_adc.c ****     ADCx->CR2 |= CR2_DMA_Set;
+ 16055              		.loc 1 331 0
+ 16056 0002 8368     		ldr	r3, [r0, #8]
+ 16057 0004 43F48073 		orr	r3, r3, #256
+ 16058 0008 02E0     		b	.L20
+ 16059              	.L18:
+ 331:stm32f10x_adc.c ****   }
+ 332:stm32f10x_adc.c ****   else
+ 333:stm32f10x_adc.c ****   {
+ 334:stm32f10x_adc.c ****     /* Disable the selected ADC DMA request */
+ 335:stm32f10x_adc.c ****     ADCx->CR2 &= CR2_DMA_Reset;
+ 16060              		.loc 1 336 0
+ 16061 000a 8168     		ldr	r1, [r0, #8]
+ 16062              	.LVL27:
+ 16063 000c 21F48073 		bic	r3, r1, #256
+ 16064              	.L20:
+ 16065              	.LVL28:
+ 16066 0010 8360     		str	r3, [r0, #8]
+ 336:stm32f10x_adc.c ****   }
+ 337:stm32f10x_adc.c **** }
+ 16067              		.loc 1 338 0
+ 16068 0012 7047     		bx	lr
+ 16069              	.LFE31:
+ 16071              		.section	.text.ADC_ITConfig,"ax",%progbits
+ 16072              		.align	1
+ 16073              		.global	ADC_ITConfig
+ 16074              		.thumb
+ 16075              		.thumb_func
+ 16077              	ADC_ITConfig:
+ 16078              	.LFB32:
+ 338:stm32f10x_adc.c **** 
+ 339:stm32f10x_adc.c **** /**
+ 340:stm32f10x_adc.c ****   * @brief  Enables or disables the specified ADC interrupts.
+ 341:stm32f10x_adc.c ****   * @param  ADCx: where x can be 1, 2 or 3 to select the ADC peripheral.
+ 342:stm32f10x_adc.c ****   * @param  ADC_IT: specifies the ADC interrupt sources to be enabled or disabled. 
+ 343:stm32f10x_adc.c ****   *   This parameter can be any combination of the following values:
+ 344:stm32f10x_adc.c ****   *     @arg ADC_IT_EOC: End of conversion interrupt mask
+ 345:stm32f10x_adc.c ****   *     @arg ADC_IT_AWD: Analog watchdog interrupt mask
+ 346:stm32f10x_adc.c ****   *     @arg ADC_IT_JEOC: End of injected conversion interrupt mask
+ 347:stm32f10x_adc.c ****   * @param  NewState: new state of the specified ADC interrupts.
+ 348:stm32f10x_adc.c ****   *   This parameter can be: ENABLE or DISABLE.
+ 349:stm32f10x_adc.c ****   * @retval None
+ 350:stm32f10x_adc.c ****   */
+ 351:stm32f10x_adc.c **** void ADC_ITConfig(ADC_TypeDef* ADCx, uint16_t ADC_IT, FunctionalState NewState)
+ 352:stm32f10x_adc.c **** {
+ 16079              		.loc 1 353 0
+ 16080              		@ args = 0, pretend = 0, frame = 0
+ 16081              		@ frame_needed = 0, uses_anonymous_args = 0
+ 16082              		@ link register save eliminated.
+ 16083              	.LVL29:
+ 353:stm32f10x_adc.c ****   uint8_t itmask = 0;
+ 354:stm32f10x_adc.c ****   /* Check the parameters */
+ 355:stm32f10x_adc.c ****   assert_param(IS_ADC_ALL_PERIPH(ADCx));
+ 356:stm32f10x_adc.c ****   assert_param(IS_FUNCTIONAL_STATE(NewState));
+ 357:stm32f10x_adc.c ****   assert_param(IS_ADC_IT(ADC_IT));
+ 358:stm32f10x_adc.c ****   /* Get the ADC IT index */
+ 359:stm32f10x_adc.c ****   itmask = (uint8_t)ADC_IT;
+ 16084              		.loc 1 360 0
+ 16085 0000 C9B2     		uxtb	r1, r1
+ 16086              	.LVL30:
+ 360:stm32f10x_adc.c ****   if (NewState != DISABLE)
+ 16087              		.loc 1 361 0
+ 16088 0002 12B1     		cbz	r2, .L22
+ 361:stm32f10x_adc.c ****   {
+ 362:stm32f10x_adc.c ****     /* Enable the selected ADC interrupts */
+ 363:stm32f10x_adc.c ****     ADCx->CR1 |= itmask;
+ 16089              		.loc 1 364 0
+ 16090 0004 4368     		ldr	r3, [r0, #4]
+ 16091              	.LVL31:
+ 16092 0006 1943     		orrs	r1, r1, r3
+ 16093              	.LVL32:
+ 16094 0008 02E0     		b	.L24
+ 16095              	.LVL33:
+ 16096              	.L22:
+ 364:stm32f10x_adc.c ****   }
+ 365:stm32f10x_adc.c ****   else
+ 366:stm32f10x_adc.c ****   {
+ 367:stm32f10x_adc.c ****     /* Disable the selected ADC interrupts */
+ 368:stm32f10x_adc.c ****     ADCx->CR1 &= (~(uint32_t)itmask);
+ 16097              		.loc 1 369 0
+ 16098 000a 4268     		ldr	r2, [r0, #4]
+ 16099              	.LVL34:
+ 16100 000c 22EA0101 		bic	r1, r2, r1
+ 16101              	.LVL35:
+ 16102              	.L24:
+ 16103 0010 4160     		str	r1, [r0, #4]
+ 369:stm32f10x_adc.c ****   }
+ 370:stm32f10x_adc.c **** }
+ 16104              		.loc 1 371 0
+ 16105 0012 7047     		bx	lr
+ 16106              	.LFE32:
+ 16108              		.section	.text.ADC_ResetCalibration,"ax",%progbits
+ 16109              		.align	1
+ 16110              		.global	ADC_ResetCalibration
+ 16111              		.thumb
+ 16112              		.thumb_func
+ 16114              	ADC_ResetCalibration:
+ 16115              	.LFB33:
+ 371:stm32f10x_adc.c **** 
+ 372:stm32f10x_adc.c **** /**
+ 373:stm32f10x_adc.c ****   * @brief  Resets the selected ADC calibration registers.
+ 374:stm32f10x_adc.c ****   * @param  ADCx: where x can be 1, 2 or 3 to select the ADC peripheral.
+ 375:stm32f10x_adc.c ****   * @retval None
+ 376:stm32f10x_adc.c ****   */
+ 377:stm32f10x_adc.c **** void ADC_ResetCalibration(ADC_TypeDef* ADCx)
+ 378:stm32f10x_adc.c **** {
+ 16116              		.loc 1 379 0
+ 16117              		@ args = 0, pretend = 0, frame = 0
+ 16118              		@ frame_needed = 0, uses_anonymous_args = 0
+ 16119              		@ link register save eliminated.
+ 16120              	.LVL36:
+ 379:stm32f10x_adc.c ****   /* Check the parameters */
+ 380:stm32f10x_adc.c ****   assert_param(IS_ADC_ALL_PERIPH(ADCx));
+ 381:stm32f10x_adc.c ****   /* Resets the selected ADC calibartion registers */  
+ 382:stm32f10x_adc.c ****   ADCx->CR2 |= CR2_RSTCAL_Set;
+ 16121              		.loc 1 383 0
+ 16122 0000 8168     		ldr	r1, [r0, #8]
+ 16123 0002 41F00803 		orr	r3, r1, #8
+ 16124              	.LVL37:
+ 16125 0006 8360     		str	r3, [r0, #8]
+ 383:stm32f10x_adc.c **** }
+ 16126              		.loc 1 384 0
+ 16127 0008 7047     		bx	lr
+ 16128              	.LFE33:
+ 16130              		.section	.text.ADC_GetResetCalibrationStatus,"ax",%progbits
+ 16131              		.align	1
+ 16132              		.global	ADC_GetResetCalibrationStatus
+ 16133              		.thumb
+ 16134              		.thumb_func
+ 16136              	ADC_GetResetCalibrationStatus:
+ 16137              	.LFB34:
+ 384:stm32f10x_adc.c **** 
+ 385:stm32f10x_adc.c **** /**
+ 386:stm32f10x_adc.c ****   * @brief  Gets the selected ADC reset calibration registers status.
+ 387:stm32f10x_adc.c ****   * @param  ADCx: where x can be 1, 2 or 3 to select the ADC peripheral.
+ 388:stm32f10x_adc.c ****   * @retval The new state of ADC reset calibration registers (SET or RESET).
+ 389:stm32f10x_adc.c ****   */
+ 390:stm32f10x_adc.c **** FlagStatus ADC_GetResetCalibrationStatus(ADC_TypeDef* ADCx)
+ 391:stm32f10x_adc.c **** {
+ 16138              		.loc 1 392 0
+ 16139              		@ args = 0, pretend = 0, frame = 0
+ 16140              		@ frame_needed = 0, uses_anonymous_args = 0
+ 16141              		@ link register save eliminated.
+ 16142              	.LVL38:
+ 392:stm32f10x_adc.c ****   FlagStatus bitstatus = RESET;
+ 393:stm32f10x_adc.c ****   /* Check the parameters */
+ 394:stm32f10x_adc.c ****   assert_param(IS_ADC_ALL_PERIPH(ADCx));
+ 395:stm32f10x_adc.c ****   /* Check the status of RSTCAL bit */
+ 396:stm32f10x_adc.c ****   if ((ADCx->CR2 & CR2_RSTCAL_Set) != (uint32_t)RESET)
+ 16143              		.loc 1 397 0
+ 16144 0000 8068     		ldr	r0, [r0, #8]
+ 16145              	.LVL39:
+ 16146 0002 C0F3C000 		ubfx	r0, r0, #3, #1
+ 397:stm32f10x_adc.c ****   {
+ 398:stm32f10x_adc.c ****     /* RSTCAL bit is set */
+ 399:stm32f10x_adc.c ****     bitstatus = SET;
+ 400:stm32f10x_adc.c ****   }
+ 401:stm32f10x_adc.c ****   else
+ 402:stm32f10x_adc.c ****   {
+ 403:stm32f10x_adc.c ****     /* RSTCAL bit is reset */
+ 404:stm32f10x_adc.c ****     bitstatus = RESET;
+ 405:stm32f10x_adc.c ****   }
+ 406:stm32f10x_adc.c ****   /* Return the RSTCAL bit status */
+ 407:stm32f10x_adc.c ****   return  bitstatus;
+ 408:stm32f10x_adc.c **** }
+ 16147              		.loc 1 409 0
+ 16148 0006 7047     		bx	lr
+ 16149              	.LFE34:
+ 16151              		.section	.text.ADC_StartCalibration,"ax",%progbits
+ 16152              		.align	1
+ 16153              		.global	ADC_StartCalibration
+ 16154              		.thumb
+ 16155              		.thumb_func
+ 16157              	ADC_StartCalibration:
+ 16158              	.LFB35:
+ 409:stm32f10x_adc.c **** 
+ 410:stm32f10x_adc.c **** /**
+ 411:stm32f10x_adc.c ****   * @brief  Starts the selected ADC calibration process.
+ 412:stm32f10x_adc.c ****   * @param  ADCx: where x can be 1, 2 or 3 to select the ADC peripheral.
+ 413:stm32f10x_adc.c ****   * @retval None
+ 414:stm32f10x_adc.c ****   */
+ 415:stm32f10x_adc.c **** void ADC_StartCalibration(ADC_TypeDef* ADCx)
+ 416:stm32f10x_adc.c **** {
+ 16159              		.loc 1 417 0
+ 16160              		@ args = 0, pretend = 0, frame = 0
+ 16161              		@ frame_needed = 0, uses_anonymous_args = 0
+ 16162              		@ link register save eliminated.
+ 16163              	.LVL40:
+ 417:stm32f10x_adc.c ****   /* Check the parameters */
+ 418:stm32f10x_adc.c ****   assert_param(IS_ADC_ALL_PERIPH(ADCx));
+ 419:stm32f10x_adc.c ****   /* Enable the selected ADC calibration process */  
+ 420:stm32f10x_adc.c ****   ADCx->CR2 |= CR2_CAL_Set;
+ 16164              		.loc 1 421 0
+ 16165 0000 8168     		ldr	r1, [r0, #8]
+ 16166 0002 41F00403 		orr	r3, r1, #4
+ 16167              	.LVL41:
+ 16168 0006 8360     		str	r3, [r0, #8]
+ 421:stm32f10x_adc.c **** }
+ 16169              		.loc 1 422 0
+ 16170 0008 7047     		bx	lr
+ 16171              	.LFE35:
+ 16173              		.section	.text.ADC_GetCalibrationStatus,"ax",%progbits
+ 16174              		.align	1
+ 16175              		.global	ADC_GetCalibrationStatus
+ 16176              		.thumb
+ 16177              		.thumb_func
+ 16179              	ADC_GetCalibrationStatus:
+ 16180              	.LFB36:
+ 422:stm32f10x_adc.c **** 
+ 423:stm32f10x_adc.c **** /**
+ 424:stm32f10x_adc.c ****   * @brief  Gets the selected ADC calibration status.
+ 425:stm32f10x_adc.c ****   * @param  ADCx: where x can be 1, 2 or 3 to select the ADC peripheral.
+ 426:stm32f10x_adc.c ****   * @retval The new state of ADC calibration (SET or RESET).
+ 427:stm32f10x_adc.c ****   */
+ 428:stm32f10x_adc.c **** FlagStatus ADC_GetCalibrationStatus(ADC_TypeDef* ADCx)
+ 429:stm32f10x_adc.c **** {
+ 16181              		.loc 1 430 0
+ 16182              		@ args = 0, pretend = 0, frame = 0
+ 16183              		@ frame_needed = 0, uses_anonymous_args = 0
+ 16184              		@ link register save eliminated.
+ 16185              	.LVL42:
+ 430:stm32f10x_adc.c ****   FlagStatus bitstatus = RESET;
+ 431:stm32f10x_adc.c ****   /* Check the parameters */
+ 432:stm32f10x_adc.c ****   assert_param(IS_ADC_ALL_PERIPH(ADCx));
+ 433:stm32f10x_adc.c ****   /* Check the status of CAL bit */
+ 434:stm32f10x_adc.c ****   if ((ADCx->CR2 & CR2_CAL_Set) != (uint32_t)RESET)
+ 16186              		.loc 1 435 0
+ 16187 0000 8068     		ldr	r0, [r0, #8]
+ 16188              	.LVL43:
+ 16189 0002 C0F38000 		ubfx	r0, r0, #2, #1
+ 435:stm32f10x_adc.c ****   {
+ 436:stm32f10x_adc.c ****     /* CAL bit is set: calibration on going */
+ 437:stm32f10x_adc.c ****     bitstatus = SET;
+ 438:stm32f10x_adc.c ****   }
+ 439:stm32f10x_adc.c ****   else
+ 440:stm32f10x_adc.c ****   {
+ 441:stm32f10x_adc.c ****     /* CAL bit is reset: end of calibration */
+ 442:stm32f10x_adc.c ****     bitstatus = RESET;
+ 443:stm32f10x_adc.c ****   }
+ 444:stm32f10x_adc.c ****   /* Return the CAL bit status */
+ 445:stm32f10x_adc.c ****   return  bitstatus;
+ 446:stm32f10x_adc.c **** }
+ 16190              		.loc 1 447 0
+ 16191 0006 7047     		bx	lr
+ 16192              	.LFE36:
+ 16194              		.section	.text.ADC_SoftwareStartConvCmd,"ax",%progbits
+ 16195              		.align	1
+ 16196              		.global	ADC_SoftwareStartConvCmd
+ 16197              		.thumb
+ 16198              		.thumb_func
+ 16200              	ADC_SoftwareStartConvCmd:
+ 16201              	.LFB37:
+ 447:stm32f10x_adc.c **** 
+ 448:stm32f10x_adc.c **** /**
+ 449:stm32f10x_adc.c ****   * @brief  Enables or disables the selected ADC software start conversion .
+ 450:stm32f10x_adc.c ****   * @param  ADCx: where x can be 1, 2 or 3 to select the ADC peripheral.
+ 451:stm32f10x_adc.c ****   * @param  NewState: new state of the selected ADC software start conversion.
+ 452:stm32f10x_adc.c ****   *   This parameter can be: ENABLE or DISABLE.
+ 453:stm32f10x_adc.c ****   * @retval None
+ 454:stm32f10x_adc.c ****   */
+ 455:stm32f10x_adc.c **** void ADC_SoftwareStartConvCmd(ADC_TypeDef* ADCx, FunctionalState NewState)
+ 456:stm32f10x_adc.c **** {
+ 16202              		.loc 1 457 0
+ 16203              		@ args = 0, pretend = 0, frame = 0
+ 16204              		@ frame_needed = 0, uses_anonymous_args = 0
+ 16205              		@ link register save eliminated.
+ 16206              	.LVL44:
+ 457:stm32f10x_adc.c ****   /* Check the parameters */
+ 458:stm32f10x_adc.c ****   assert_param(IS_ADC_ALL_PERIPH(ADCx));
+ 459:stm32f10x_adc.c ****   assert_param(IS_FUNCTIONAL_STATE(NewState));
+ 460:stm32f10x_adc.c ****   if (NewState != DISABLE)
+ 16207              		.loc 1 461 0
+ 16208 0000 19B1     		cbz	r1, .L30
+ 461:stm32f10x_adc.c ****   {
+ 462:stm32f10x_adc.c ****     /* Enable the selected ADC conversion on external event and start the selected
+ 463:stm32f10x_adc.c ****        ADC conversion */
+ 464:stm32f10x_adc.c ****     ADCx->CR2 |= CR2_EXTTRIG_SWSTART_Set;
+ 16209              		.loc 1 465 0
+ 16210 0002 8368     		ldr	r3, [r0, #8]
+ 16211 0004 43F4A003 		orr	r3, r3, #5242880
+ 16212 0008 02E0     		b	.L32
+ 16213              	.L30:
+ 465:stm32f10x_adc.c ****   }
+ 466:stm32f10x_adc.c ****   else
+ 467:stm32f10x_adc.c ****   {
+ 468:stm32f10x_adc.c ****     /* Disable the selected ADC conversion on external event and stop the selected
+ 469:stm32f10x_adc.c ****        ADC conversion */
+ 470:stm32f10x_adc.c ****     ADCx->CR2 &= CR2_EXTTRIG_SWSTART_Reset;
+ 16214              		.loc 1 471 0
+ 16215 000a 8168     		ldr	r1, [r0, #8]
+ 16216              	.LVL45:
+ 16217 000c 21F4A003 		bic	r3, r1, #5242880
+ 16218              	.L32:
+ 16219              	.LVL46:
+ 16220 0010 8360     		str	r3, [r0, #8]
+ 471:stm32f10x_adc.c ****   }
+ 472:stm32f10x_adc.c **** }
+ 16221              		.loc 1 473 0
+ 16222 0012 7047     		bx	lr
+ 16223              	.LFE37:
+ 16225              		.section	.text.ADC_GetSoftwareStartConvStatus,"ax",%progbits
+ 16226              		.align	1
+ 16227              		.global	ADC_GetSoftwareStartConvStatus
+ 16228              		.thumb
+ 16229              		.thumb_func
+ 16231              	ADC_GetSoftwareStartConvStatus:
+ 16232              	.LFB38:
+ 473:stm32f10x_adc.c **** 
+ 474:stm32f10x_adc.c **** /**
+ 475:stm32f10x_adc.c ****   * @brief  Gets the selected ADC Software start conversion Status.
+ 476:stm32f10x_adc.c ****   * @param  ADCx: where x can be 1, 2 or 3 to select the ADC peripheral.
+ 477:stm32f10x_adc.c ****   * @retval The new state of ADC software start conversion (SET or RESET).
+ 478:stm32f10x_adc.c ****   */
+ 479:stm32f10x_adc.c **** FlagStatus ADC_GetSoftwareStartConvStatus(ADC_TypeDef* ADCx)
+ 480:stm32f10x_adc.c **** {
+ 16233              		.loc 1 481 0
+ 16234              		@ args = 0, pretend = 0, frame = 0
+ 16235              		@ frame_needed = 0, uses_anonymous_args = 0
+ 16236              		@ link register save eliminated.
+ 16237              	.LVL47:
+ 481:stm32f10x_adc.c ****   FlagStatus bitstatus = RESET;
+ 482:stm32f10x_adc.c ****   /* Check the parameters */
+ 483:stm32f10x_adc.c ****   assert_param(IS_ADC_ALL_PERIPH(ADCx));
+ 484:stm32f10x_adc.c ****   /* Check the status of SWSTART bit */
+ 485:stm32f10x_adc.c ****   if ((ADCx->CR2 & CR2_SWSTART_Set) != (uint32_t)RESET)
+ 16238              		.loc 1 486 0
+ 16239 0000 8068     		ldr	r0, [r0, #8]
+ 16240              	.LVL48:
+ 16241 0002 C0F38050 		ubfx	r0, r0, #22, #1
+ 486:stm32f10x_adc.c ****   {
+ 487:stm32f10x_adc.c ****     /* SWSTART bit is set */
+ 488:stm32f10x_adc.c ****     bitstatus = SET;
+ 489:stm32f10x_adc.c ****   }
+ 490:stm32f10x_adc.c ****   else
+ 491:stm32f10x_adc.c ****   {
+ 492:stm32f10x_adc.c ****     /* SWSTART bit is reset */
+ 493:stm32f10x_adc.c ****     bitstatus = RESET;
+ 494:stm32f10x_adc.c ****   }
+ 495:stm32f10x_adc.c ****   /* Return the SWSTART bit status */
+ 496:stm32f10x_adc.c ****   return  bitstatus;
+ 497:stm32f10x_adc.c **** }
+ 16242              		.loc 1 498 0
+ 16243 0006 7047     		bx	lr
+ 16244              	.LFE38:
+ 16246              		.section	.text.ADC_DiscModeChannelCountConfig,"ax",%progbits
+ 16247              		.align	1
+ 16248              		.global	ADC_DiscModeChannelCountConfig
+ 16249              		.thumb
+ 16250              		.thumb_func
+ 16252              	ADC_DiscModeChannelCountConfig:
+ 16253              	.LFB39:
+ 498:stm32f10x_adc.c **** 
+ 499:stm32f10x_adc.c **** /**
+ 500:stm32f10x_adc.c ****   * @brief  Configures the discontinuous mode for the selected ADC regular
+ 501:stm32f10x_adc.c ****   *   group channel.
+ 502:stm32f10x_adc.c ****   * @param  ADCx: where x can be 1, 2 or 3 to select the ADC peripheral.
+ 503:stm32f10x_adc.c ****   * @param  Number: specifies the discontinuous mode regular channel
+ 504:stm32f10x_adc.c ****   *   count value. This number must be between 1 and 8.
+ 505:stm32f10x_adc.c ****   * @retval None
+ 506:stm32f10x_adc.c ****   */
+ 507:stm32f10x_adc.c **** void ADC_DiscModeChannelCountConfig(ADC_TypeDef* ADCx, uint8_t Number)
+ 508:stm32f10x_adc.c **** {
+ 16254              		.loc 1 509 0
+ 16255              		@ args = 0, pretend = 0, frame = 0
+ 16256              		@ frame_needed = 0, uses_anonymous_args = 0
+ 16257              		@ link register save eliminated.
+ 16258              	.LVL49:
+ 509:stm32f10x_adc.c ****   uint32_t tmpreg1 = 0;
+ 510:stm32f10x_adc.c ****   uint32_t tmpreg2 = 0;
+ 511:stm32f10x_adc.c ****   /* Check the parameters */
+ 512:stm32f10x_adc.c ****   assert_param(IS_ADC_ALL_PERIPH(ADCx));
+ 513:stm32f10x_adc.c ****   assert_param(IS_ADC_REGULAR_DISC_NUMBER(Number));
+ 514:stm32f10x_adc.c ****   /* Get the old register value */
+ 515:stm32f10x_adc.c ****   tmpreg1 = ADCx->CR1;
+ 16259              		.loc 1 516 0
+ 16260 0000 D0F804C0 		ldr	ip, [r0, #4]
+ 16261              	.LVL50:
+ 516:stm32f10x_adc.c ****   /* Clear the old discontinuous mode channel count */
+ 517:stm32f10x_adc.c ****   tmpreg1 &= CR1_DISCNUM_Reset;
+ 518:stm32f10x_adc.c ****   /* Set the discontinuous mode channel count */
+ 519:stm32f10x_adc.c ****   tmpreg2 = Number - 1;
+ 520:stm32f10x_adc.c ****   tmpreg1 |= tmpreg2 << 13;
+ 16262              		.loc 1 521 0
+ 16263 0004 4A1E     		subs	r2, r1, #1
+ 518:stm32f10x_adc.c ****   tmpreg1 &= CR1_DISCNUM_Reset;
+ 16264              		.loc 1 518 0
+ 16265 0006 2CF46043 		bic	r3, ip, #57344
+ 16266              	.LVL51:
+ 16267              		.loc 1 521 0
+ 16268 000a 43EA4231 		orr	r1, r3, r2, lsl #13
+ 16269              	.LVL52:
+ 521:stm32f10x_adc.c ****   /* Store the new register value */
+ 522:stm32f10x_adc.c ****   ADCx->CR1 = tmpreg1;
+ 16270              		.loc 1 523 0
+ 16271 000e 4160     		str	r1, [r0, #4]
+ 523:stm32f10x_adc.c **** }
+ 16272              		.loc 1 524 0
+ 16273 0010 7047     		bx	lr
+ 16274              	.LFE39:
+ 16276              		.section	.text.ADC_DiscModeCmd,"ax",%progbits
+ 16277              		.align	1
+ 16278              		.global	ADC_DiscModeCmd
+ 16279              		.thumb
+ 16280              		.thumb_func
+ 16282              	ADC_DiscModeCmd:
+ 16283              	.LFB40:
+ 524:stm32f10x_adc.c **** 
+ 525:stm32f10x_adc.c **** /**
+ 526:stm32f10x_adc.c ****   * @brief  Enables or disables the discontinuous mode on regular group
+ 527:stm32f10x_adc.c ****   *   channel for the specified ADC
+ 528:stm32f10x_adc.c ****   * @param  ADCx: where x can be 1, 2 or 3 to select the ADC peripheral.
+ 529:stm32f10x_adc.c ****   * @param  NewState: new state of the selected ADC discontinuous mode
+ 530:stm32f10x_adc.c ****   *   on regular group channel.
+ 531:stm32f10x_adc.c ****   *   This parameter can be: ENABLE or DISABLE.
+ 532:stm32f10x_adc.c ****   * @retval None
+ 533:stm32f10x_adc.c ****   */
+ 534:stm32f10x_adc.c **** void ADC_DiscModeCmd(ADC_TypeDef* ADCx, FunctionalState NewState)
+ 535:stm32f10x_adc.c **** {
+ 16284              		.loc 1 536 0
+ 16285              		@ args = 0, pretend = 0, frame = 0
+ 16286              		@ frame_needed = 0, uses_anonymous_args = 0
+ 16287              		@ link register save eliminated.
+ 16288              	.LVL53:
+ 536:stm32f10x_adc.c ****   /* Check the parameters */
+ 537:stm32f10x_adc.c ****   assert_param(IS_ADC_ALL_PERIPH(ADCx));
+ 538:stm32f10x_adc.c ****   assert_param(IS_FUNCTIONAL_STATE(NewState));
+ 539:stm32f10x_adc.c ****   if (NewState != DISABLE)
+ 16289              		.loc 1 540 0
+ 16290 0000 19B1     		cbz	r1, .L36
+ 540:stm32f10x_adc.c ****   {
+ 541:stm32f10x_adc.c ****     /* Enable the selected ADC regular discontinuous mode */
+ 542:stm32f10x_adc.c ****     ADCx->CR1 |= CR1_DISCEN_Set;
+ 16291              		.loc 1 543 0
+ 16292 0002 4368     		ldr	r3, [r0, #4]
+ 16293 0004 43F40063 		orr	r3, r3, #2048
+ 16294 0008 02E0     		b	.L38
+ 16295              	.L36:
+ 543:stm32f10x_adc.c ****   }
+ 544:stm32f10x_adc.c ****   else
+ 545:stm32f10x_adc.c ****   {
+ 546:stm32f10x_adc.c ****     /* Disable the selected ADC regular discontinuous mode */
+ 547:stm32f10x_adc.c ****     ADCx->CR1 &= CR1_DISCEN_Reset;
+ 16296              		.loc 1 548 0
+ 16297 000a 4168     		ldr	r1, [r0, #4]
+ 16298              	.LVL54:
+ 16299 000c 21F40063 		bic	r3, r1, #2048
+ 16300              	.L38:
+ 16301              	.LVL55:
+ 16302 0010 4360     		str	r3, [r0, #4]
+ 548:stm32f10x_adc.c ****   }
+ 549:stm32f10x_adc.c **** }
+ 16303              		.loc 1 550 0
+ 16304 0012 7047     		bx	lr
+ 16305              	.LFE40:
+ 16307              		.section	.text.ADC_RegularChannelConfig,"ax",%progbits
+ 16308              		.align	1
+ 16309              		.global	ADC_RegularChannelConfig
+ 16310              		.thumb
+ 16311              		.thumb_func
+ 16313              	ADC_RegularChannelConfig:
+ 16314              	.LFB41:
+ 550:stm32f10x_adc.c **** 
+ 551:stm32f10x_adc.c **** /**
+ 552:stm32f10x_adc.c ****   * @brief  Configures for the selected ADC regular channel its corresponding
+ 553:stm32f10x_adc.c ****   *   rank in the sequencer and its sample time.
+ 554:stm32f10x_adc.c ****   * @param  ADCx: where x can be 1, 2 or 3 to select the ADC peripheral.
+ 555:stm32f10x_adc.c ****   * @param  ADC_Channel: the ADC channel to configure. 
+ 556:stm32f10x_adc.c ****   *   This parameter can be one of the following values:
+ 557:stm32f10x_adc.c ****   *     @arg ADC_Channel_0: ADC Channel0 selected
+ 558:stm32f10x_adc.c ****   *     @arg ADC_Channel_1: ADC Channel1 selected
+ 559:stm32f10x_adc.c ****   *     @arg ADC_Channel_2: ADC Channel2 selected
+ 560:stm32f10x_adc.c ****   *     @arg ADC_Channel_3: ADC Channel3 selected
+ 561:stm32f10x_adc.c ****   *     @arg ADC_Channel_4: ADC Channel4 selected
+ 562:stm32f10x_adc.c ****   *     @arg ADC_Channel_5: ADC Channel5 selected
+ 563:stm32f10x_adc.c ****   *     @arg ADC_Channel_6: ADC Channel6 selected
+ 564:stm32f10x_adc.c ****   *     @arg ADC_Channel_7: ADC Channel7 selected
+ 565:stm32f10x_adc.c ****   *     @arg ADC_Channel_8: ADC Channel8 selected
+ 566:stm32f10x_adc.c ****   *     @arg ADC_Channel_9: ADC Channel9 selected
+ 567:stm32f10x_adc.c ****   *     @arg ADC_Channel_10: ADC Channel10 selected
+ 568:stm32f10x_adc.c ****   *     @arg ADC_Channel_11: ADC Channel11 selected
+ 569:stm32f10x_adc.c ****   *     @arg ADC_Channel_12: ADC Channel12 selected
+ 570:stm32f10x_adc.c ****   *     @arg ADC_Channel_13: ADC Channel13 selected
+ 571:stm32f10x_adc.c ****   *     @arg ADC_Channel_14: ADC Channel14 selected
+ 572:stm32f10x_adc.c ****   *     @arg ADC_Channel_15: ADC Channel15 selected
+ 573:stm32f10x_adc.c ****   *     @arg ADC_Channel_16: ADC Channel16 selected
+ 574:stm32f10x_adc.c ****   *     @arg ADC_Channel_17: ADC Channel17 selected
+ 575:stm32f10x_adc.c ****   * @param  Rank: The rank in the regular group sequencer. This parameter must be between 1 to 16.
+ 576:stm32f10x_adc.c ****   * @param  ADC_SampleTime: The sample time value to be set for the selected channel. 
+ 577:stm32f10x_adc.c ****   *   This parameter can be one of the following values:
+ 578:stm32f10x_adc.c ****   *     @arg ADC_SampleTime_1Cycles5: Sample time equal to 1.5 cycles
+ 579:stm32f10x_adc.c ****   *     @arg ADC_SampleTime_7Cycles5: Sample time equal to 7.5 cycles
+ 580:stm32f10x_adc.c ****   *     @arg ADC_SampleTime_13Cycles5: Sample time equal to 13.5 cycles
+ 581:stm32f10x_adc.c ****   *     @arg ADC_SampleTime_28Cycles5: Sample time equal to 28.5 cycles	
+ 582:stm32f10x_adc.c ****   *     @arg ADC_SampleTime_41Cycles5: Sample time equal to 41.5 cycles	
+ 583:stm32f10x_adc.c ****   *     @arg ADC_SampleTime_55Cycles5: Sample time equal to 55.5 cycles	
+ 584:stm32f10x_adc.c ****   *     @arg ADC_SampleTime_71Cycles5: Sample time equal to 71.5 cycles	
+ 585:stm32f10x_adc.c ****   *     @arg ADC_SampleTime_239Cycles5: Sample time equal to 239.5 cycles	
+ 586:stm32f10x_adc.c ****   * @retval None
+ 587:stm32f10x_adc.c ****   */
+ 588:stm32f10x_adc.c **** void ADC_RegularChannelConfig(ADC_TypeDef* ADCx, uint8_t ADC_Channel, uint8_t Rank, uint8_t ADC_Sam
+ 589:stm32f10x_adc.c **** {
+ 16315              		.loc 1 590 0
+ 16316              		@ args = 0, pretend = 0, frame = 0
+ 16317              		@ frame_needed = 0, uses_anonymous_args = 0
+ 16318              	.LVL56:
+ 590:stm32f10x_adc.c ****   uint32_t tmpreg1 = 0, tmpreg2 = 0;
+ 591:stm32f10x_adc.c ****   /* Check the parameters */
+ 592:stm32f10x_adc.c ****   assert_param(IS_ADC_ALL_PERIPH(ADCx));
+ 593:stm32f10x_adc.c ****   assert_param(IS_ADC_CHANNEL(ADC_Channel));
+ 594:stm32f10x_adc.c ****   assert_param(IS_ADC_REGULAR_RANK(Rank));
+ 595:stm32f10x_adc.c ****   assert_param(IS_ADC_SAMPLE_TIME(ADC_SampleTime));
+ 596:stm32f10x_adc.c ****   /* if ADC_Channel_10 ... ADC_Channel_17 is selected */
+ 597:stm32f10x_adc.c ****   if (ADC_Channel > ADC_Channel_9)
+ 16319              		.loc 1 598 0
+ 16320 0000 0929     		cmp	r1, #9
+ 590:stm32f10x_adc.c ****   uint32_t tmpreg1 = 0, tmpreg2 = 0;
+ 16321              		.loc 1 590 0
+ 16322 0002 30B5     		push	{r4, r5, lr}
+ 16323              	.LCFI1:
+ 16324              		.loc 1 598 0
+ 16325 0004 12D9     		bls	.L40
+ 598:stm32f10x_adc.c ****   {
+ 599:stm32f10x_adc.c ****     /* Get the old register value */
+ 600:stm32f10x_adc.c ****     tmpreg1 = ADCx->SMPR1;
+ 601:stm32f10x_adc.c ****     /* Calculate the mask to clear */
+ 602:stm32f10x_adc.c ****     tmpreg2 = SMPR1_SMP_Set << (3 * (ADC_Channel - 10));
+ 16326              		.loc 1 603 0
+ 16327 0006 4FF00304 		mov	r4, #3
+ 16328 000a 04FB01FC 		mul	ip, r4, r1
+ 603:stm32f10x_adc.c ****     /* Clear the old channel sample time */
+ 604:stm32f10x_adc.c ****     tmpreg1 &= ~tmpreg2;
+ 16329              		.loc 1 605 0
+ 16330 000e 0724     		movs	r4, #7
+ 603:stm32f10x_adc.c ****     /* Clear the old channel sample time */
+ 16331              		.loc 1 603 0
+ 16332 0010 ACF11E0C 		sub	ip, ip, #30
+ 16333              		.loc 1 605 0
+ 16334 0014 04FA0CF4 		lsl	r4, r4, ip
+ 605:stm32f10x_adc.c ****     /* Calculate the mask to set */
+ 606:stm32f10x_adc.c ****     tmpreg2 = (uint32_t)ADC_SampleTime << (3 * (ADC_Channel - 10));
+ 607:stm32f10x_adc.c ****     /* Set the new channel sample time */
+ 608:stm32f10x_adc.c ****     tmpreg1 |= tmpreg2;
+ 16335              		.loc 1 609 0
+ 16336 0018 03FA0CF3 		lsl	r3, r3, ip
+ 16337              	.LVL57:
+ 601:stm32f10x_adc.c ****     tmpreg1 = ADCx->SMPR1;
+ 16338              		.loc 1 601 0
+ 16339 001c C568     		ldr	r5, [r0, #12]
+ 16340              	.LVL58:
+ 605:stm32f10x_adc.c ****     /* Calculate the mask to set */
+ 16341              		.loc 1 605 0
+ 16342 001e 25EA0404 		bic	r4, r5, r4
+ 16343              	.LVL59:
+ 16344              		.loc 1 609 0
+ 16345 0022 44EA030C 		orr	ip, r4, r3
+ 16346              	.LVL60:
+ 609:stm32f10x_adc.c ****     /* Store the new register value */
+ 610:stm32f10x_adc.c ****     ADCx->SMPR1 = tmpreg1;
+ 16347              		.loc 1 611 0
+ 16348 0026 C0F80CC0 		str	ip, [r0, #12]
+ 16349 002a 0EE0     		b	.L41
+ 16350              	.LVL61:
+ 16351              	.L40:
+ 611:stm32f10x_adc.c ****   }
+ 612:stm32f10x_adc.c ****   else /* ADC_Channel include in ADC_Channel_[0..9] */
+ 613:stm32f10x_adc.c ****   {
+ 614:stm32f10x_adc.c ****     /* Get the old register value */
+ 615:stm32f10x_adc.c ****     tmpreg1 = ADCx->SMPR2;
+ 616:stm32f10x_adc.c ****     /* Calculate the mask to clear */
+ 617:stm32f10x_adc.c ****     tmpreg2 = SMPR2_SMP_Set << (3 * ADC_Channel);
+ 16352              		.loc 1 618 0
+ 16353 002c 4FF0030C 		mov	ip, #3
+ 16354 0030 0CFB01FC 		mul	ip, ip, r1
+ 618:stm32f10x_adc.c ****     /* Clear the old channel sample time */
+ 619:stm32f10x_adc.c ****     tmpreg1 &= ~tmpreg2;
+ 16355              		.loc 1 620 0
+ 16356 0034 0724     		movs	r4, #7
+ 16357 0036 04FA0CF4 		lsl	r4, r4, ip
+ 620:stm32f10x_adc.c ****     /* Calculate the mask to set */
+ 621:stm32f10x_adc.c ****     tmpreg2 = (uint32_t)ADC_SampleTime << (3 * ADC_Channel);
+ 622:stm32f10x_adc.c ****     /* Set the new channel sample time */
+ 623:stm32f10x_adc.c ****     tmpreg1 |= tmpreg2;
+ 16358              		.loc 1 624 0
+ 16359 003a 03FA0CFC 		lsl	ip, r3, ip
+ 616:stm32f10x_adc.c ****     tmpreg1 = ADCx->SMPR2;
+ 16360              		.loc 1 616 0
+ 16361 003e 0569     		ldr	r5, [r0, #16]
+ 16362              	.LVL62:
+ 620:stm32f10x_adc.c ****     /* Calculate the mask to set */
+ 16363              		.loc 1 620 0
+ 16364 0040 25EA0404 		bic	r4, r5, r4
+ 16365              	.LVL63:
+ 16366              		.loc 1 624 0
+ 16367 0044 44EA0C03 		orr	r3, r4, ip
+ 16368              	.LVL64:
+ 624:stm32f10x_adc.c ****     /* Store the new register value */
+ 625:stm32f10x_adc.c ****     ADCx->SMPR2 = tmpreg1;
+ 16369              		.loc 1 626 0
+ 16370 0048 0361     		str	r3, [r0, #16]
+ 16371              	.LVL65:
+ 16372              	.L41:
+ 626:stm32f10x_adc.c ****   }
+ 627:stm32f10x_adc.c ****   /* For Rank 1 to 6 */
+ 628:stm32f10x_adc.c ****   if (Rank < 7)
+ 16373              		.loc 1 629 0
+ 16374 004a 062A     		cmp	r2, #6
+ 16375 004c 0DD8     		bhi	.L42
+ 629:stm32f10x_adc.c ****   {
+ 630:stm32f10x_adc.c ****     /* Get the old register value */
+ 631:stm32f10x_adc.c ****     tmpreg1 = ADCx->SQR3;
+ 632:stm32f10x_adc.c ****     /* Calculate the mask to clear */
+ 633:stm32f10x_adc.c ****     tmpreg2 = SQR3_SQ_Set << (5 * (Rank - 1));
+ 16376              		.loc 1 634 0
+ 16377 004e 0523     		movs	r3, #5
+ 16378 0050 013A     		subs	r2, r2, #1
+ 16379              	.LVL66:
+ 16380 0052 5A43     		muls	r2, r3, r2
+ 634:stm32f10x_adc.c ****     /* Clear the old SQx bits for the selected rank */
+ 635:stm32f10x_adc.c ****     tmpreg1 &= ~tmpreg2;
+ 16381              		.loc 1 636 0
+ 16382 0054 1A33     		adds	r3, r3, #26
+ 16383 0056 9340     		lsls	r3, r3, r2
+ 636:stm32f10x_adc.c ****     /* Calculate the mask to set */
+ 637:stm32f10x_adc.c ****     tmpreg2 = (uint32_t)ADC_Channel << (5 * (Rank - 1));
+ 638:stm32f10x_adc.c ****     /* Set the SQx bits for the selected rank */
+ 639:stm32f10x_adc.c ****     tmpreg1 |= tmpreg2;
+ 16384              		.loc 1 640 0
+ 16385 0058 9140     		lsls	r1, r1, r2
+ 16386              	.LVL67:
+ 632:stm32f10x_adc.c ****     tmpreg1 = ADCx->SQR3;
+ 16387              		.loc 1 632 0
+ 16388 005a D0F834C0 		ldr	ip, [r0, #52]
+ 16389              	.LVL68:
+ 636:stm32f10x_adc.c ****     /* Calculate the mask to set */
+ 16390              		.loc 1 636 0
+ 16391 005e 2CEA0303 		bic	r3, ip, r3
+ 16392              	.LVL69:
+ 16393              		.loc 1 640 0
+ 16394 0062 43EA0102 		orr	r2, r3, r1
+ 16395              	.LVL70:
+ 640:stm32f10x_adc.c ****     /* Store the new register value */
+ 641:stm32f10x_adc.c ****     ADCx->SQR3 = tmpreg1;
+ 16396              		.loc 1 642 0
+ 16397 0066 4263     		str	r2, [r0, #52]
+ 16398 0068 1EE0     		b	.L39
+ 16399              	.LVL71:
+ 16400              	.L42:
+ 642:stm32f10x_adc.c ****   }
+ 643:stm32f10x_adc.c ****   /* For Rank 7 to 12 */
+ 644:stm32f10x_adc.c ****   else if (Rank < 13)
+ 16401              		.loc 1 645 0
+ 16402 006a 0C2A     		cmp	r2, #12
+ 16403 006c 0ED8     		bhi	.L44
+ 645:stm32f10x_adc.c ****   {
+ 646:stm32f10x_adc.c ****     /* Get the old register value */
+ 647:stm32f10x_adc.c ****     tmpreg1 = ADCx->SQR2;
+ 648:stm32f10x_adc.c ****     /* Calculate the mask to clear */
+ 649:stm32f10x_adc.c ****     tmpreg2 = SQR2_SQ_Set << (5 * (Rank - 7));
+ 16404              		.loc 1 650 0
+ 16405 006e 0523     		movs	r3, #5
+ 16406 0070 5A43     		muls	r2, r3, r2
+ 16407              	.LVL72:
+ 650:stm32f10x_adc.c ****     /* Clear the old SQx bits for the selected rank */
+ 651:stm32f10x_adc.c ****     tmpreg1 &= ~tmpreg2;
+ 16408              		.loc 1 652 0
+ 16409 0072 1A33     		adds	r3, r3, #26
+ 650:stm32f10x_adc.c ****     /* Clear the old SQx bits for the selected rank */
+ 16410              		.loc 1 650 0
+ 16411 0074 233A     		subs	r2, r2, #35
+ 16412              		.loc 1 652 0
+ 16413 0076 9340     		lsls	r3, r3, r2
+ 652:stm32f10x_adc.c ****     /* Calculate the mask to set */
+ 653:stm32f10x_adc.c ****     tmpreg2 = (uint32_t)ADC_Channel << (5 * (Rank - 7));
+ 654:stm32f10x_adc.c ****     /* Set the SQx bits for the selected rank */
+ 655:stm32f10x_adc.c ****     tmpreg1 |= tmpreg2;
+ 16414              		.loc 1 656 0
+ 16415 0078 11FA02F2 		lsls	r2, r1, r2
+ 648:stm32f10x_adc.c ****     tmpreg1 = ADCx->SQR2;
+ 16416              		.loc 1 648 0
+ 16417 007c D0F830C0 		ldr	ip, [r0, #48]
+ 16418              	.LVL73:
+ 652:stm32f10x_adc.c ****     /* Calculate the mask to set */
+ 16419              		.loc 1 652 0
+ 16420 0080 2CEA030C 		bic	ip, ip, r3
+ 16421              	.LVL74:
+ 16422              		.loc 1 656 0
+ 16423 0084 4CEA0201 		orr	r1, ip, r2
+ 16424              	.LVL75:
+ 656:stm32f10x_adc.c ****     /* Store the new register value */
+ 657:stm32f10x_adc.c ****     ADCx->SQR2 = tmpreg1;
+ 16425              		.loc 1 658 0
+ 16426 0088 0163     		str	r1, [r0, #48]
+ 16427 008a 0DE0     		b	.L39
+ 16428              	.LVL76:
+ 16429              	.L44:
+ 658:stm32f10x_adc.c ****   }
+ 659:stm32f10x_adc.c ****   /* For Rank 13 to 16 */
+ 660:stm32f10x_adc.c ****   else
+ 661:stm32f10x_adc.c ****   {
+ 662:stm32f10x_adc.c ****     /* Get the old register value */
+ 663:stm32f10x_adc.c ****     tmpreg1 = ADCx->SQR1;
+ 664:stm32f10x_adc.c ****     /* Calculate the mask to clear */
+ 665:stm32f10x_adc.c ****     tmpreg2 = SQR1_SQ_Set << (5 * (Rank - 13));
+ 16430              		.loc 1 666 0
+ 16431 008c 0523     		movs	r3, #5
+ 16432 008e 5A43     		muls	r2, r3, r2
+ 16433              	.LVL77:
+ 666:stm32f10x_adc.c ****     /* Clear the old SQx bits for the selected rank */
+ 667:stm32f10x_adc.c ****     tmpreg1 &= ~tmpreg2;
+ 16434              		.loc 1 668 0
+ 16435 0090 1A33     		adds	r3, r3, #26
+ 666:stm32f10x_adc.c ****     /* Clear the old SQx bits for the selected rank */
+ 16436              		.loc 1 666 0
+ 16437 0092 413A     		subs	r2, r2, #65
+ 16438              		.loc 1 668 0
+ 16439 0094 9340     		lsls	r3, r3, r2
+ 668:stm32f10x_adc.c ****     /* Calculate the mask to set */
+ 669:stm32f10x_adc.c ****     tmpreg2 = (uint32_t)ADC_Channel << (5 * (Rank - 13));
+ 670:stm32f10x_adc.c ****     /* Set the SQx bits for the selected rank */
+ 671:stm32f10x_adc.c ****     tmpreg1 |= tmpreg2;
+ 16440              		.loc 1 672 0
+ 16441 0096 11FA02F2 		lsls	r2, r1, r2
+ 664:stm32f10x_adc.c ****     tmpreg1 = ADCx->SQR1;
+ 16442              		.loc 1 664 0
+ 16443 009a D0F82CC0 		ldr	ip, [r0, #44]
+ 16444              	.LVL78:
+ 668:stm32f10x_adc.c ****     /* Calculate the mask to set */
+ 16445              		.loc 1 668 0
+ 16446 009e 2CEA030C 		bic	ip, ip, r3
+ 16447              	.LVL79:
+ 16448              		.loc 1 672 0
+ 16449 00a2 4CEA0201 		orr	r1, ip, r2
+ 16450              	.LVL80:
+ 672:stm32f10x_adc.c ****     /* Store the new register value */
+ 673:stm32f10x_adc.c ****     ADCx->SQR1 = tmpreg1;
+ 16451              		.loc 1 674 0
+ 16452 00a6 C162     		str	r1, [r0, #44]
+ 16453              	.LVL81:
+ 16454              	.L39:
+ 674:stm32f10x_adc.c ****   }
+ 675:stm32f10x_adc.c **** }
+ 16455              		.loc 1 676 0
+ 16456 00a8 30BD     		pop	{r4, r5, pc}
+ 16457              	.LFE41:
+ 16459              		.section	.text.ADC_ExternalTrigConvCmd,"ax",%progbits
+ 16460              		.align	1
+ 16461              		.global	ADC_ExternalTrigConvCmd
+ 16462              		.thumb
+ 16463              		.thumb_func
+ 16465              	ADC_ExternalTrigConvCmd:
+ 16466              	.LFB42:
+ 676:stm32f10x_adc.c **** 
+ 677:stm32f10x_adc.c **** /**
+ 678:stm32f10x_adc.c ****   * @brief  Enables or disables the ADCx conversion through external trigger.
+ 679:stm32f10x_adc.c ****   * @param  ADCx: where x can be 1, 2 or 3 to select the ADC peripheral.
+ 680:stm32f10x_adc.c ****   * @param  NewState: new state of the selected ADC external trigger start of conversion.
+ 681:stm32f10x_adc.c ****   *   This parameter can be: ENABLE or DISABLE.
+ 682:stm32f10x_adc.c ****   * @retval None
+ 683:stm32f10x_adc.c ****   */
+ 684:stm32f10x_adc.c **** void ADC_ExternalTrigConvCmd(ADC_TypeDef* ADCx, FunctionalState NewState)
+ 685:stm32f10x_adc.c **** {
+ 16467              		.loc 1 686 0
+ 16468              		@ args = 0, pretend = 0, frame = 0
+ 16469              		@ frame_needed = 0, uses_anonymous_args = 0
+ 16470              		@ link register save eliminated.
+ 16471              	.LVL82:
+ 686:stm32f10x_adc.c ****   /* Check the parameters */
+ 687:stm32f10x_adc.c ****   assert_param(IS_ADC_ALL_PERIPH(ADCx));
+ 688:stm32f10x_adc.c ****   assert_param(IS_FUNCTIONAL_STATE(NewState));
+ 689:stm32f10x_adc.c ****   if (NewState != DISABLE)
+ 16472              		.loc 1 690 0
+ 16473 0000 19B1     		cbz	r1, .L46
+ 690:stm32f10x_adc.c ****   {
+ 691:stm32f10x_adc.c ****     /* Enable the selected ADC conversion on external event */
+ 692:stm32f10x_adc.c ****     ADCx->CR2 |= CR2_EXTTRIG_Set;
+ 16474              		.loc 1 693 0
+ 16475 0002 8368     		ldr	r3, [r0, #8]
+ 16476 0004 43F48013 		orr	r3, r3, #1048576
+ 16477 0008 02E0     		b	.L48
+ 16478              	.L46:
+ 693:stm32f10x_adc.c ****   }
+ 694:stm32f10x_adc.c ****   else
+ 695:stm32f10x_adc.c ****   {
+ 696:stm32f10x_adc.c ****     /* Disable the selected ADC conversion on external event */
+ 697:stm32f10x_adc.c ****     ADCx->CR2 &= CR2_EXTTRIG_Reset;
+ 16479              		.loc 1 698 0
+ 16480 000a 8168     		ldr	r1, [r0, #8]
+ 16481              	.LVL83:
+ 16482 000c 21F48013 		bic	r3, r1, #1048576
+ 16483              	.L48:
+ 16484              	.LVL84:
+ 16485 0010 8360     		str	r3, [r0, #8]
+ 698:stm32f10x_adc.c ****   }
+ 699:stm32f10x_adc.c **** }
+ 16486              		.loc 1 700 0
+ 16487 0012 7047     		bx	lr
+ 16488              	.LFE42:
+ 16490              		.section	.text.ADC_GetConversionValue,"ax",%progbits
+ 16491              		.align	1
+ 16492              		.global	ADC_GetConversionValue
+ 16493              		.thumb
+ 16494              		.thumb_func
+ 16496              	ADC_GetConversionValue:
+ 16497              	.LFB43:
+ 700:stm32f10x_adc.c **** 
+ 701:stm32f10x_adc.c **** /**
+ 702:stm32f10x_adc.c ****   * @brief  Returns the last ADCx conversion result data for regular channel.
+ 703:stm32f10x_adc.c ****   * @param  ADCx: where x can be 1, 2 or 3 to select the ADC peripheral.
+ 704:stm32f10x_adc.c ****   * @retval The Data conversion value.
+ 705:stm32f10x_adc.c ****   */
+ 706:stm32f10x_adc.c **** uint16_t ADC_GetConversionValue(ADC_TypeDef* ADCx)
+ 707:stm32f10x_adc.c **** {
+ 16498              		.loc 1 708 0
+ 16499              		@ args = 0, pretend = 0, frame = 0
+ 16500              		@ frame_needed = 0, uses_anonymous_args = 0
+ 16501              		@ link register save eliminated.
+ 16502              	.LVL85:
+ 708:stm32f10x_adc.c ****   /* Check the parameters */
+ 709:stm32f10x_adc.c ****   assert_param(IS_ADC_ALL_PERIPH(ADCx));
+ 710:stm32f10x_adc.c ****   /* Return the selected ADC conversion value */
+ 711:stm32f10x_adc.c ****   return (uint16_t) ADCx->DR;
+ 16503              		.loc 1 712 0
+ 16504 0000 C06C     		ldr	r0, [r0, #76]
+ 16505              	.LVL86:
+ 16506 0002 80B2     		uxth	r0, r0
+ 712:stm32f10x_adc.c **** }
+ 16507              		.loc 1 713 0
+ 16508 0004 7047     		bx	lr
+ 16509              	.LFE43:
+ 16511              		.section	.text.ADC_GetDualModeConversionValue,"ax",%progbits
+ 16512              		.align	1
+ 16513              		.global	ADC_GetDualModeConversionValue
+ 16514              		.thumb
+ 16515              		.thumb_func
+ 16517              	ADC_GetDualModeConversionValue:
+ 16518              	.LFB44:
+ 713:stm32f10x_adc.c **** 
+ 714:stm32f10x_adc.c **** /**
+ 715:stm32f10x_adc.c ****   * @brief  Returns the last ADC1 and ADC2 conversion result data in dual mode.
+ 716:stm32f10x_adc.c ****   * @retval The Data conversion value.
+ 717:stm32f10x_adc.c ****   */
+ 718:stm32f10x_adc.c **** uint32_t ADC_GetDualModeConversionValue(void)
+ 719:stm32f10x_adc.c **** {
+ 16519              		.loc 1 720 0
+ 16520              		@ args = 0, pretend = 0, frame = 0
+ 16521              		@ frame_needed = 0, uses_anonymous_args = 0
+ 16522              		@ link register save eliminated.
+ 720:stm32f10x_adc.c ****   /* Return the dual mode conversion value */
+ 721:stm32f10x_adc.c ****   return (*(__IO uint32_t *) DR_ADDRESS);
+ 16523              		.loc 1 722 0
+ 16524 0000 014B     		ldr	r3, .L51
+ 16525 0002 1868     		ldr	r0, [r3, #0]
+ 722:stm32f10x_adc.c **** }
+ 16526              		.loc 1 723 0
+ 16527 0004 7047     		bx	lr
+ 16528              	.L52:
+ 16529 0006 00BF     		.align	2
+ 16530              	.L51:
+ 16531 0008 4C240140 		.word	1073816652
+ 16532              	.LFE44:
+ 16534              		.section	.text.ADC_AutoInjectedConvCmd,"ax",%progbits
+ 16535              		.align	1
+ 16536              		.global	ADC_AutoInjectedConvCmd
+ 16537              		.thumb
+ 16538              		.thumb_func
+ 16540              	ADC_AutoInjectedConvCmd:
+ 16541              	.LFB45:
+ 723:stm32f10x_adc.c **** 
+ 724:stm32f10x_adc.c **** /**
+ 725:stm32f10x_adc.c ****   * @brief  Enables or disables the selected ADC automatic injected group
+ 726:stm32f10x_adc.c ****   *   conversion after regular one.
+ 727:stm32f10x_adc.c ****   * @param  ADCx: where x can be 1, 2 or 3 to select the ADC peripheral.
+ 728:stm32f10x_adc.c ****   * @param  NewState: new state of the selected ADC auto injected conversion
+ 729:stm32f10x_adc.c ****   *   This parameter can be: ENABLE or DISABLE.
+ 730:stm32f10x_adc.c ****   * @retval None
+ 731:stm32f10x_adc.c ****   */
+ 732:stm32f10x_adc.c **** void ADC_AutoInjectedConvCmd(ADC_TypeDef* ADCx, FunctionalState NewState)
+ 733:stm32f10x_adc.c **** {
+ 16542              		.loc 1 734 0
+ 16543              		@ args = 0, pretend = 0, frame = 0
+ 16544              		@ frame_needed = 0, uses_anonymous_args = 0
+ 16545              		@ link register save eliminated.
+ 16546              	.LVL87:
+ 734:stm32f10x_adc.c ****   /* Check the parameters */
+ 735:stm32f10x_adc.c ****   assert_param(IS_ADC_ALL_PERIPH(ADCx));
+ 736:stm32f10x_adc.c ****   assert_param(IS_FUNCTIONAL_STATE(NewState));
+ 737:stm32f10x_adc.c ****   if (NewState != DISABLE)
+ 16547              		.loc 1 738 0
+ 16548 0000 19B1     		cbz	r1, .L54
+ 738:stm32f10x_adc.c ****   {
+ 739:stm32f10x_adc.c ****     /* Enable the selected ADC automatic injected group conversion */
+ 740:stm32f10x_adc.c ****     ADCx->CR1 |= CR1_JAUTO_Set;
+ 16549              		.loc 1 741 0
+ 16550 0002 4368     		ldr	r3, [r0, #4]
+ 16551 0004 43F48063 		orr	r3, r3, #1024
+ 16552 0008 02E0     		b	.L56
+ 16553              	.L54:
+ 741:stm32f10x_adc.c ****   }
+ 742:stm32f10x_adc.c ****   else
+ 743:stm32f10x_adc.c ****   {
+ 744:stm32f10x_adc.c ****     /* Disable the selected ADC automatic injected group conversion */
+ 745:stm32f10x_adc.c ****     ADCx->CR1 &= CR1_JAUTO_Reset;
+ 16554              		.loc 1 746 0
+ 16555 000a 4168     		ldr	r1, [r0, #4]
+ 16556              	.LVL88:
+ 16557 000c 21F48063 		bic	r3, r1, #1024
+ 16558              	.L56:
+ 16559              	.LVL89:
+ 16560 0010 4360     		str	r3, [r0, #4]
+ 746:stm32f10x_adc.c ****   }
+ 747:stm32f10x_adc.c **** }
+ 16561              		.loc 1 748 0
+ 16562 0012 7047     		bx	lr
+ 16563              	.LFE45:
+ 16565              		.section	.text.ADC_InjectedDiscModeCmd,"ax",%progbits
+ 16566              		.align	1
+ 16567              		.global	ADC_InjectedDiscModeCmd
+ 16568              		.thumb
+ 16569              		.thumb_func
+ 16571              	ADC_InjectedDiscModeCmd:
+ 16572              	.LFB46:
+ 748:stm32f10x_adc.c **** 
+ 749:stm32f10x_adc.c **** /**
+ 750:stm32f10x_adc.c ****   * @brief  Enables or disables the discontinuous mode for injected group
+ 751:stm32f10x_adc.c ****   *   channel for the specified ADC
+ 752:stm32f10x_adc.c ****   * @param  ADCx: where x can be 1, 2 or 3 to select the ADC peripheral.
+ 753:stm32f10x_adc.c ****   * @param  NewState: new state of the selected ADC discontinuous mode
+ 754:stm32f10x_adc.c ****   *   on injected group channel.
+ 755:stm32f10x_adc.c ****   *   This parameter can be: ENABLE or DISABLE.
+ 756:stm32f10x_adc.c ****   * @retval None
+ 757:stm32f10x_adc.c ****   */
+ 758:stm32f10x_adc.c **** void ADC_InjectedDiscModeCmd(ADC_TypeDef* ADCx, FunctionalState NewState)
+ 759:stm32f10x_adc.c **** {
+ 16573              		.loc 1 760 0
+ 16574              		@ args = 0, pretend = 0, frame = 0
+ 16575              		@ frame_needed = 0, uses_anonymous_args = 0
+ 16576              		@ link register save eliminated.
+ 16577              	.LVL90:
+ 760:stm32f10x_adc.c ****   /* Check the parameters */
+ 761:stm32f10x_adc.c ****   assert_param(IS_ADC_ALL_PERIPH(ADCx));
+ 762:stm32f10x_adc.c ****   assert_param(IS_FUNCTIONAL_STATE(NewState));
+ 763:stm32f10x_adc.c ****   if (NewState != DISABLE)
+ 16578              		.loc 1 764 0
+ 16579 0000 19B1     		cbz	r1, .L58
+ 764:stm32f10x_adc.c ****   {
+ 765:stm32f10x_adc.c ****     /* Enable the selected ADC injected discontinuous mode */
+ 766:stm32f10x_adc.c ****     ADCx->CR1 |= CR1_JDISCEN_Set;
+ 16580              		.loc 1 767 0
+ 16581 0002 4368     		ldr	r3, [r0, #4]
+ 16582 0004 43F48053 		orr	r3, r3, #4096
+ 16583 0008 02E0     		b	.L60
+ 16584              	.L58:
+ 767:stm32f10x_adc.c ****   }
+ 768:stm32f10x_adc.c ****   else
+ 769:stm32f10x_adc.c ****   {
+ 770:stm32f10x_adc.c ****     /* Disable the selected ADC injected discontinuous mode */
+ 771:stm32f10x_adc.c ****     ADCx->CR1 &= CR1_JDISCEN_Reset;
+ 16585              		.loc 1 772 0
+ 16586 000a 4168     		ldr	r1, [r0, #4]
+ 16587              	.LVL91:
+ 16588 000c 21F48053 		bic	r3, r1, #4096
+ 16589              	.L60:
+ 16590              	.LVL92:
+ 16591 0010 4360     		str	r3, [r0, #4]
+ 772:stm32f10x_adc.c ****   }
+ 773:stm32f10x_adc.c **** }
+ 16592              		.loc 1 774 0
+ 16593 0012 7047     		bx	lr
+ 16594              	.LFE46:
+ 16596              		.section	.text.ADC_ExternalTrigInjectedConvConfig,"ax",%progbits
+ 16597              		.align	1
+ 16598              		.global	ADC_ExternalTrigInjectedConvConfig
+ 16599              		.thumb
+ 16600              		.thumb_func
+ 16602              	ADC_ExternalTrigInjectedConvConfig:
+ 16603              	.LFB47:
+ 774:stm32f10x_adc.c **** 
+ 775:stm32f10x_adc.c **** /**
+ 776:stm32f10x_adc.c ****   * @brief  Configures the ADCx external trigger for injected channels conversion.
+ 777:stm32f10x_adc.c ****   * @param  ADCx: where x can be 1, 2 or 3 to select the ADC peripheral.
+ 778:stm32f10x_adc.c ****   * @param  ADC_ExternalTrigInjecConv: specifies the ADC trigger to start injected conversion. 
+ 779:stm32f10x_adc.c ****   *   This parameter can be one of the following values:
+ 780:stm32f10x_adc.c ****   *     @arg ADC_ExternalTrigInjecConv_T1_TRGO: Timer1 TRGO event selected (for ADC1, ADC2 and ADC3
+ 781:stm32f10x_adc.c ****   *     @arg ADC_ExternalTrigInjecConv_T1_CC4: Timer1 capture compare4 selected (for ADC1, ADC2 and
+ 782:stm32f10x_adc.c ****   *     @arg ADC_ExternalTrigInjecConv_T2_TRGO: Timer2 TRGO event selected (for ADC1 and ADC2)
+ 783:stm32f10x_adc.c ****   *     @arg ADC_ExternalTrigInjecConv_T2_CC1: Timer2 capture compare1 selected (for ADC1 and ADC2)
+ 784:stm32f10x_adc.c ****   *     @arg ADC_ExternalTrigInjecConv_T3_CC4: Timer3 capture compare4 selected (for ADC1 and ADC2)
+ 785:stm32f10x_adc.c ****   *     @arg ADC_ExternalTrigInjecConv_T4_TRGO: Timer4 TRGO event selected (for ADC1 and ADC2)
+ 786:stm32f10x_adc.c ****   *     @arg ADC_ExternalTrigInjecConv_Ext_IT15_TIM8_CC4: External interrupt line 15 or Timer8
+ 787:stm32f10x_adc.c ****   *                                                       capture compare4 event selected (for ADC1
+ 788:stm32f10x_adc.c ****   *     @arg ADC_ExternalTrigInjecConv_T4_CC3: Timer4 capture compare3 selected (for ADC3 only)
+ 789:stm32f10x_adc.c ****   *     @arg ADC_ExternalTrigInjecConv_T8_CC2: Timer8 capture compare2 selected (for ADC3 only)    
+ 790:stm32f10x_adc.c ****   *     @arg ADC_ExternalTrigInjecConv_T8_CC4: Timer8 capture compare4 selected (for ADC3 only)
+ 791:stm32f10x_adc.c ****   *     @arg ADC_ExternalTrigInjecConv_T5_TRGO: Timer5 TRGO event selected (for ADC3 only)         
+ 792:stm32f10x_adc.c ****   *     @arg ADC_ExternalTrigInjecConv_T5_CC4: Timer5 capture compare4 selected (for ADC3 only)    
+ 793:stm32f10x_adc.c ****   *     @arg ADC_ExternalTrigInjecConv_None: Injected conversion started by software and not
+ 794:stm32f10x_adc.c ****   *                                          by external trigger (for ADC1, ADC2 and ADC3)
+ 795:stm32f10x_adc.c ****   * @retval None
+ 796:stm32f10x_adc.c ****   */
+ 797:stm32f10x_adc.c **** void ADC_ExternalTrigInjectedConvConfig(ADC_TypeDef* ADCx, uint32_t ADC_ExternalTrigInjecConv)
+ 798:stm32f10x_adc.c **** {
+ 16604              		.loc 1 799 0
+ 16605              		@ args = 0, pretend = 0, frame = 0
+ 16606              		@ frame_needed = 0, uses_anonymous_args = 0
+ 16607              		@ link register save eliminated.
+ 16608              	.LVL93:
+ 799:stm32f10x_adc.c ****   uint32_t tmpreg = 0;
+ 800:stm32f10x_adc.c ****   /* Check the parameters */
+ 801:stm32f10x_adc.c ****   assert_param(IS_ADC_ALL_PERIPH(ADCx));
+ 802:stm32f10x_adc.c ****   assert_param(IS_ADC_EXT_INJEC_TRIG(ADC_ExternalTrigInjecConv));
+ 803:stm32f10x_adc.c ****   /* Get the old register value */
+ 804:stm32f10x_adc.c ****   tmpreg = ADCx->CR2;
+ 16609              		.loc 1 805 0
+ 16610 0000 8268     		ldr	r2, [r0, #8]
+ 16611              	.LVL94:
+ 805:stm32f10x_adc.c ****   /* Clear the old external event selection for injected group */
+ 806:stm32f10x_adc.c ****   tmpreg &= CR2_JEXTSEL_Reset;
+ 16612              		.loc 1 807 0
+ 16613 0002 22F4E043 		bic	r3, r2, #28672
+ 16614              	.LVL95:
+ 807:stm32f10x_adc.c ****   /* Set the external event selection for injected group */
+ 808:stm32f10x_adc.c ****   tmpreg |= ADC_ExternalTrigInjecConv;
+ 16615              		.loc 1 809 0
+ 16616 0006 1943     		orrs	r1, r1, r3
+ 16617              	.LVL96:
+ 809:stm32f10x_adc.c ****   /* Store the new register value */
+ 810:stm32f10x_adc.c ****   ADCx->CR2 = tmpreg;
+ 16618              		.loc 1 811 0
+ 16619 0008 8160     		str	r1, [r0, #8]
+ 811:stm32f10x_adc.c **** }
+ 16620              		.loc 1 812 0
+ 16621 000a 7047     		bx	lr
+ 16622              	.LFE47:
+ 16624              		.section	.text.ADC_ExternalTrigInjectedConvCmd,"ax",%progbits
+ 16625              		.align	1
+ 16626              		.global	ADC_ExternalTrigInjectedConvCmd
+ 16627              		.thumb
+ 16628              		.thumb_func
+ 16630              	ADC_ExternalTrigInjectedConvCmd:
+ 16631              	.LFB48:
+ 812:stm32f10x_adc.c **** 
+ 813:stm32f10x_adc.c **** /**
+ 814:stm32f10x_adc.c ****   * @brief  Enables or disables the ADCx injected channels conversion through
+ 815:stm32f10x_adc.c ****   *   external trigger
+ 816:stm32f10x_adc.c ****   * @param  ADCx: where x can be 1, 2 or 3 to select the ADC peripheral.
+ 817:stm32f10x_adc.c ****   * @param  NewState: new state of the selected ADC external trigger start of
+ 818:stm32f10x_adc.c ****   *   injected conversion.
+ 819:stm32f10x_adc.c ****   *   This parameter can be: ENABLE or DISABLE.
+ 820:stm32f10x_adc.c ****   * @retval None
+ 821:stm32f10x_adc.c ****   */
+ 822:stm32f10x_adc.c **** void ADC_ExternalTrigInjectedConvCmd(ADC_TypeDef* ADCx, FunctionalState NewState)
+ 823:stm32f10x_adc.c **** {
+ 16632              		.loc 1 824 0
+ 16633              		@ args = 0, pretend = 0, frame = 0
+ 16634              		@ frame_needed = 0, uses_anonymous_args = 0
+ 16635              		@ link register save eliminated.
+ 16636              	.LVL97:
+ 824:stm32f10x_adc.c ****   /* Check the parameters */
+ 825:stm32f10x_adc.c ****   assert_param(IS_ADC_ALL_PERIPH(ADCx));
+ 826:stm32f10x_adc.c ****   assert_param(IS_FUNCTIONAL_STATE(NewState));
+ 827:stm32f10x_adc.c ****   if (NewState != DISABLE)
+ 16637              		.loc 1 828 0
+ 16638 0000 19B1     		cbz	r1, .L63
+ 828:stm32f10x_adc.c ****   {
+ 829:stm32f10x_adc.c ****     /* Enable the selected ADC external event selection for injected group */
+ 830:stm32f10x_adc.c ****     ADCx->CR2 |= CR2_JEXTTRIG_Set;
+ 16639              		.loc 1 831 0
+ 16640 0002 8368     		ldr	r3, [r0, #8]
+ 16641 0004 43F40043 		orr	r3, r3, #32768
+ 16642 0008 02E0     		b	.L65
+ 16643              	.L63:
+ 831:stm32f10x_adc.c ****   }
+ 832:stm32f10x_adc.c ****   else
+ 833:stm32f10x_adc.c ****   {
+ 834:stm32f10x_adc.c ****     /* Disable the selected ADC external event selection for injected group */
+ 835:stm32f10x_adc.c ****     ADCx->CR2 &= CR2_JEXTTRIG_Reset;
+ 16644              		.loc 1 836 0
+ 16645 000a 8168     		ldr	r1, [r0, #8]
+ 16646              	.LVL98:
+ 16647 000c 21F40043 		bic	r3, r1, #32768
+ 16648              	.L65:
+ 16649              	.LVL99:
+ 16650 0010 8360     		str	r3, [r0, #8]
+ 836:stm32f10x_adc.c ****   }
+ 837:stm32f10x_adc.c **** }
+ 16651              		.loc 1 838 0
+ 16652 0012 7047     		bx	lr
+ 16653              	.LFE48:
+ 16655              		.section	.text.ADC_SoftwareStartInjectedConvCmd,"ax",%progbits
+ 16656              		.align	1
+ 16657              		.global	ADC_SoftwareStartInjectedConvCmd
+ 16658              		.thumb
+ 16659              		.thumb_func
+ 16661              	ADC_SoftwareStartInjectedConvCmd:
+ 16662              	.LFB49:
+ 838:stm32f10x_adc.c **** 
+ 839:stm32f10x_adc.c **** /**
+ 840:stm32f10x_adc.c ****   * @brief  Enables or disables the selected ADC start of the injected 
+ 841:stm32f10x_adc.c ****   *   channels conversion.
+ 842:stm32f10x_adc.c ****   * @param  ADCx: where x can be 1, 2 or 3 to select the ADC peripheral.
+ 843:stm32f10x_adc.c ****   * @param  NewState: new state of the selected ADC software start injected conversion.
+ 844:stm32f10x_adc.c ****   *   This parameter can be: ENABLE or DISABLE.
+ 845:stm32f10x_adc.c ****   * @retval None
+ 846:stm32f10x_adc.c ****   */
+ 847:stm32f10x_adc.c **** void ADC_SoftwareStartInjectedConvCmd(ADC_TypeDef* ADCx, FunctionalState NewState)
+ 848:stm32f10x_adc.c **** {
+ 16663              		.loc 1 849 0
+ 16664              		@ args = 0, pretend = 0, frame = 0
+ 16665              		@ frame_needed = 0, uses_anonymous_args = 0
+ 16666              		@ link register save eliminated.
+ 16667              	.LVL100:
+ 849:stm32f10x_adc.c ****   /* Check the parameters */
+ 850:stm32f10x_adc.c ****   assert_param(IS_ADC_ALL_PERIPH(ADCx));
+ 851:stm32f10x_adc.c ****   assert_param(IS_FUNCTIONAL_STATE(NewState));
+ 852:stm32f10x_adc.c ****   if (NewState != DISABLE)
+ 16668              		.loc 1 853 0
+ 16669 0000 19B1     		cbz	r1, .L67
+ 853:stm32f10x_adc.c ****   {
+ 854:stm32f10x_adc.c ****     /* Enable the selected ADC conversion for injected group on external event and start the select
+ 855:stm32f10x_adc.c ****        ADC injected conversion */
+ 856:stm32f10x_adc.c ****     ADCx->CR2 |= CR2_JEXTTRIG_JSWSTART_Set;
+ 16670              		.loc 1 857 0
+ 16671 0002 8368     		ldr	r3, [r0, #8]
+ 16672 0004 43F40213 		orr	r3, r3, #2129920
+ 16673 0008 02E0     		b	.L69
+ 16674              	.L67:
+ 857:stm32f10x_adc.c ****   }
+ 858:stm32f10x_adc.c ****   else
+ 859:stm32f10x_adc.c ****   {
+ 860:stm32f10x_adc.c ****     /* Disable the selected ADC conversion on external event for injected group and stop the select
+ 861:stm32f10x_adc.c ****        ADC injected conversion */
+ 862:stm32f10x_adc.c ****     ADCx->CR2 &= CR2_JEXTTRIG_JSWSTART_Reset;
+ 16675              		.loc 1 863 0
+ 16676 000a 8168     		ldr	r1, [r0, #8]
+ 16677              	.LVL101:
+ 16678 000c 21F40213 		bic	r3, r1, #2129920
+ 16679              	.L69:
+ 16680              	.LVL102:
+ 16681 0010 8360     		str	r3, [r0, #8]
+ 863:stm32f10x_adc.c ****   }
+ 864:stm32f10x_adc.c **** }
+ 16682              		.loc 1 865 0
+ 16683 0012 7047     		bx	lr
+ 16684              	.LFE49:
+ 16686              		.section	.text.ADC_GetSoftwareStartInjectedConvCmdStatus,"ax",%progbits
+ 16687              		.align	1
+ 16688              		.global	ADC_GetSoftwareStartInjectedConvCmdStatus
+ 16689              		.thumb
+ 16690              		.thumb_func
+ 16692              	ADC_GetSoftwareStartInjectedConvCmdStatus:
+ 16693              	.LFB50:
+ 865:stm32f10x_adc.c **** 
+ 866:stm32f10x_adc.c **** /**
+ 867:stm32f10x_adc.c ****   * @brief  Gets the selected ADC Software start injected conversion Status.
+ 868:stm32f10x_adc.c ****   * @param  ADCx: where x can be 1, 2 or 3 to select the ADC peripheral.
+ 869:stm32f10x_adc.c ****   * @retval The new state of ADC software start injected conversion (SET or RESET).
+ 870:stm32f10x_adc.c ****   */
+ 871:stm32f10x_adc.c **** FlagStatus ADC_GetSoftwareStartInjectedConvCmdStatus(ADC_TypeDef* ADCx)
+ 872:stm32f10x_adc.c **** {
+ 16694              		.loc 1 873 0
+ 16695              		@ args = 0, pretend = 0, frame = 0
+ 16696              		@ frame_needed = 0, uses_anonymous_args = 0
+ 16697              		@ link register save eliminated.
+ 16698              	.LVL103:
+ 873:stm32f10x_adc.c ****   FlagStatus bitstatus = RESET;
+ 874:stm32f10x_adc.c ****   /* Check the parameters */
+ 875:stm32f10x_adc.c ****   assert_param(IS_ADC_ALL_PERIPH(ADCx));
+ 876:stm32f10x_adc.c ****   /* Check the status of JSWSTART bit */
+ 877:stm32f10x_adc.c ****   if ((ADCx->CR2 & CR2_JSWSTART_Set) != (uint32_t)RESET)
+ 16699              		.loc 1 878 0
+ 16700 0000 8068     		ldr	r0, [r0, #8]
+ 16701              	.LVL104:
+ 16702 0002 C0F34050 		ubfx	r0, r0, #21, #1
+ 878:stm32f10x_adc.c ****   {
+ 879:stm32f10x_adc.c ****     /* JSWSTART bit is set */
+ 880:stm32f10x_adc.c ****     bitstatus = SET;
+ 881:stm32f10x_adc.c ****   }
+ 882:stm32f10x_adc.c ****   else
+ 883:stm32f10x_adc.c ****   {
+ 884:stm32f10x_adc.c ****     /* JSWSTART bit is reset */
+ 885:stm32f10x_adc.c ****     bitstatus = RESET;
+ 886:stm32f10x_adc.c ****   }
+ 887:stm32f10x_adc.c ****   /* Return the JSWSTART bit status */
+ 888:stm32f10x_adc.c ****   return  bitstatus;
+ 889:stm32f10x_adc.c **** }
+ 16703              		.loc 1 890 0
+ 16704 0006 7047     		bx	lr
+ 16705              	.LFE50:
+ 16707              		.section	.text.ADC_InjectedChannelConfig,"ax",%progbits
+ 16708              		.align	1
+ 16709              		.global	ADC_InjectedChannelConfig
+ 16710              		.thumb
+ 16711              		.thumb_func
+ 16713              	ADC_InjectedChannelConfig:
+ 16714              	.LFB51:
+ 890:stm32f10x_adc.c **** 
+ 891:stm32f10x_adc.c **** /**
+ 892:stm32f10x_adc.c ****   * @brief  Configures for the selected ADC injected channel its corresponding
+ 893:stm32f10x_adc.c ****   *   rank in the sequencer and its sample time.
+ 894:stm32f10x_adc.c ****   * @param  ADCx: where x can be 1, 2 or 3 to select the ADC peripheral.
+ 895:stm32f10x_adc.c ****   * @param  ADC_Channel: the ADC channel to configure. 
+ 896:stm32f10x_adc.c ****   *   This parameter can be one of the following values:
+ 897:stm32f10x_adc.c ****   *     @arg ADC_Channel_0: ADC Channel0 selected
+ 898:stm32f10x_adc.c ****   *     @arg ADC_Channel_1: ADC Channel1 selected
+ 899:stm32f10x_adc.c ****   *     @arg ADC_Channel_2: ADC Channel2 selected
+ 900:stm32f10x_adc.c ****   *     @arg ADC_Channel_3: ADC Channel3 selected
+ 901:stm32f10x_adc.c ****   *     @arg ADC_Channel_4: ADC Channel4 selected
+ 902:stm32f10x_adc.c ****   *     @arg ADC_Channel_5: ADC Channel5 selected
+ 903:stm32f10x_adc.c ****   *     @arg ADC_Channel_6: ADC Channel6 selected
+ 904:stm32f10x_adc.c ****   *     @arg ADC_Channel_7: ADC Channel7 selected
+ 905:stm32f10x_adc.c ****   *     @arg ADC_Channel_8: ADC Channel8 selected
+ 906:stm32f10x_adc.c ****   *     @arg ADC_Channel_9: ADC Channel9 selected
+ 907:stm32f10x_adc.c ****   *     @arg ADC_Channel_10: ADC Channel10 selected
+ 908:stm32f10x_adc.c ****   *     @arg ADC_Channel_11: ADC Channel11 selected
+ 909:stm32f10x_adc.c ****   *     @arg ADC_Channel_12: ADC Channel12 selected
+ 910:stm32f10x_adc.c ****   *     @arg ADC_Channel_13: ADC Channel13 selected
+ 911:stm32f10x_adc.c ****   *     @arg ADC_Channel_14: ADC Channel14 selected
+ 912:stm32f10x_adc.c ****   *     @arg ADC_Channel_15: ADC Channel15 selected
+ 913:stm32f10x_adc.c ****   *     @arg ADC_Channel_16: ADC Channel16 selected
+ 914:stm32f10x_adc.c ****   *     @arg ADC_Channel_17: ADC Channel17 selected
+ 915:stm32f10x_adc.c ****   * @param  Rank: The rank in the injected group sequencer. This parameter must be between 1 and 4.
+ 916:stm32f10x_adc.c ****   * @param  ADC_SampleTime: The sample time value to be set for the selected channel. 
+ 917:stm32f10x_adc.c ****   *   This parameter can be one of the following values:
+ 918:stm32f10x_adc.c ****   *     @arg ADC_SampleTime_1Cycles5: Sample time equal to 1.5 cycles
+ 919:stm32f10x_adc.c ****   *     @arg ADC_SampleTime_7Cycles5: Sample time equal to 7.5 cycles
+ 920:stm32f10x_adc.c ****   *     @arg ADC_SampleTime_13Cycles5: Sample time equal to 13.5 cycles
+ 921:stm32f10x_adc.c ****   *     @arg ADC_SampleTime_28Cycles5: Sample time equal to 28.5 cycles	
+ 922:stm32f10x_adc.c ****   *     @arg ADC_SampleTime_41Cycles5: Sample time equal to 41.5 cycles	
+ 923:stm32f10x_adc.c ****   *     @arg ADC_SampleTime_55Cycles5: Sample time equal to 55.5 cycles	
+ 924:stm32f10x_adc.c ****   *     @arg ADC_SampleTime_71Cycles5: Sample time equal to 71.5 cycles	
+ 925:stm32f10x_adc.c ****   *     @arg ADC_SampleTime_239Cycles5: Sample time equal to 239.5 cycles	
+ 926:stm32f10x_adc.c ****   * @retval None
+ 927:stm32f10x_adc.c ****   */
+ 928:stm32f10x_adc.c **** void ADC_InjectedChannelConfig(ADC_TypeDef* ADCx, uint8_t ADC_Channel, uint8_t Rank, uint8_t ADC_Sa
+ 929:stm32f10x_adc.c **** {
+ 16715              		.loc 1 930 0
+ 16716              		@ args = 0, pretend = 0, frame = 0
+ 16717              		@ frame_needed = 0, uses_anonymous_args = 0
+ 16718              	.LVL105:
+ 930:stm32f10x_adc.c ****   uint32_t tmpreg1 = 0, tmpreg2 = 0, tmpreg3 = 0;
+ 931:stm32f10x_adc.c ****   /* Check the parameters */
+ 932:stm32f10x_adc.c ****   assert_param(IS_ADC_ALL_PERIPH(ADCx));
+ 933:stm32f10x_adc.c ****   assert_param(IS_ADC_CHANNEL(ADC_Channel));
+ 934:stm32f10x_adc.c ****   assert_param(IS_ADC_INJECTED_RANK(Rank));
+ 935:stm32f10x_adc.c ****   assert_param(IS_ADC_SAMPLE_TIME(ADC_SampleTime));
+ 936:stm32f10x_adc.c ****   /* if ADC_Channel_10 ... ADC_Channel_17 is selected */
+ 937:stm32f10x_adc.c ****   if (ADC_Channel > ADC_Channel_9)
+ 16719              		.loc 1 938 0
+ 16720 0000 0929     		cmp	r1, #9
+ 930:stm32f10x_adc.c ****   uint32_t tmpreg1 = 0, tmpreg2 = 0, tmpreg3 = 0;
+ 16721              		.loc 1 930 0
+ 16722 0002 30B5     		push	{r4, r5, lr}
+ 16723              	.LCFI2:
+ 16724              		.loc 1 938 0
+ 16725 0004 12D9     		bls	.L72
+ 938:stm32f10x_adc.c ****   {
+ 939:stm32f10x_adc.c ****     /* Get the old register value */
+ 940:stm32f10x_adc.c ****     tmpreg1 = ADCx->SMPR1;
+ 941:stm32f10x_adc.c ****     /* Calculate the mask to clear */
+ 942:stm32f10x_adc.c ****     tmpreg2 = SMPR1_SMP_Set << (3*(ADC_Channel - 10));
+ 16726              		.loc 1 943 0
+ 16727 0006 4FF00304 		mov	r4, #3
+ 16728 000a 04FB01FC 		mul	ip, r4, r1
+ 943:stm32f10x_adc.c ****     /* Clear the old channel sample time */
+ 944:stm32f10x_adc.c ****     tmpreg1 &= ~tmpreg2;
+ 16729              		.loc 1 945 0
+ 16730 000e 0724     		movs	r4, #7
+ 943:stm32f10x_adc.c ****     /* Clear the old channel sample time */
+ 16731              		.loc 1 943 0
+ 16732 0010 ACF11E0C 		sub	ip, ip, #30
+ 16733              		.loc 1 945 0
+ 16734 0014 04FA0CF4 		lsl	r4, r4, ip
+ 945:stm32f10x_adc.c ****     /* Calculate the mask to set */
+ 946:stm32f10x_adc.c ****     tmpreg2 = (uint32_t)ADC_SampleTime << (3*(ADC_Channel - 10));
+ 947:stm32f10x_adc.c ****     /* Set the new channel sample time */
+ 948:stm32f10x_adc.c ****     tmpreg1 |= tmpreg2;
+ 16735              		.loc 1 949 0
+ 16736 0018 03FA0CF3 		lsl	r3, r3, ip
+ 16737              	.LVL106:
+ 941:stm32f10x_adc.c ****     tmpreg1 = ADCx->SMPR1;
+ 16738              		.loc 1 941 0
+ 16739 001c C568     		ldr	r5, [r0, #12]
+ 16740              	.LVL107:
+ 945:stm32f10x_adc.c ****     /* Calculate the mask to set */
+ 16741              		.loc 1 945 0
+ 16742 001e 25EA0404 		bic	r4, r5, r4
+ 16743              	.LVL108:
+ 16744              		.loc 1 949 0
+ 16745 0022 44EA030C 		orr	ip, r4, r3
+ 16746              	.LVL109:
+ 949:stm32f10x_adc.c ****     /* Store the new register value */
+ 950:stm32f10x_adc.c ****     ADCx->SMPR1 = tmpreg1;
+ 16747              		.loc 1 951 0
+ 16748 0026 C0F80CC0 		str	ip, [r0, #12]
+ 16749 002a 0EE0     		b	.L73
+ 16750              	.LVL110:
+ 16751              	.L72:
+ 951:stm32f10x_adc.c ****   }
+ 952:stm32f10x_adc.c ****   else /* ADC_Channel include in ADC_Channel_[0..9] */
+ 953:stm32f10x_adc.c ****   {
+ 954:stm32f10x_adc.c ****     /* Get the old register value */
+ 955:stm32f10x_adc.c ****     tmpreg1 = ADCx->SMPR2;
+ 956:stm32f10x_adc.c ****     /* Calculate the mask to clear */
+ 957:stm32f10x_adc.c ****     tmpreg2 = SMPR2_SMP_Set << (3 * ADC_Channel);
+ 16752              		.loc 1 958 0
+ 16753 002c 4FF0030C 		mov	ip, #3
+ 16754 0030 0CFB01FC 		mul	ip, ip, r1
+ 958:stm32f10x_adc.c ****     /* Clear the old channel sample time */
+ 959:stm32f10x_adc.c ****     tmpreg1 &= ~tmpreg2;
+ 16755              		.loc 1 960 0
+ 16756 0034 0724     		movs	r4, #7
+ 16757 0036 04FA0CF4 		lsl	r4, r4, ip
+ 960:stm32f10x_adc.c ****     /* Calculate the mask to set */
+ 961:stm32f10x_adc.c ****     tmpreg2 = (uint32_t)ADC_SampleTime << (3 * ADC_Channel);
+ 962:stm32f10x_adc.c ****     /* Set the new channel sample time */
+ 963:stm32f10x_adc.c ****     tmpreg1 |= tmpreg2;
+ 16758              		.loc 1 964 0
+ 16759 003a 03FA0CFC 		lsl	ip, r3, ip
+ 956:stm32f10x_adc.c ****     tmpreg1 = ADCx->SMPR2;
+ 16760              		.loc 1 956 0
+ 16761 003e 0569     		ldr	r5, [r0, #16]
+ 16762              	.LVL111:
+ 960:stm32f10x_adc.c ****     /* Calculate the mask to set */
+ 16763              		.loc 1 960 0
+ 16764 0040 25EA0404 		bic	r4, r5, r4
+ 16765              	.LVL112:
+ 16766              		.loc 1 964 0
+ 16767 0044 44EA0C03 		orr	r3, r4, ip
+ 16768              	.LVL113:
+ 964:stm32f10x_adc.c ****     /* Store the new register value */
+ 965:stm32f10x_adc.c ****     ADCx->SMPR2 = tmpreg1;
+ 16769              		.loc 1 966 0
+ 16770 0048 0361     		str	r3, [r0, #16]
+ 16771              	.LVL114:
+ 16772              	.L73:
+ 966:stm32f10x_adc.c ****   }
+ 967:stm32f10x_adc.c ****   /* Rank configuration */
+ 968:stm32f10x_adc.c ****   /* Get the old register value */
+ 969:stm32f10x_adc.c ****   tmpreg1 = ADCx->JSQR;
+ 16773              		.loc 1 970 0
+ 16774 004a 836B     		ldr	r3, [r0, #56]
+ 16775              	.LVL115:
+ 970:stm32f10x_adc.c ****   /* Get JL value: Number = JL+1 */
+ 971:stm32f10x_adc.c ****   tmpreg3 =  (tmpreg1 & JSQR_JL_Set)>> 20;
+ 972:stm32f10x_adc.c ****   /* Calculate the mask to clear: ((Rank-1)+(4-JL-1)) */
+ 973:stm32f10x_adc.c ****   tmpreg2 = JSQR_JSQ_Set << (5 * (uint8_t)((Rank + 3) - (tmpreg3 + 1)));
+ 16776              		.loc 1 974 0
+ 16777 004c C3F3015C 		ubfx	ip, r3, #20, #2
+ 16778 0050 CCEB0202 		rsb	r2, ip, r2
+ 16779              	.LVL116:
+ 16780 0054 0232     		adds	r2, r2, #2
+ 16781 0056 4FF0050C 		mov	ip, #5
+ 16782 005a D2B2     		uxtb	r2, r2
+ 16783 005c 0CFB02F2 		mul	r2, ip, r2
+ 974:stm32f10x_adc.c ****   /* Clear the old JSQx bits for the selected rank */
+ 975:stm32f10x_adc.c ****   tmpreg1 &= ~tmpreg2;
+ 16784              		.loc 1 976 0
+ 16785 0060 0CF11A0C 		add	ip, ip, #26
+ 16786 0064 0CFA02FC 		lsl	ip, ip, r2
+ 976:stm32f10x_adc.c ****   /* Calculate the mask to set: ((Rank-1)+(4-JL-1)) */
+ 977:stm32f10x_adc.c ****   tmpreg2 = (uint32_t)ADC_Channel << (5 * (uint8_t)((Rank + 3) - (tmpreg3 + 1)));
+ 978:stm32f10x_adc.c ****   /* Set the JSQx bits for the selected rank */
+ 979:stm32f10x_adc.c ****   tmpreg1 |= tmpreg2;
+ 16787              		.loc 1 980 0
+ 16788 0068 9140     		lsls	r1, r1, r2
+ 16789              	.LVL117:
+ 976:stm32f10x_adc.c ****   /* Calculate the mask to set: ((Rank-1)+(4-JL-1)) */
+ 16790              		.loc 1 976 0
+ 16791 006a 23EA0C03 		bic	r3, r3, ip
+ 16792              	.LVL118:
+ 16793              		.loc 1 980 0
+ 16794 006e 0B43     		orrs	r3, r3, r1
+ 16795              	.LVL119:
+ 980:stm32f10x_adc.c ****   /* Store the new register value */
+ 981:stm32f10x_adc.c ****   ADCx->JSQR = tmpreg1;
+ 16796              		.loc 1 982 0
+ 16797 0070 8363     		str	r3, [r0, #56]
+ 982:stm32f10x_adc.c **** }
+ 16798              		.loc 1 983 0
+ 16799 0072 30BD     		pop	{r4, r5, pc}
+ 16800              	.LFE51:
+ 16802              		.section	.text.ADC_InjectedSequencerLengthConfig,"ax",%progbits
+ 16803              		.align	1
+ 16804              		.global	ADC_InjectedSequencerLengthConfig
+ 16805              		.thumb
+ 16806              		.thumb_func
+ 16808              	ADC_InjectedSequencerLengthConfig:
+ 16809              	.LFB52:
+ 983:stm32f10x_adc.c **** 
+ 984:stm32f10x_adc.c **** /**
+ 985:stm32f10x_adc.c ****   * @brief  Configures the sequencer length for injected channels
+ 986:stm32f10x_adc.c ****   * @param  ADCx: where x can be 1, 2 or 3 to select the ADC peripheral.
+ 987:stm32f10x_adc.c ****   * @param  Length: The sequencer length. 
+ 988:stm32f10x_adc.c ****   *   This parameter must be a number between 1 to 4.
+ 989:stm32f10x_adc.c ****   * @retval None
+ 990:stm32f10x_adc.c ****   */
+ 991:stm32f10x_adc.c **** void ADC_InjectedSequencerLengthConfig(ADC_TypeDef* ADCx, uint8_t Length)
+ 992:stm32f10x_adc.c **** {
+ 16810              		.loc 1 993 0
+ 16811              		@ args = 0, pretend = 0, frame = 0
+ 16812              		@ frame_needed = 0, uses_anonymous_args = 0
+ 16813              		@ link register save eliminated.
+ 16814              	.LVL120:
+ 993:stm32f10x_adc.c ****   uint32_t tmpreg1 = 0;
+ 994:stm32f10x_adc.c ****   uint32_t tmpreg2 = 0;
+ 995:stm32f10x_adc.c ****   /* Check the parameters */
+ 996:stm32f10x_adc.c ****   assert_param(IS_ADC_ALL_PERIPH(ADCx));
+ 997:stm32f10x_adc.c ****   assert_param(IS_ADC_INJECTED_LENGTH(Length));
+ 998:stm32f10x_adc.c ****   
+ 999:stm32f10x_adc.c ****   /* Get the old register value */
+1000:stm32f10x_adc.c ****   tmpreg1 = ADCx->JSQR;
+ 16815              		.loc 1 1001 0
+ 16816 0000 D0F838C0 		ldr	ip, [r0, #56]
+ 16817              	.LVL121:
+1001:stm32f10x_adc.c ****   /* Clear the old injected sequnence lenght JL bits */
+1002:stm32f10x_adc.c ****   tmpreg1 &= JSQR_JL_Reset;
+1003:stm32f10x_adc.c ****   /* Set the injected sequnence lenght JL bits */
+1004:stm32f10x_adc.c ****   tmpreg2 = Length - 1; 
+1005:stm32f10x_adc.c ****   tmpreg1 |= tmpreg2 << 20;
+ 16818              		.loc 1 1006 0
+ 16819 0004 4A1E     		subs	r2, r1, #1
+1003:stm32f10x_adc.c ****   tmpreg1 &= JSQR_JL_Reset;
+ 16820              		.loc 1 1003 0
+ 16821 0006 2CF44013 		bic	r3, ip, #3145728
+ 16822              	.LVL122:
+ 16823              		.loc 1 1006 0
+ 16824 000a 43EA0251 		orr	r1, r3, r2, lsl #20
+ 16825              	.LVL123:
+1006:stm32f10x_adc.c ****   /* Store the new register value */
+1007:stm32f10x_adc.c ****   ADCx->JSQR = tmpreg1;
+ 16826              		.loc 1 1008 0
+ 16827 000e 8163     		str	r1, [r0, #56]
+1008:stm32f10x_adc.c **** }
+ 16828              		.loc 1 1009 0
+ 16829 0010 7047     		bx	lr
+ 16830              	.LFE52:
+ 16832              		.section	.text.ADC_SetInjectedOffset,"ax",%progbits
+ 16833              		.align	1
+ 16834              		.global	ADC_SetInjectedOffset
+ 16835              		.thumb
+ 16836              		.thumb_func
+ 16838              	ADC_SetInjectedOffset:
+ 16839              	.LFB53:
+1009:stm32f10x_adc.c **** 
+1010:stm32f10x_adc.c **** /**
+1011:stm32f10x_adc.c ****   * @brief  Set the injected channels conversion value offset
+1012:stm32f10x_adc.c ****   * @param  ADCx: where x can be 1, 2 or 3 to select the ADC peripheral.
+1013:stm32f10x_adc.c ****   * @param  ADC_InjectedChannel: the ADC injected channel to set its offset. 
+1014:stm32f10x_adc.c ****   *   This parameter can be one of the following values:
+1015:stm32f10x_adc.c ****   *     @arg ADC_InjectedChannel_1: Injected Channel1 selected
+1016:stm32f10x_adc.c ****   *     @arg ADC_InjectedChannel_2: Injected Channel2 selected
+1017:stm32f10x_adc.c ****   *     @arg ADC_InjectedChannel_3: Injected Channel3 selected
+1018:stm32f10x_adc.c ****   *     @arg ADC_InjectedChannel_4: Injected Channel4 selected
+1019:stm32f10x_adc.c ****   * @param  Offset: the offset value for the selected ADC injected channel
+1020:stm32f10x_adc.c ****   *   This parameter must be a 12bit value.
+1021:stm32f10x_adc.c ****   * @retval None
+1022:stm32f10x_adc.c ****   */
+1023:stm32f10x_adc.c **** void ADC_SetInjectedOffset(ADC_TypeDef* ADCx, uint8_t ADC_InjectedChannel, uint16_t Offset)
+1024:stm32f10x_adc.c **** {
+ 16840              		.loc 1 1025 0
+ 16841              		@ args = 0, pretend = 0, frame = 8
+ 16842              		@ frame_needed = 0, uses_anonymous_args = 0
+ 16843              		@ link register save eliminated.
+ 16844              	.LVL124:
+ 16845 0000 82B0     		sub	sp, sp, #8
+ 16846              	.LCFI3:
+1025:stm32f10x_adc.c ****   __IO uint32_t tmp = 0;
+ 16847              		.loc 1 1026 0
+ 16848 0002 0023     		movs	r3, #0
+ 16849 0004 0193     		str	r3, [sp, #4]
+ 16850              	.LVL125:
+1026:stm32f10x_adc.c ****   
+1027:stm32f10x_adc.c ****   /* Check the parameters */
+1028:stm32f10x_adc.c ****   assert_param(IS_ADC_ALL_PERIPH(ADCx));
+1029:stm32f10x_adc.c ****   assert_param(IS_ADC_INJECTED_CHANNEL(ADC_InjectedChannel));
+1030:stm32f10x_adc.c ****   assert_param(IS_ADC_OFFSET(Offset));  
+1031:stm32f10x_adc.c ****   
+1032:stm32f10x_adc.c ****   tmp = (uint32_t)ADCx;
+ 16851              		.loc 1 1033 0
+ 16852 0006 0190     		str	r0, [sp, #4]
+ 16853              	.LVL126:
+1033:stm32f10x_adc.c ****   tmp += ADC_InjectedChannel;
+ 16854              		.loc 1 1034 0
+ 16855 0008 0198     		ldr	r0, [sp, #4]
+ 16856              	.LVL127:
+ 16857 000a 0918     		adds	r1, r1, r0
+ 16858              	.LVL128:
+ 16859 000c 0191     		str	r1, [sp, #4]
+ 16860              	.LVL129:
+1034:stm32f10x_adc.c ****   
+1035:stm32f10x_adc.c ****   /* Set the selected injected channel data offset */
+1036:stm32f10x_adc.c ****   *(__IO uint32_t *) tmp = (uint32_t)Offset;
+ 16861              		.loc 1 1037 0
+ 16862 000e 019B     		ldr	r3, [sp, #4]
+ 16863 0010 1A60     		str	r2, [r3, #0]
+1037:stm32f10x_adc.c **** }
+ 16864              		.loc 1 1038 0
+ 16865 0012 02B0     		add	sp, sp, #8
+ 16866 0014 7047     		bx	lr
+ 16867              	.LFE53:
+ 16869              		.section	.text.ADC_GetInjectedConversionValue,"ax",%progbits
+ 16870              		.align	1
+ 16871              		.global	ADC_GetInjectedConversionValue
+ 16872              		.thumb
+ 16873              		.thumb_func
+ 16875              	ADC_GetInjectedConversionValue:
+ 16876              	.LFB54:
+1038:stm32f10x_adc.c **** 
+1039:stm32f10x_adc.c **** /**
+1040:stm32f10x_adc.c ****   * @brief  Returns the ADC injected channel conversion result
+1041:stm32f10x_adc.c ****   * @param  ADCx: where x can be 1, 2 or 3 to select the ADC peripheral.
+1042:stm32f10x_adc.c ****   * @param  ADC_InjectedChannel: the converted ADC injected channel.
+1043:stm32f10x_adc.c ****   *   This parameter can be one of the following values:
+1044:stm32f10x_adc.c ****   *     @arg ADC_InjectedChannel_1: Injected Channel1 selected
+1045:stm32f10x_adc.c ****   *     @arg ADC_InjectedChannel_2: Injected Channel2 selected
+1046:stm32f10x_adc.c ****   *     @arg ADC_InjectedChannel_3: Injected Channel3 selected
+1047:stm32f10x_adc.c ****   *     @arg ADC_InjectedChannel_4: Injected Channel4 selected
+1048:stm32f10x_adc.c ****   * @retval The Data conversion value.
+1049:stm32f10x_adc.c ****   */
+1050:stm32f10x_adc.c **** uint16_t ADC_GetInjectedConversionValue(ADC_TypeDef* ADCx, uint8_t ADC_InjectedChannel)
+1051:stm32f10x_adc.c **** {
+ 16877              		.loc 1 1052 0
+ 16878              		@ args = 0, pretend = 0, frame = 8
+ 16879              		@ frame_needed = 0, uses_anonymous_args = 0
+ 16880              		@ link register save eliminated.
+ 16881              	.LVL130:
+ 16882 0000 82B0     		sub	sp, sp, #8
+ 16883              	.LCFI4:
+1052:stm32f10x_adc.c ****   __IO uint32_t tmp = 0;
+ 16884              		.loc 1 1053 0
+ 16885 0002 0023     		movs	r3, #0
+ 16886 0004 0193     		str	r3, [sp, #4]
+ 16887              	.LVL131:
+1053:stm32f10x_adc.c ****   
+1054:stm32f10x_adc.c ****   /* Check the parameters */
+1055:stm32f10x_adc.c ****   assert_param(IS_ADC_ALL_PERIPH(ADCx));
+1056:stm32f10x_adc.c ****   assert_param(IS_ADC_INJECTED_CHANNEL(ADC_InjectedChannel));
+1057:stm32f10x_adc.c **** 
+1058:stm32f10x_adc.c ****   tmp = (uint32_t)ADCx;
+ 16888              		.loc 1 1059 0
+ 16889 0006 0190     		str	r0, [sp, #4]
+ 16890              	.LVL132:
+1059:stm32f10x_adc.c ****   tmp += ADC_InjectedChannel + JDR_Offset;
+ 16891              		.loc 1 1060 0
+ 16892 0008 019A     		ldr	r2, [sp, #4]
+ 16893 000a 2832     		adds	r2, r2, #40
+ 16894 000c 5118     		adds	r1, r2, r1
+ 16895              	.LVL133:
+ 16896 000e 0191     		str	r1, [sp, #4]
+ 16897              	.LVL134:
+1060:stm32f10x_adc.c ****   
+1061:stm32f10x_adc.c ****   /* Returns the selected injected channel conversion data value */
+1062:stm32f10x_adc.c ****   return (uint16_t) (*(__IO uint32_t*)  tmp);   
+ 16898              		.loc 1 1063 0
+ 16899 0010 019B     		ldr	r3, [sp, #4]
+ 16900 0012 1868     		ldr	r0, [r3, #0]
+ 16901              	.LVL135:
+ 16902 0014 80B2     		uxth	r0, r0
+1063:stm32f10x_adc.c **** }
+ 16903              		.loc 1 1064 0
+ 16904 0016 02B0     		add	sp, sp, #8
+ 16905 0018 7047     		bx	lr
+ 16906              	.LFE54:
+ 16908              		.section	.text.ADC_AnalogWatchdogCmd,"ax",%progbits
+ 16909              		.align	1
+ 16910              		.global	ADC_AnalogWatchdogCmd
+ 16911              		.thumb
+ 16912              		.thumb_func
+ 16914              	ADC_AnalogWatchdogCmd:
+ 16915              	.LFB55:
+1064:stm32f10x_adc.c **** 
+1065:stm32f10x_adc.c **** /**
+1066:stm32f10x_adc.c ****   * @brief  Enables or disables the analog watchdog on single/all regular
+1067:stm32f10x_adc.c ****   *   or injected channels
+1068:stm32f10x_adc.c ****   * @param  ADCx: where x can be 1, 2 or 3 to select the ADC peripheral.
+1069:stm32f10x_adc.c ****   * @param  ADC_AnalogWatchdog: the ADC analog watchdog configuration.
+1070:stm32f10x_adc.c ****   *   This parameter can be one of the following values:
+1071:stm32f10x_adc.c ****   *     @arg ADC_AnalogWatchdog_SingleRegEnable: Analog watchdog on a single regular channel
+1072:stm32f10x_adc.c ****   *     @arg ADC_AnalogWatchdog_SingleInjecEnable: Analog watchdog on a single injected channel
+1073:stm32f10x_adc.c ****   *     @arg ADC_AnalogWatchdog_SingleRegOrInjecEnable: Analog watchdog on a single regular or inje
+1074:stm32f10x_adc.c ****   *     @arg ADC_AnalogWatchdog_AllRegEnable: Analog watchdog on  all regular channel
+1075:stm32f10x_adc.c ****   *     @arg ADC_AnalogWatchdog_AllInjecEnable: Analog watchdog on  all injected channel
+1076:stm32f10x_adc.c ****   *     @arg ADC_AnalogWatchdog_AllRegAllInjecEnable: Analog watchdog on all regular and injected c
+1077:stm32f10x_adc.c ****   *     @arg ADC_AnalogWatchdog_None: No channel guarded by the analog watchdog
+1078:stm32f10x_adc.c ****   * @retval None	  
+1079:stm32f10x_adc.c ****   */
+1080:stm32f10x_adc.c **** void ADC_AnalogWatchdogCmd(ADC_TypeDef* ADCx, uint32_t ADC_AnalogWatchdog)
+1081:stm32f10x_adc.c **** {
+ 16916              		.loc 1 1082 0
+ 16917              		@ args = 0, pretend = 0, frame = 0
+ 16918              		@ frame_needed = 0, uses_anonymous_args = 0
+ 16919              		@ link register save eliminated.
+ 16920              	.LVL136:
+1082:stm32f10x_adc.c ****   uint32_t tmpreg = 0;
+1083:stm32f10x_adc.c ****   /* Check the parameters */
+1084:stm32f10x_adc.c ****   assert_param(IS_ADC_ALL_PERIPH(ADCx));
+1085:stm32f10x_adc.c ****   assert_param(IS_ADC_ANALOG_WATCHDOG(ADC_AnalogWatchdog));
+1086:stm32f10x_adc.c ****   /* Get the old register value */
+1087:stm32f10x_adc.c ****   tmpreg = ADCx->CR1;
+ 16921              		.loc 1 1088 0
+ 16922 0000 4368     		ldr	r3, [r0, #4]
+ 16923              	.LVL137:
+1088:stm32f10x_adc.c ****   /* Clear AWDEN, AWDENJ and AWDSGL bits */
+1089:stm32f10x_adc.c ****   tmpreg &= CR1_AWDMode_Reset;
+ 16924              		.loc 1 1090 0
+ 16925 0002 23F4400C 		bic	ip, r3, #12582912
+ 16926 0006 2CF40072 		bic	r2, ip, #512
+ 16927              	.LVL138:
+1090:stm32f10x_adc.c ****   /* Set the analog watchdog enable mode */
+1091:stm32f10x_adc.c ****   tmpreg |= ADC_AnalogWatchdog;
+ 16928              		.loc 1 1092 0
+ 16929 000a 41EA0203 		orr	r3, r1, r2
+ 16930              	.LVL139:
+1092:stm32f10x_adc.c ****   /* Store the new register value */
+1093:stm32f10x_adc.c ****   ADCx->CR1 = tmpreg;
+ 16931              		.loc 1 1094 0
+ 16932 000e 4360     		str	r3, [r0, #4]
+1094:stm32f10x_adc.c **** }
+ 16933              		.loc 1 1095 0
+ 16934 0010 7047     		bx	lr
+ 16935              	.LFE55:
+ 16937              		.section	.text.ADC_AnalogWatchdogThresholdsConfig,"ax",%progbits
+ 16938              		.align	1
+ 16939              		.global	ADC_AnalogWatchdogThresholdsConfig
+ 16940              		.thumb
+ 16941              		.thumb_func
+ 16943              	ADC_AnalogWatchdogThresholdsConfig:
+ 16944              	.LFB56:
+1095:stm32f10x_adc.c **** 
+1096:stm32f10x_adc.c **** /**
+1097:stm32f10x_adc.c ****   * @brief  Configures the high and low thresholds of the analog watchdog.
+1098:stm32f10x_adc.c ****   * @param  ADCx: where x can be 1, 2 or 3 to select the ADC peripheral.
+1099:stm32f10x_adc.c ****   * @param  HighThreshold: the ADC analog watchdog High threshold value.
+1100:stm32f10x_adc.c ****   *   This parameter must be a 12bit value.
+1101:stm32f10x_adc.c ****   * @param  LowThreshold: the ADC analog watchdog Low threshold value.
+1102:stm32f10x_adc.c ****   *   This parameter must be a 12bit value.
+1103:stm32f10x_adc.c ****   * @retval None
+1104:stm32f10x_adc.c ****   */
+1105:stm32f10x_adc.c **** void ADC_AnalogWatchdogThresholdsConfig(ADC_TypeDef* ADCx, uint16_t HighThreshold,
+1106:stm32f10x_adc.c ****                                         uint16_t LowThreshold)
+1107:stm32f10x_adc.c **** {
+ 16945              		.loc 1 1108 0
+ 16946              		@ args = 0, pretend = 0, frame = 0
+ 16947              		@ frame_needed = 0, uses_anonymous_args = 0
+ 16948              		@ link register save eliminated.
+ 16949              	.LVL140:
+1108:stm32f10x_adc.c ****   /* Check the parameters */
+1109:stm32f10x_adc.c ****   assert_param(IS_ADC_ALL_PERIPH(ADCx));
+1110:stm32f10x_adc.c ****   assert_param(IS_ADC_THRESHOLD(HighThreshold));
+1111:stm32f10x_adc.c ****   assert_param(IS_ADC_THRESHOLD(LowThreshold));
+1112:stm32f10x_adc.c ****   /* Set the ADCx high threshold */
+1113:stm32f10x_adc.c ****   ADCx->HTR = HighThreshold;
+ 16950              		.loc 1 1114 0
+ 16951 0000 4162     		str	r1, [r0, #36]
+1114:stm32f10x_adc.c ****   /* Set the ADCx low threshold */
+1115:stm32f10x_adc.c ****   ADCx->LTR = LowThreshold;
+ 16952              		.loc 1 1116 0
+ 16953 0002 8262     		str	r2, [r0, #40]
+1116:stm32f10x_adc.c **** }
+ 16954              		.loc 1 1117 0
+ 16955 0004 7047     		bx	lr
+ 16956              	.LFE56:
+ 16958              		.section	.text.ADC_AnalogWatchdogSingleChannelConfig,"ax",%progbits
+ 16959              		.align	1
+ 16960              		.global	ADC_AnalogWatchdogSingleChannelConfig
+ 16961              		.thumb
+ 16962              		.thumb_func
+ 16964              	ADC_AnalogWatchdogSingleChannelConfig:
+ 16965              	.LFB57:
+1117:stm32f10x_adc.c **** 
+1118:stm32f10x_adc.c **** /**
+1119:stm32f10x_adc.c ****   * @brief  Configures the analog watchdog guarded single channel
+1120:stm32f10x_adc.c ****   * @param  ADCx: where x can be 1, 2 or 3 to select the ADC peripheral.
+1121:stm32f10x_adc.c ****   * @param  ADC_Channel: the ADC channel to configure for the analog watchdog. 
+1122:stm32f10x_adc.c ****   *   This parameter can be one of the following values:
+1123:stm32f10x_adc.c ****   *     @arg ADC_Channel_0: ADC Channel0 selected
+1124:stm32f10x_adc.c ****   *     @arg ADC_Channel_1: ADC Channel1 selected
+1125:stm32f10x_adc.c ****   *     @arg ADC_Channel_2: ADC Channel2 selected
+1126:stm32f10x_adc.c ****   *     @arg ADC_Channel_3: ADC Channel3 selected
+1127:stm32f10x_adc.c ****   *     @arg ADC_Channel_4: ADC Channel4 selected
+1128:stm32f10x_adc.c ****   *     @arg ADC_Channel_5: ADC Channel5 selected
+1129:stm32f10x_adc.c ****   *     @arg ADC_Channel_6: ADC Channel6 selected
+1130:stm32f10x_adc.c ****   *     @arg ADC_Channel_7: ADC Channel7 selected
+1131:stm32f10x_adc.c ****   *     @arg ADC_Channel_8: ADC Channel8 selected
+1132:stm32f10x_adc.c ****   *     @arg ADC_Channel_9: ADC Channel9 selected
+1133:stm32f10x_adc.c ****   *     @arg ADC_Channel_10: ADC Channel10 selected
+1134:stm32f10x_adc.c ****   *     @arg ADC_Channel_11: ADC Channel11 selected
+1135:stm32f10x_adc.c ****   *     @arg ADC_Channel_12: ADC Channel12 selected
+1136:stm32f10x_adc.c ****   *     @arg ADC_Channel_13: ADC Channel13 selected
+1137:stm32f10x_adc.c ****   *     @arg ADC_Channel_14: ADC Channel14 selected
+1138:stm32f10x_adc.c ****   *     @arg ADC_Channel_15: ADC Channel15 selected
+1139:stm32f10x_adc.c ****   *     @arg ADC_Channel_16: ADC Channel16 selected
+1140:stm32f10x_adc.c ****   *     @arg ADC_Channel_17: ADC Channel17 selected
+1141:stm32f10x_adc.c ****   * @retval None
+1142:stm32f10x_adc.c ****   */
+1143:stm32f10x_adc.c **** void ADC_AnalogWatchdogSingleChannelConfig(ADC_TypeDef* ADCx, uint8_t ADC_Channel)
+1144:stm32f10x_adc.c **** {
+ 16966              		.loc 1 1145 0
+ 16967              		@ args = 0, pretend = 0, frame = 0
+ 16968              		@ frame_needed = 0, uses_anonymous_args = 0
+ 16969              		@ link register save eliminated.
+ 16970              	.LVL141:
+1145:stm32f10x_adc.c ****   uint32_t tmpreg = 0;
+1146:stm32f10x_adc.c ****   /* Check the parameters */
+1147:stm32f10x_adc.c ****   assert_param(IS_ADC_ALL_PERIPH(ADCx));
+1148:stm32f10x_adc.c ****   assert_param(IS_ADC_CHANNEL(ADC_Channel));
+1149:stm32f10x_adc.c ****   /* Get the old register value */
+1150:stm32f10x_adc.c ****   tmpreg = ADCx->CR1;
+ 16971              		.loc 1 1151 0
+ 16972 0000 4268     		ldr	r2, [r0, #4]
+ 16973              	.LVL142:
+1151:stm32f10x_adc.c ****   /* Clear the Analog watchdog channel select bits */
+1152:stm32f10x_adc.c ****   tmpreg &= CR1_AWDCH_Reset;
+ 16974              		.loc 1 1153 0
+ 16975 0002 22F01F03 		bic	r3, r2, #31
+ 16976              	.LVL143:
+1153:stm32f10x_adc.c ****   /* Set the Analog watchdog channel */
+1154:stm32f10x_adc.c ****   tmpreg |= ADC_Channel;
+ 16977              		.loc 1 1155 0
+ 16978 0006 1943     		orrs	r1, r1, r3
+ 16979              	.LVL144:
+1155:stm32f10x_adc.c ****   /* Store the new register value */
+1156:stm32f10x_adc.c ****   ADCx->CR1 = tmpreg;
+ 16980              		.loc 1 1157 0
+ 16981 0008 4160     		str	r1, [r0, #4]
+1157:stm32f10x_adc.c **** }
+ 16982              		.loc 1 1158 0
+ 16983 000a 7047     		bx	lr
+ 16984              	.LFE57:
+ 16986              		.section	.text.ADC_TempSensorVrefintCmd,"ax",%progbits
+ 16987              		.align	1
+ 16988              		.global	ADC_TempSensorVrefintCmd
+ 16989              		.thumb
+ 16990              		.thumb_func
+ 16992              	ADC_TempSensorVrefintCmd:
+ 16993              	.LFB58:
+1158:stm32f10x_adc.c **** 
+1159:stm32f10x_adc.c **** /**
+1160:stm32f10x_adc.c ****   * @brief  Enables or disables the temperature sensor and Vrefint channel.
+1161:stm32f10x_adc.c ****   * @param  NewState: new state of the temperature sensor.
+1162:stm32f10x_adc.c ****   *   This parameter can be: ENABLE or DISABLE.
+1163:stm32f10x_adc.c ****   * @retval None
+1164:stm32f10x_adc.c ****   */
+1165:stm32f10x_adc.c **** void ADC_TempSensorVrefintCmd(FunctionalState NewState)
+1166:stm32f10x_adc.c **** {
+ 16994              		.loc 1 1167 0
+ 16995              		@ args = 0, pretend = 0, frame = 0
+ 16996              		@ frame_needed = 0, uses_anonymous_args = 0
+ 16997              		@ link register save eliminated.
+ 16998              	.LVL145:
+1167:stm32f10x_adc.c ****   /* Check the parameters */
+1168:stm32f10x_adc.c ****   assert_param(IS_FUNCTIONAL_STATE(NewState));
+1169:stm32f10x_adc.c ****   if (NewState != DISABLE)
+ 16999              		.loc 1 1170 0
+ 17000 0000 20B1     		cbz	r0, .L81
+1170:stm32f10x_adc.c ****   {
+1171:stm32f10x_adc.c ****     /* Enable the temperature sensor and Vrefint channel*/
+1172:stm32f10x_adc.c ****     ADC1->CR2 |= CR2_TSVREFE_Set;
+ 17001              		.loc 1 1173 0
+ 17002 0002 054B     		ldr	r3, .L84
+ 17003 0004 9A68     		ldr	r2, [r3, #8]
+ 17004 0006 42F40002 		orr	r2, r2, #8388608
+ 17005 000a 03E0     		b	.L83
+ 17006              	.L81:
+1173:stm32f10x_adc.c ****   }
+1174:stm32f10x_adc.c ****   else
+1175:stm32f10x_adc.c ****   {
+1176:stm32f10x_adc.c ****     /* Disable the temperature sensor and Vrefint channel*/
+1177:stm32f10x_adc.c ****     ADC1->CR2 &= CR2_TSVREFE_Reset;
+ 17007              		.loc 1 1178 0
+ 17008 000c 024B     		ldr	r3, .L84
+ 17009 000e 9868     		ldr	r0, [r3, #8]
+ 17010              	.LVL146:
+ 17011 0010 20F40002 		bic	r2, r0, #8388608
+ 17012              	.L83:
+ 17013 0014 9A60     		str	r2, [r3, #8]
+1178:stm32f10x_adc.c ****   }
+1179:stm32f10x_adc.c **** }
+ 17014              		.loc 1 1180 0
+ 17015 0016 7047     		bx	lr
+ 17016              	.L85:
+ 17017              		.align	2
+ 17018              	.L84:
+ 17019 0018 00240140 		.word	1073816576
+ 17020              	.LFE58:
+ 17022              		.section	.text.ADC_GetFlagStatus,"ax",%progbits
+ 17023              		.align	1
+ 17024              		.global	ADC_GetFlagStatus
+ 17025              		.thumb
+ 17026              		.thumb_func
+ 17028              	ADC_GetFlagStatus:
+ 17029              	.LFB59:
+1180:stm32f10x_adc.c **** 
+1181:stm32f10x_adc.c **** /**
+1182:stm32f10x_adc.c ****   * @brief  Checks whether the specified ADC flag is set or not.
+1183:stm32f10x_adc.c ****   * @param  ADCx: where x can be 1, 2 or 3 to select the ADC peripheral.
+1184:stm32f10x_adc.c ****   * @param  ADC_FLAG: specifies the flag to check. 
+1185:stm32f10x_adc.c ****   *   This parameter can be one of the following values:
+1186:stm32f10x_adc.c ****   *     @arg ADC_FLAG_AWD: Analog watchdog flag
+1187:stm32f10x_adc.c ****   *     @arg ADC_FLAG_EOC: End of conversion flag
+1188:stm32f10x_adc.c ****   *     @arg ADC_FLAG_JEOC: End of injected group conversion flag
+1189:stm32f10x_adc.c ****   *     @arg ADC_FLAG_JSTRT: Start of injected group conversion flag
+1190:stm32f10x_adc.c ****   *     @arg ADC_FLAG_STRT: Start of regular group conversion flag
+1191:stm32f10x_adc.c ****   * @retval The new state of ADC_FLAG (SET or RESET).
+1192:stm32f10x_adc.c ****   */
+1193:stm32f10x_adc.c **** FlagStatus ADC_GetFlagStatus(ADC_TypeDef* ADCx, uint8_t ADC_FLAG)
+1194:stm32f10x_adc.c **** {
+ 17030              		.loc 1 1195 0
+ 17031              		@ args = 0, pretend = 0, frame = 0
+ 17032              		@ frame_needed = 0, uses_anonymous_args = 0
+ 17033              		@ link register save eliminated.
+ 17034              	.LVL147:
+1195:stm32f10x_adc.c ****   FlagStatus bitstatus = RESET;
+1196:stm32f10x_adc.c ****   /* Check the parameters */
+1197:stm32f10x_adc.c ****   assert_param(IS_ADC_ALL_PERIPH(ADCx));
+1198:stm32f10x_adc.c ****   assert_param(IS_ADC_GET_FLAG(ADC_FLAG));
+1199:stm32f10x_adc.c ****   /* Check the status of the specified ADC flag */
+1200:stm32f10x_adc.c ****   if ((ADCx->SR & ADC_FLAG) != (uint8_t)RESET)
+ 17035              		.loc 1 1201 0
+ 17036 0000 0368     		ldr	r3, [r0, #0]
+ 17037              	.LVL148:
+ 17038 0002 1942     		tst	r1, r3
+ 17039 0004 0CBF     		ite	eq
+ 17040 0006 0020     		moveq	r0, #0
+ 17041 0008 0120     		movne	r0, #1
+ 17042              	.LVL149:
+1201:stm32f10x_adc.c ****   {
+1202:stm32f10x_adc.c ****     /* ADC_FLAG is set */
+1203:stm32f10x_adc.c ****     bitstatus = SET;
+1204:stm32f10x_adc.c ****   }
+1205:stm32f10x_adc.c ****   else
+1206:stm32f10x_adc.c ****   {
+1207:stm32f10x_adc.c ****     /* ADC_FLAG is reset */
+1208:stm32f10x_adc.c ****     bitstatus = RESET;
+1209:stm32f10x_adc.c ****   }
+1210:stm32f10x_adc.c ****   /* Return the ADC_FLAG status */
+1211:stm32f10x_adc.c ****   return  bitstatus;
+1212:stm32f10x_adc.c **** }
+ 17043              		.loc 1 1213 0
+ 17044 000a 7047     		bx	lr
+ 17045              	.LFE59:
+ 17047              		.section	.text.ADC_ClearFlag,"ax",%progbits
+ 17048              		.align	1
+ 17049              		.global	ADC_ClearFlag
+ 17050              		.thumb
+ 17051              		.thumb_func
+ 17053              	ADC_ClearFlag:
+ 17054              	.LFB60:
+1213:stm32f10x_adc.c **** 
+1214:stm32f10x_adc.c **** /**
+1215:stm32f10x_adc.c ****   * @brief  Clears the ADCx's pending flags.
+1216:stm32f10x_adc.c ****   * @param  ADCx: where x can be 1, 2 or 3 to select the ADC peripheral.
+1217:stm32f10x_adc.c ****   * @param  ADC_FLAG: specifies the flag to clear. 
+1218:stm32f10x_adc.c ****   *   This parameter can be any combination of the following values:
+1219:stm32f10x_adc.c ****   *     @arg ADC_FLAG_AWD: Analog watchdog flag
+1220:stm32f10x_adc.c ****   *     @arg ADC_FLAG_EOC: End of conversion flag
+1221:stm32f10x_adc.c ****   *     @arg ADC_FLAG_JEOC: End of injected group conversion flag
+1222:stm32f10x_adc.c ****   *     @arg ADC_FLAG_JSTRT: Start of injected group conversion flag
+1223:stm32f10x_adc.c ****   *     @arg ADC_FLAG_STRT: Start of regular group conversion flag
+1224:stm32f10x_adc.c ****   * @retval None
+1225:stm32f10x_adc.c ****   */
+1226:stm32f10x_adc.c **** void ADC_ClearFlag(ADC_TypeDef* ADCx, uint8_t ADC_FLAG)
+1227:stm32f10x_adc.c **** {
+ 17055              		.loc 1 1228 0
+ 17056              		@ args = 0, pretend = 0, frame = 0
+ 17057              		@ frame_needed = 0, uses_anonymous_args = 0
+ 17058              		@ link register save eliminated.
+ 17059              	.LVL150:
+1228:stm32f10x_adc.c ****   /* Check the parameters */
+1229:stm32f10x_adc.c ****   assert_param(IS_ADC_ALL_PERIPH(ADCx));
+1230:stm32f10x_adc.c ****   assert_param(IS_ADC_CLEAR_FLAG(ADC_FLAG));
+1231:stm32f10x_adc.c ****   /* Clear the selected ADC flags */
+1232:stm32f10x_adc.c ****   ADCx->SR = ~(uint32_t)ADC_FLAG;
+ 17060              		.loc 1 1233 0
+ 17061 0000 C943     		mvns	r1, r1
+ 17062              	.LVL151:
+ 17063 0002 0160     		str	r1, [r0, #0]
+1233:stm32f10x_adc.c **** }
+ 17064              		.loc 1 1234 0
+ 17065 0004 7047     		bx	lr
+ 17066              	.LFE60:
+ 17068              		.section	.text.ADC_GetITStatus,"ax",%progbits
+ 17069              		.align	1
+ 17070              		.global	ADC_GetITStatus
+ 17071              		.thumb
+ 17072              		.thumb_func
+ 17074              	ADC_GetITStatus:
+ 17075              	.LFB61:
+1234:stm32f10x_adc.c **** 
+1235:stm32f10x_adc.c **** /**
+1236:stm32f10x_adc.c ****   * @brief  Checks whether the specified ADC interrupt has occurred or not.
+1237:stm32f10x_adc.c ****   * @param  ADCx: where x can be 1, 2 or 3 to select the ADC peripheral.
+1238:stm32f10x_adc.c ****   * @param  ADC_IT: specifies the ADC interrupt source to check. 
+1239:stm32f10x_adc.c ****   *   This parameter can be one of the following values:
+1240:stm32f10x_adc.c ****   *     @arg ADC_IT_EOC: End of conversion interrupt mask
+1241:stm32f10x_adc.c ****   *     @arg ADC_IT_AWD: Analog watchdog interrupt mask
+1242:stm32f10x_adc.c ****   *     @arg ADC_IT_JEOC: End of injected conversion interrupt mask
+1243:stm32f10x_adc.c ****   * @retval The new state of ADC_IT (SET or RESET).
+1244:stm32f10x_adc.c ****   */
+1245:stm32f10x_adc.c **** ITStatus ADC_GetITStatus(ADC_TypeDef* ADCx, uint16_t ADC_IT)
+1246:stm32f10x_adc.c **** {
+ 17076              		.loc 1 1247 0
+ 17077              		@ args = 0, pretend = 0, frame = 0
+ 17078              		@ frame_needed = 0, uses_anonymous_args = 0
+ 17079              		@ link register save eliminated.
+ 17080              	.LVL152:
+1247:stm32f10x_adc.c ****   ITStatus bitstatus = RESET;
+1248:stm32f10x_adc.c ****   uint32_t itmask = 0, enablestatus = 0;
+1249:stm32f10x_adc.c ****   /* Check the parameters */
+1250:stm32f10x_adc.c ****   assert_param(IS_ADC_ALL_PERIPH(ADCx));
+1251:stm32f10x_adc.c ****   assert_param(IS_ADC_GET_IT(ADC_IT));
+1252:stm32f10x_adc.c ****   /* Get the ADC IT index */
+1253:stm32f10x_adc.c ****   itmask = ADC_IT >> 8;
+1254:stm32f10x_adc.c ****   /* Get the ADC_IT enable bit status */
+1255:stm32f10x_adc.c ****   enablestatus = (ADCx->CR1 & (uint8_t)ADC_IT) ;
+ 17081              		.loc 1 1256 0
+ 17082 0000 4368     		ldr	r3, [r0, #4]
+ 17083              	.LVL153:
+1256:stm32f10x_adc.c ****   /* Check the status of the specified ADC interrupt */
+1257:stm32f10x_adc.c ****   if (((ADCx->SR & itmask) != (uint32_t)RESET) && enablestatus)
+ 17084              		.loc 1 1258 0
+ 17085 0002 0068     		ldr	r0, [r0, #0]
+ 17086              	.LVL154:
+ 17087 0004 10EA1120 		ands	r0, r0, r1, lsr #8
+ 17088 0008 04D0     		beq	.L89
+1258:stm32f10x_adc.c ****   {
+1259:stm32f10x_adc.c ****     /* ADC_IT is set */
+1260:stm32f10x_adc.c ****     bitstatus = SET;
+ 17089              		.loc 1 1261 0 discriminator 1
+ 17090 000a C9B2     		uxtb	r1, r1
+ 17091              	.LVL155:
+ 17092 000c 1942     		tst	r1, r3
+ 17093 000e 0CBF     		ite	eq
+ 17094 0010 0020     		moveq	r0, #0
+ 17095 0012 0120     		movne	r0, #1
+ 17096              	.LVL156:
+ 17097              	.L89:
+ 17098              	.LVL157:
+1261:stm32f10x_adc.c ****   }
+1262:stm32f10x_adc.c ****   else
+1263:stm32f10x_adc.c ****   {
+1264:stm32f10x_adc.c ****     /* ADC_IT is reset */
+1265:stm32f10x_adc.c ****     bitstatus = RESET;
+1266:stm32f10x_adc.c ****   }
+1267:stm32f10x_adc.c ****   /* Return the ADC_IT status */
+1268:stm32f10x_adc.c ****   return  bitstatus;
+1269:stm32f10x_adc.c **** }
+ 17099              		.loc 1 1270 0
+ 17100 0014 7047     		bx	lr
+ 17101              	.LFE61:
+ 17103              		.section	.text.ADC_ClearITPendingBit,"ax",%progbits
+ 17104              		.align	1
+ 17105              		.global	ADC_ClearITPendingBit
+ 17106              		.thumb
+ 17107              		.thumb_func
+ 17109              	ADC_ClearITPendingBit:
+ 17110              	.LFB62:
+1270:stm32f10x_adc.c **** 
+1271:stm32f10x_adc.c **** /**
+1272:stm32f10x_adc.c ****   * @brief  Clears the ADCx’s interrupt pending bits.
+1273:stm32f10x_adc.c ****   * @param  ADCx: where x can be 1, 2 or 3 to select the ADC peripheral.
+1274:stm32f10x_adc.c ****   * @param  ADC_IT: specifies the ADC interrupt pending bit to clear.
+1275:stm32f10x_adc.c ****   *   This parameter can be any combination of the following values:
+1276:stm32f10x_adc.c ****   *     @arg ADC_IT_EOC: End of conversion interrupt mask
+1277:stm32f10x_adc.c ****   *     @arg ADC_IT_AWD: Analog watchdog interrupt mask
+1278:stm32f10x_adc.c ****   *     @arg ADC_IT_JEOC: End of injected conversion interrupt mask
+1279:stm32f10x_adc.c ****   * @retval None
+1280:stm32f10x_adc.c ****   */
+1281:stm32f10x_adc.c **** void ADC_ClearITPendingBit(ADC_TypeDef* ADCx, uint16_t ADC_IT)
+1282:stm32f10x_adc.c **** {
+ 17111              		.loc 1 1283 0
+ 17112              		@ args = 0, pretend = 0, frame = 0
+ 17113              		@ frame_needed = 0, uses_anonymous_args = 0
+ 17114              		@ link register save eliminated.
+ 17115              	.LVL158:
+1283:stm32f10x_adc.c ****   uint8_t itmask = 0;
+1284:stm32f10x_adc.c ****   /* Check the parameters */
+1285:stm32f10x_adc.c ****   assert_param(IS_ADC_ALL_PERIPH(ADCx));
+1286:stm32f10x_adc.c ****   assert_param(IS_ADC_IT(ADC_IT));
+1287:stm32f10x_adc.c ****   /* Get the ADC IT index */
+1288:stm32f10x_adc.c ****   itmask = (uint8_t)(ADC_IT >> 8);
+1289:stm32f10x_adc.c ****   /* Clear the selected ADC interrupt pending bits */
+1290:stm32f10x_adc.c ****   ADCx->SR = ~(uint32_t)itmask;
+ 17116              		.loc 1 1291 0
+ 17117 0000 6FEA1121 		mvn	r1, r1, lsr #8
+ 17118              	.LVL159:
+ 17119 0004 0160     		str	r1, [r0, #0]
+1291:stm32f10x_adc.c **** }
+ 17120              		.loc 1 1292 0
+ 17121 0006 7047     		bx	lr
+ 17122              	.LFE62:
+ 17464              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 stm32f10x_adc.c
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:15833  .text.ADC_DeInit:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:15838  .text.ADC_DeInit:00000000 ADC_DeInit
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:15899  .text.ADC_DeInit:0000004c $d
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:15905  .text.ADC_Init:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:15910  .text.ADC_Init:00000000 ADC_Init
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:15972  .text.ADC_Init:00000050 $d
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:15976  .text.ADC_StructInit:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:15981  .text.ADC_StructInit:00000000 ADC_StructInit
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16010  .text.ADC_Cmd:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16015  .text.ADC_Cmd:00000000 ADC_Cmd
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16041  .text.ADC_DMACmd:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16046  .text.ADC_DMACmd:00000000 ADC_DMACmd
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16072  .text.ADC_ITConfig:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16077  .text.ADC_ITConfig:00000000 ADC_ITConfig
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16109  .text.ADC_ResetCalibration:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16114  .text.ADC_ResetCalibration:00000000 ADC_ResetCalibration
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16131  .text.ADC_GetResetCalibrationStatus:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16136  .text.ADC_GetResetCalibrationStatus:00000000 ADC_GetResetCalibrationStatus
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16152  .text.ADC_StartCalibration:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16157  .text.ADC_StartCalibration:00000000 ADC_StartCalibration
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16174  .text.ADC_GetCalibrationStatus:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16179  .text.ADC_GetCalibrationStatus:00000000 ADC_GetCalibrationStatus
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16195  .text.ADC_SoftwareStartConvCmd:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16200  .text.ADC_SoftwareStartConvCmd:00000000 ADC_SoftwareStartConvCmd
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16226  .text.ADC_GetSoftwareStartConvStatus:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16231  .text.ADC_GetSoftwareStartConvStatus:00000000 ADC_GetSoftwareStartConvStatus
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16247  .text.ADC_DiscModeChannelCountConfig:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16252  .text.ADC_DiscModeChannelCountConfig:00000000 ADC_DiscModeChannelCountConfig
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16277  .text.ADC_DiscModeCmd:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16282  .text.ADC_DiscModeCmd:00000000 ADC_DiscModeCmd
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16308  .text.ADC_RegularChannelConfig:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16313  .text.ADC_RegularChannelConfig:00000000 ADC_RegularChannelConfig
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16460  .text.ADC_ExternalTrigConvCmd:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16465  .text.ADC_ExternalTrigConvCmd:00000000 ADC_ExternalTrigConvCmd
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16491  .text.ADC_GetConversionValue:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16496  .text.ADC_GetConversionValue:00000000 ADC_GetConversionValue
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16512  .text.ADC_GetDualModeConversionValue:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16517  .text.ADC_GetDualModeConversionValue:00000000 ADC_GetDualModeConversionValue
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16531  .text.ADC_GetDualModeConversionValue:00000008 $d
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16535  .text.ADC_AutoInjectedConvCmd:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16540  .text.ADC_AutoInjectedConvCmd:00000000 ADC_AutoInjectedConvCmd
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16566  .text.ADC_InjectedDiscModeCmd:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16571  .text.ADC_InjectedDiscModeCmd:00000000 ADC_InjectedDiscModeCmd
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16597  .text.ADC_ExternalTrigInjectedConvConfig:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16602  .text.ADC_ExternalTrigInjectedConvConfig:00000000 ADC_ExternalTrigInjectedConvConfig
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16625  .text.ADC_ExternalTrigInjectedConvCmd:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16630  .text.ADC_ExternalTrigInjectedConvCmd:00000000 ADC_ExternalTrigInjectedConvCmd
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16656  .text.ADC_SoftwareStartInjectedConvCmd:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16661  .text.ADC_SoftwareStartInjectedConvCmd:00000000 ADC_SoftwareStartInjectedConvCmd
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16687  .text.ADC_GetSoftwareStartInjectedConvCmdStatus:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16692  .text.ADC_GetSoftwareStartInjectedConvCmdStatus:00000000 ADC_GetSoftwareStartInjectedConvCmdStatus
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16708  .text.ADC_InjectedChannelConfig:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16713  .text.ADC_InjectedChannelConfig:00000000 ADC_InjectedChannelConfig
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16803  .text.ADC_InjectedSequencerLengthConfig:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16808  .text.ADC_InjectedSequencerLengthConfig:00000000 ADC_InjectedSequencerLengthConfig
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16833  .text.ADC_SetInjectedOffset:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16838  .text.ADC_SetInjectedOffset:00000000 ADC_SetInjectedOffset
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16870  .text.ADC_GetInjectedConversionValue:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16875  .text.ADC_GetInjectedConversionValue:00000000 ADC_GetInjectedConversionValue
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16909  .text.ADC_AnalogWatchdogCmd:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16914  .text.ADC_AnalogWatchdogCmd:00000000 ADC_AnalogWatchdogCmd
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16938  .text.ADC_AnalogWatchdogThresholdsConfig:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16943  .text.ADC_AnalogWatchdogThresholdsConfig:00000000 ADC_AnalogWatchdogThresholdsConfig
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16959  .text.ADC_AnalogWatchdogSingleChannelConfig:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16964  .text.ADC_AnalogWatchdogSingleChannelConfig:00000000 ADC_AnalogWatchdogSingleChannelConfig
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16987  .text.ADC_TempSensorVrefintCmd:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:16992  .text.ADC_TempSensorVrefintCmd:00000000 ADC_TempSensorVrefintCmd
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:17019  .text.ADC_TempSensorVrefintCmd:00000018 $d
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:17023  .text.ADC_GetFlagStatus:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:17028  .text.ADC_GetFlagStatus:00000000 ADC_GetFlagStatus
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:17048  .text.ADC_ClearFlag:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:17053  .text.ADC_ClearFlag:00000000 ADC_ClearFlag
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:17069  .text.ADC_GetITStatus:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:17074  .text.ADC_GetITStatus:00000000 ADC_GetITStatus
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:17104  .text.ADC_ClearITPendingBit:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:17109  .text.ADC_ClearITPendingBit:00000000 ADC_ClearITPendingBit
+C:\Users\ts\AppData\Local\Temp\ccwMFLKc.s:17137  .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+RCC_APB2PeriphResetCmd

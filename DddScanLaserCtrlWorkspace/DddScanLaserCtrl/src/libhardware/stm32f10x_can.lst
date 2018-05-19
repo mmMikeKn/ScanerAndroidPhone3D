@@ -1,0 +1,2624 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 4
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"stm32f10x_can.c"
+  23              	.Ltext0:
+  24              		.file 1 "stm32f10x_can.c"
+ 15723              		.align	1
+ 15724              		.global	CAN_DeInit
+ 15725              		.thumb
+ 15726              		.thumb_func
+ 15728              	CAN_DeInit:
+ 15729              	.LFB27:
+   0:stm32f10x_can.c **** /**
+   1:stm32f10x_can.c ****   ******************************************************************************
+   2:stm32f10x_can.c ****   * @file    stm32f10x_can.c
+   3:stm32f10x_can.c ****   * @author  MCD Application Team
+   4:stm32f10x_can.c ****   * @version V3.1.2
+   5:stm32f10x_can.c ****   * @date    09/28/2009
+   6:stm32f10x_can.c ****   * @brief   This file provides all the CAN firmware functions.
+   7:stm32f10x_can.c ****   ******************************************************************************
+   8:stm32f10x_can.c ****   * @copy
+   9:stm32f10x_can.c ****   *
+  10:stm32f10x_can.c ****   * THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
+  11:stm32f10x_can.c ****   * WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE
+  12:stm32f10x_can.c ****   * TIME. AS A RESULT, STMICROELECTRONICS SHALL NOT BE HELD LIABLE FOR ANY
+  13:stm32f10x_can.c ****   * DIRECT, INDIRECT OR CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY CLAIMS ARISING
+  14:stm32f10x_can.c ****   * FROM THE CONTENT OF SUCH FIRMWARE AND/OR THE USE MADE BY CUSTOMERS OF THE
+  15:stm32f10x_can.c ****   * CODING INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
+  16:stm32f10x_can.c ****   *
+  17:stm32f10x_can.c ****   * <h2><center>&copy; COPYRIGHT 2009 STMicroelectronics</center></h2>
+  18:stm32f10x_can.c ****   */ 
+  19:stm32f10x_can.c **** 
+  20:stm32f10x_can.c **** /* Includes ------------------------------------------------------------------*/
+  21:stm32f10x_can.c **** #include "stm32f10x_can.h"
+  22:stm32f10x_can.c **** #include "stm32f10x_rcc.h"
+  23:stm32f10x_can.c **** 
+  24:stm32f10x_can.c **** /** @addtogroup STM32F10x_StdPeriph_Driver
+  25:stm32f10x_can.c ****   * @{
+  26:stm32f10x_can.c ****   */
+  27:stm32f10x_can.c **** 
+  28:stm32f10x_can.c **** /** @defgroup CAN 
+  29:stm32f10x_can.c ****   * @brief CAN driver modules
+  30:stm32f10x_can.c ****   * @{
+  31:stm32f10x_can.c ****   */ 
+  32:stm32f10x_can.c **** 
+  33:stm32f10x_can.c **** /** @defgroup CAN_Private_TypesDefinitions
+  34:stm32f10x_can.c ****   * @{
+  35:stm32f10x_can.c ****   */
+  36:stm32f10x_can.c **** 
+  37:stm32f10x_can.c **** /**
+  38:stm32f10x_can.c ****   * @}
+  39:stm32f10x_can.c ****   */
+  40:stm32f10x_can.c **** 
+  41:stm32f10x_can.c **** /** @defgroup CAN_Private_Defines
+  42:stm32f10x_can.c ****   * @{
+  43:stm32f10x_can.c ****   */
+  44:stm32f10x_can.c **** 
+  45:stm32f10x_can.c **** /* CAN Master Control Register bits */
+  46:stm32f10x_can.c **** #define MCR_INRQ     ((uint32_t)0x00000001) /* Initialization request */
+  47:stm32f10x_can.c **** #define MCR_SLEEP    ((uint32_t)0x00000002) /* Sleep mode request */
+  48:stm32f10x_can.c **** #define MCR_TXFP     ((uint32_t)0x00000004) /* Transmit FIFO priority */
+  49:stm32f10x_can.c **** #define MCR_RFLM     ((uint32_t)0x00000008) /* Receive FIFO locked mode */
+  50:stm32f10x_can.c **** #define MCR_NART     ((uint32_t)0x00000010) /* No automatic retransmission */
+  51:stm32f10x_can.c **** #define MCR_AWUM     ((uint32_t)0x00000020) /* Automatic wake up mode */
+  52:stm32f10x_can.c **** #define MCR_ABOM     ((uint32_t)0x00000040) /* Automatic bus-off management */
+  53:stm32f10x_can.c **** #define MCR_TTCM     ((uint32_t)0x00000080) /* time triggered communication */
+  54:stm32f10x_can.c **** #define MCR_RESET    ((uint32_t)0x00008000) /* time triggered communication */
+  55:stm32f10x_can.c **** #define MCR_DBF      ((uint32_t)0x00010000) /* software master reset */
+  56:stm32f10x_can.c **** 
+  57:stm32f10x_can.c **** /* CAN Master Status Register bits */
+  58:stm32f10x_can.c **** #define MSR_INAK     ((uint32_t)0x00000001)    /* Initialization acknowledge */
+  59:stm32f10x_can.c **** #define MSR_WKUI     ((uint32_t)0x00000008)    /* Wake-up interrupt */
+  60:stm32f10x_can.c **** #define MSR_SLAKI    ((uint32_t)0x00000010)    /* Sleep acknowledge interrupt */
+  61:stm32f10x_can.c **** 
+  62:stm32f10x_can.c **** /* CAN Transmit Status Register bits */
+  63:stm32f10x_can.c **** #define TSR_RQCP0    ((uint32_t)0x00000001)    /* Request completed mailbox0 */
+  64:stm32f10x_can.c **** #define TSR_TXOK0    ((uint32_t)0x00000002)    /* Transmission OK of mailbox0 */
+  65:stm32f10x_can.c **** #define TSR_ABRQ0    ((uint32_t)0x00000080)    /* Abort request for mailbox0 */
+  66:stm32f10x_can.c **** #define TSR_RQCP1    ((uint32_t)0x00000100)    /* Request completed mailbox1 */
+  67:stm32f10x_can.c **** #define TSR_TXOK1    ((uint32_t)0x00000200)    /* Transmission OK of mailbox1 */
+  68:stm32f10x_can.c **** #define TSR_ABRQ1    ((uint32_t)0x00008000)    /* Abort request for mailbox1 */
+  69:stm32f10x_can.c **** #define TSR_RQCP2    ((uint32_t)0x00010000)    /* Request completed mailbox2 */
+  70:stm32f10x_can.c **** #define TSR_TXOK2    ((uint32_t)0x00020000)    /* Transmission OK of mailbox2 */
+  71:stm32f10x_can.c **** #define TSR_ABRQ2    ((uint32_t)0x00800000)    /* Abort request for mailbox2 */
+  72:stm32f10x_can.c **** #define TSR_TME0     ((uint32_t)0x04000000)    /* Transmit mailbox 0 empty */
+  73:stm32f10x_can.c **** #define TSR_TME1     ((uint32_t)0x08000000)    /* Transmit mailbox 1 empty */
+  74:stm32f10x_can.c **** #define TSR_TME2     ((uint32_t)0x10000000)    /* Transmit mailbox 2 empty */
+  75:stm32f10x_can.c **** 
+  76:stm32f10x_can.c **** /* CAN Receive FIFO 0 Register bits */
+  77:stm32f10x_can.c **** #define RF0R_FULL0   ((uint32_t)0x00000008)    /* FIFO 0 full */
+  78:stm32f10x_can.c **** #define RF0R_FOVR0   ((uint32_t)0x00000010)    /* FIFO 0 overrun */
+  79:stm32f10x_can.c **** #define RF0R_RFOM0   ((uint32_t)0x00000020)    /* Release FIFO 0 output mailbox */
+  80:stm32f10x_can.c **** 
+  81:stm32f10x_can.c **** /* CAN Receive FIFO 1 Register bits */
+  82:stm32f10x_can.c **** #define RF1R_FULL1   ((uint32_t)0x00000008)    /* FIFO 1 full */
+  83:stm32f10x_can.c **** #define RF1R_FOVR1   ((uint32_t)0x00000010)    /* FIFO 1 overrun */
+  84:stm32f10x_can.c **** #define RF1R_RFOM1   ((uint32_t)0x00000020)    /* Release FIFO 1 output mailbox */
+  85:stm32f10x_can.c **** 
+  86:stm32f10x_can.c **** /* CAN Error Status Register bits */
+  87:stm32f10x_can.c **** #define ESR_EWGF     ((uint32_t)0x00000001)    /* Error warning flag */
+  88:stm32f10x_can.c **** #define ESR_EPVF     ((uint32_t)0x00000002)    /* Error passive flag */
+  89:stm32f10x_can.c **** #define ESR_BOFF     ((uint32_t)0x00000004)    /* Bus-off flag */
+  90:stm32f10x_can.c **** 
+  91:stm32f10x_can.c **** /* CAN Mailbox Transmit Request */
+  92:stm32f10x_can.c **** #define TMIDxR_TXRQ  ((uint32_t)0x00000001) /* Transmit mailbox request */
+  93:stm32f10x_can.c **** 
+  94:stm32f10x_can.c **** /* CAN Filter Master Register bits */
+  95:stm32f10x_can.c **** #define FMR_FINIT    ((uint32_t)0x00000001) /* Filter init mode */
+  96:stm32f10x_can.c **** 
+  97:stm32f10x_can.c **** /* Time out for INAK bit */
+  98:stm32f10x_can.c **** #define INAK_TimeOut        ((uint32_t)0x0000FFFF)
+  99:stm32f10x_can.c **** 
+ 100:stm32f10x_can.c **** /* Time out for SLAK bit */
+ 101:stm32f10x_can.c **** #define SLAK_TimeOut        ((uint32_t)0x0000FFFF)
+ 102:stm32f10x_can.c **** 
+ 103:stm32f10x_can.c **** /**
+ 104:stm32f10x_can.c ****   * @}
+ 105:stm32f10x_can.c ****   */
+ 106:stm32f10x_can.c **** 
+ 107:stm32f10x_can.c **** /** @defgroup CAN_Private_Macros
+ 108:stm32f10x_can.c ****   * @{
+ 109:stm32f10x_can.c ****   */
+ 110:stm32f10x_can.c **** 
+ 111:stm32f10x_can.c **** /**
+ 112:stm32f10x_can.c ****   * @}
+ 113:stm32f10x_can.c ****   */
+ 114:stm32f10x_can.c **** 
+ 115:stm32f10x_can.c **** /** @defgroup CAN_Private_Variables
+ 116:stm32f10x_can.c ****   * @{
+ 117:stm32f10x_can.c ****   */
+ 118:stm32f10x_can.c **** 
+ 119:stm32f10x_can.c **** /**
+ 120:stm32f10x_can.c ****   * @}
+ 121:stm32f10x_can.c ****   */
+ 122:stm32f10x_can.c **** 
+ 123:stm32f10x_can.c **** /** @defgroup CAN_Private_FunctionPrototypes
+ 124:stm32f10x_can.c ****   * @{
+ 125:stm32f10x_can.c ****   */
+ 126:stm32f10x_can.c **** 
+ 127:stm32f10x_can.c **** static ITStatus CheckITStatus(uint32_t CAN_Reg, uint32_t It_Bit);
+ 128:stm32f10x_can.c **** 
+ 129:stm32f10x_can.c **** /**
+ 130:stm32f10x_can.c ****   * @}
+ 131:stm32f10x_can.c ****   */
+ 132:stm32f10x_can.c **** 
+ 133:stm32f10x_can.c **** /** @defgroup CAN_Private_Functions
+ 134:stm32f10x_can.c ****   * @{
+ 135:stm32f10x_can.c ****   */
+ 136:stm32f10x_can.c **** 
+ 137:stm32f10x_can.c **** /**
+ 138:stm32f10x_can.c ****   * @brief  Deinitializes the CAN peripheral registers to their default reset values.
+ 139:stm32f10x_can.c ****   * @param  CANx: where x can be 1 or 2 to select the CAN peripheral.
+ 140:stm32f10x_can.c ****   * @retval None.
+ 141:stm32f10x_can.c ****   */
+ 142:stm32f10x_can.c **** void CAN_DeInit(CAN_TypeDef* CANx)
+ 143:stm32f10x_can.c **** {
+ 15730              		.loc 1 144 0
+ 15731              		@ args = 0, pretend = 0, frame = 0
+ 15732              		@ frame_needed = 0, uses_anonymous_args = 0
+ 15733              	.LVL0:
+ 15734 0000 08B5     		push	{r3, lr}
+ 15735              	.LCFI0:
+ 144:stm32f10x_can.c ****   /* Check the parameters */
+ 145:stm32f10x_can.c ****   assert_param(IS_CAN_ALL_PERIPH(CANx));
+ 146:stm32f10x_can.c ****  
+ 147:stm32f10x_can.c ****   if (CANx == CAN1)
+ 15736              		.loc 1 148 0
+ 15737 0002 0B4B     		ldr	r3, .L6
+ 15738              	.LVL1:
+ 15739 0004 9842     		cmp	r0, r3
+ 15740 0006 07D1     		bne	.L2
+ 15741              	.LVL2:
+ 148:stm32f10x_can.c ****   {
+ 149:stm32f10x_can.c ****     /* Enable CAN1 reset state */
+ 150:stm32f10x_can.c ****     RCC_APB1PeriphResetCmd(RCC_APB1Periph_CAN1, ENABLE);
+ 15742              		.loc 1 151 0
+ 15743 0008 4FF00070 		mov	r0, #33554432
+ 15744              	.LVL3:
+ 15745 000c 0121     		movs	r1, #1
+ 15746 000e FFF7FEFF 		bl	RCC_APB1PeriphResetCmd
+ 151:stm32f10x_can.c ****     /* Release CAN1 from reset state */
+ 152:stm32f10x_can.c ****     RCC_APB1PeriphResetCmd(RCC_APB1Periph_CAN1, DISABLE);
+ 15747              		.loc 1 153 0
+ 15748 0012 4FF00070 		mov	r0, #33554432
+ 15749 0016 06E0     		b	.L4
+ 15750              	.LVL4:
+ 15751              	.L2:
+ 153:stm32f10x_can.c ****   }
+ 154:stm32f10x_can.c ****   else
+ 155:stm32f10x_can.c ****   {  
+ 156:stm32f10x_can.c ****     /* Enable CAN2 reset state */
+ 157:stm32f10x_can.c ****     RCC_APB1PeriphResetCmd(RCC_APB1Periph_CAN2, ENABLE);
+ 15752              		.loc 1 158 0
+ 15753 0018 4FF08060 		mov	r0, #67108864
+ 15754              	.LVL5:
+ 15755 001c 0121     		movs	r1, #1
+ 15756 001e FFF7FEFF 		bl	RCC_APB1PeriphResetCmd
+ 158:stm32f10x_can.c ****     /* Release CAN2 from reset state */
+ 159:stm32f10x_can.c ****     RCC_APB1PeriphResetCmd(RCC_APB1Periph_CAN2, DISABLE);
+ 15757              		.loc 1 160 0
+ 15758 0022 4FF08060 		mov	r0, #67108864
+ 15759              	.L4:
+ 15760 0026 0021     		movs	r1, #0
+ 15761 0028 FFF7FEFF 		bl	RCC_APB1PeriphResetCmd
+ 160:stm32f10x_can.c ****   }
+ 161:stm32f10x_can.c **** }
+ 15762              		.loc 1 162 0
+ 15763 002c 08BD     		pop	{r3, pc}
+ 15764              	.L7:
+ 15765 002e 00BF     		.align	2
+ 15766              	.L6:
+ 15767 0030 00640040 		.word	1073767424
+ 15768              	.LFE27:
+ 15770              		.section	.text.CAN_Init,"ax",%progbits
+ 15771              		.align	1
+ 15772              		.global	CAN_Init
+ 15773              		.thumb
+ 15774              		.thumb_func
+ 15776              	CAN_Init:
+ 15777              	.LFB28:
+ 162:stm32f10x_can.c **** 
+ 163:stm32f10x_can.c **** /**
+ 164:stm32f10x_can.c ****   * @brief  Initializes the CAN peripheral according to the specified
+ 165:stm32f10x_can.c ****   *   parameters in the CAN_InitStruct.
+ 166:stm32f10x_can.c ****   * @param  CANx: where x can be 1 or 2 to to select the CAN peripheral.
+ 167:stm32f10x_can.c ****   * @param  CAN_InitStruct: pointer to a CAN_InitTypeDef structure that
+ 168:stm32f10x_can.c ****   *   contains the configuration information for the CAN peripheral.
+ 169:stm32f10x_can.c ****   * @retval Constant indicates initialization succeed which will be 
+ 170:stm32f10x_can.c ****   *   CANINITFAILED or CANINITOK.
+ 171:stm32f10x_can.c ****   */
+ 172:stm32f10x_can.c **** uint8_t CAN_Init(CAN_TypeDef* CANx, CAN_InitTypeDef* CAN_InitStruct)
+ 173:stm32f10x_can.c **** {
+ 15778              		.loc 1 174 0
+ 15779              		@ args = 0, pretend = 0, frame = 0
+ 15780              		@ frame_needed = 0, uses_anonymous_args = 0
+ 15781              		@ link register save eliminated.
+ 15782              	.LVL6:
+ 174:stm32f10x_can.c ****   uint8_t InitStatus = CANINITFAILED;
+ 175:stm32f10x_can.c ****   uint32_t wait_ack = 0x00000000;
+ 176:stm32f10x_can.c ****   /* Check the parameters */
+ 177:stm32f10x_can.c ****   assert_param(IS_CAN_ALL_PERIPH(CANx));
+ 178:stm32f10x_can.c ****   assert_param(IS_FUNCTIONAL_STATE(CAN_InitStruct->CAN_TTCM));
+ 179:stm32f10x_can.c ****   assert_param(IS_FUNCTIONAL_STATE(CAN_InitStruct->CAN_ABOM));
+ 180:stm32f10x_can.c ****   assert_param(IS_FUNCTIONAL_STATE(CAN_InitStruct->CAN_AWUM));
+ 181:stm32f10x_can.c ****   assert_param(IS_FUNCTIONAL_STATE(CAN_InitStruct->CAN_NART));
+ 182:stm32f10x_can.c ****   assert_param(IS_FUNCTIONAL_STATE(CAN_InitStruct->CAN_RFLM));
+ 183:stm32f10x_can.c ****   assert_param(IS_FUNCTIONAL_STATE(CAN_InitStruct->CAN_TXFP));
+ 184:stm32f10x_can.c ****   assert_param(IS_CAN_MODE(CAN_InitStruct->CAN_Mode));
+ 185:stm32f10x_can.c ****   assert_param(IS_CAN_SJW(CAN_InitStruct->CAN_SJW));
+ 186:stm32f10x_can.c ****   assert_param(IS_CAN_BS1(CAN_InitStruct->CAN_BS1));
+ 187:stm32f10x_can.c ****   assert_param(IS_CAN_BS2(CAN_InitStruct->CAN_BS2));
+ 188:stm32f10x_can.c ****   assert_param(IS_CAN_PRESCALER(CAN_InitStruct->CAN_Prescaler));
+ 189:stm32f10x_can.c **** 
+ 190:stm32f10x_can.c ****   /* exit from sleep mode */
+ 191:stm32f10x_can.c ****   CANx->MCR &= ~MCR_SLEEP;
+ 15783              		.loc 1 192 0
+ 15784 0000 0368     		ldr	r3, [r0, #0]
+ 15785 0002 23F0020C 		bic	ip, r3, #2
+ 15786              	.LVL7:
+ 15787 0006 C0F800C0 		str	ip, [r0, #0]
+ 192:stm32f10x_can.c **** 
+ 193:stm32f10x_can.c ****   /* Request initialisation */
+ 194:stm32f10x_can.c ****   CANx->MCR |= MCR_INRQ ;
+ 15788              		.loc 1 195 0
+ 15789 000a 0268     		ldr	r2, [r0, #0]
+ 15790 000c 42F00103 		orr	r3, r2, #1
+ 15791 0010 0360     		str	r3, [r0, #0]
+ 195:stm32f10x_can.c **** 
+ 196:stm32f10x_can.c ****   /* Wait the acknowledge */
+ 197:stm32f10x_can.c ****   while (((CANx->MSR & MSR_INAK) != MSR_INAK) && (wait_ack != INAK_TimeOut))
+ 15792              		.loc 1 198 0
+ 15793 0012 4FF6FF72 		movw	r2, #65535
+ 176:stm32f10x_can.c ****   uint32_t wait_ack = 0x00000000;
+ 15794              		.loc 1 176 0
+ 15795 0016 0023     		movs	r3, #0
+ 15796              		.loc 1 198 0
+ 15797 0018 00E0     		b	.L9
+ 15798              	.LVL8:
+ 15799              	.L11:
+ 198:stm32f10x_can.c ****   {
+ 199:stm32f10x_can.c ****     wait_ack++;
+ 15800              		.loc 1 200 0
+ 15801 001a 0133     		adds	r3, r3, #1
+ 15802              	.LVL9:
+ 15803              	.L9:
+ 198:stm32f10x_can.c ****   {
+ 15804              		.loc 1 198 0 discriminator 1
+ 15805 001c D0F804C0 		ldr	ip, [r0, #4]
+ 15806 0020 1CF0010F 		tst	ip, #1
+ 15807 0024 01D1     		bne	.L10
+ 15808              	.LVL10:
+ 198:stm32f10x_can.c ****   {
+ 15809              		.loc 1 198 0 is_stmt 0 discriminator 2
+ 15810 0026 9342     		cmp	r3, r2
+ 15811 0028 F7D1     		bne	.L11
+ 15812              	.LVL11:
+ 15813              	.L10:
+ 200:stm32f10x_can.c ****   }
+ 201:stm32f10x_can.c **** 
+ 202:stm32f10x_can.c ****   /* ...and check acknowledged */
+ 203:stm32f10x_can.c ****   if ((CANx->MSR & MSR_INAK) != MSR_INAK)
+ 15814              		.loc 1 204 0 is_stmt 1
+ 15815 002a 4368     		ldr	r3, [r0, #4]
+ 15816              	.LVL12:
+ 15817 002c 13F00102 		ands	r2, r3, #1
+ 204:stm32f10x_can.c ****   {
+ 205:stm32f10x_can.c ****     InitStatus = CANINITFAILED;
+ 15818              		.loc 1 206 0
+ 15819 0030 08BF     		it	eq
+ 15820 0032 1046     		moveq	r0, r2
+ 15821              	.LVL13:
+ 204:stm32f10x_can.c ****   {
+ 15822              		.loc 1 204 0
+ 15823 0034 6FD0     		beq	.L12
+ 15824              	.LVL14:
+ 206:stm32f10x_can.c ****   }
+ 207:stm32f10x_can.c ****   else 
+ 208:stm32f10x_can.c ****   {
+ 209:stm32f10x_can.c ****     /* Set the time triggered communication mode */
+ 210:stm32f10x_can.c ****     if (CAN_InitStruct->CAN_TTCM == ENABLE)
+ 15825              		.loc 1 211 0
+ 15826 0036 8A79     		ldrb	r2, [r1, #6]	@ zero_extendqisi2
+ 211:stm32f10x_can.c ****     {
+ 212:stm32f10x_can.c ****       CANx->MCR |= MCR_TTCM;
+ 213:stm32f10x_can.c ****     }
+ 214:stm32f10x_can.c ****     else
+ 215:stm32f10x_can.c ****     {
+ 216:stm32f10x_can.c ****       CANx->MCR &= ~MCR_TTCM;
+ 217:stm32f10x_can.c ****     }
+ 218:stm32f10x_can.c **** 
+ 219:stm32f10x_can.c ****     /* Set the automatic bus-off management */
+ 220:stm32f10x_can.c ****     if (CAN_InitStruct->CAN_ABOM == ENABLE)
+ 15827              		.loc 1 221 0
+ 15828 0038 91F807C0 		ldrb	ip, [r1, #7]	@ zero_extendqisi2
+ 211:stm32f10x_can.c ****     {
+ 15829              		.loc 1 211 0
+ 15830 003c 012A     		cmp	r2, #1
+ 213:stm32f10x_can.c ****       CANx->MCR |= MCR_TTCM;
+ 15831              		.loc 1 213 0
+ 15832 003e 0BBF     		itete	eq
+ 15833 0040 0268     		ldreq	r2, [r0, #0]
+ 217:stm32f10x_can.c ****       CANx->MCR &= ~MCR_TTCM;
+ 15834              		.loc 1 217 0
+ 15835 0042 0268     		ldrne	r2, [r0, #0]
+ 213:stm32f10x_can.c ****       CANx->MCR |= MCR_TTCM;
+ 15836              		.loc 1 213 0
+ 15837 0044 42F08002 		orreq	r2, r2, #128
+ 217:stm32f10x_can.c ****       CANx->MCR &= ~MCR_TTCM;
+ 15838              		.loc 1 217 0
+ 15839 0048 22F08002 		bicne	r2, r2, #128
+ 15840 004c 0260     		str	r2, [r0, #0]
+ 15841              		.loc 1 221 0
+ 15842 004e BCF1010F 		cmp	ip, #1
+ 221:stm32f10x_can.c ****     {
+ 222:stm32f10x_can.c ****       CANx->MCR |= MCR_ABOM;
+ 15843              		.loc 1 223 0
+ 15844 0052 0CBF     		ite	eq
+ 15845 0054 D0F800C0 		ldreq	ip, [r0, #0]
+ 223:stm32f10x_can.c ****     }
+ 224:stm32f10x_can.c ****     else
+ 225:stm32f10x_can.c ****     {
+ 226:stm32f10x_can.c ****       CANx->MCR &= ~MCR_ABOM;
+ 15846              		.loc 1 227 0
+ 15847 0058 D0F800C0 		ldrne	ip, [r0, #0]
+ 227:stm32f10x_can.c ****     }
+ 228:stm32f10x_can.c **** 
+ 229:stm32f10x_can.c ****     /* Set the automatic wake-up mode */
+ 230:stm32f10x_can.c ****     if (CAN_InitStruct->CAN_AWUM == ENABLE)
+ 15848              		.loc 1 231 0
+ 15849 005c 0B7A     		ldrb	r3, [r1, #8]	@ zero_extendqisi2
+ 223:stm32f10x_can.c ****     }
+ 15850              		.loc 1 223 0
+ 15851 005e 0CBF     		ite	eq
+ 15852 0060 4CF0400C 		orreq	ip, ip, #64
+ 227:stm32f10x_can.c ****     }
+ 15853              		.loc 1 227 0
+ 15854 0064 2CF0400C 		bicne	ip, ip, #64
+ 15855 0068 C0F800C0 		str	ip, [r0, #0]
+ 15856              		.loc 1 231 0
+ 15857 006c 012B     		cmp	r3, #1
+ 231:stm32f10x_can.c ****     {
+ 232:stm32f10x_can.c ****       CANx->MCR |= MCR_AWUM;
+ 15858              		.loc 1 233 0
+ 15859 006e 0CBF     		ite	eq
+ 15860 0070 0368     		ldreq	r3, [r0, #0]
+ 233:stm32f10x_can.c ****     }
+ 234:stm32f10x_can.c ****     else
+ 235:stm32f10x_can.c ****     {
+ 236:stm32f10x_can.c ****       CANx->MCR &= ~MCR_AWUM;
+ 15861              		.loc 1 237 0
+ 15862 0072 0368     		ldrne	r3, [r0, #0]
+ 237:stm32f10x_can.c ****     }
+ 238:stm32f10x_can.c **** 
+ 239:stm32f10x_can.c ****     /* Set the no automatic retransmission */
+ 240:stm32f10x_can.c ****     if (CAN_InitStruct->CAN_NART == ENABLE)
+ 15863              		.loc 1 241 0
+ 15864 0074 4A7A     		ldrb	r2, [r1, #9]	@ zero_extendqisi2
+ 233:stm32f10x_can.c ****     }
+ 15865              		.loc 1 233 0
+ 15866 0076 0CBF     		ite	eq
+ 15867 0078 43F02003 		orreq	r3, r3, #32
+ 237:stm32f10x_can.c ****     }
+ 15868              		.loc 1 237 0
+ 15869 007c 23F02003 		bicne	r3, r3, #32
+ 15870 0080 0360     		str	r3, [r0, #0]
+ 15871              		.loc 1 241 0
+ 15872 0082 012A     		cmp	r2, #1
+ 241:stm32f10x_can.c ****     {
+ 242:stm32f10x_can.c ****       CANx->MCR |= MCR_NART;
+ 15873              		.loc 1 243 0
+ 15874 0084 0CBF     		ite	eq
+ 15875 0086 0268     		ldreq	r2, [r0, #0]
+ 243:stm32f10x_can.c ****     }
+ 244:stm32f10x_can.c ****     else
+ 245:stm32f10x_can.c ****     {
+ 246:stm32f10x_can.c ****       CANx->MCR &= ~MCR_NART;
+ 15876              		.loc 1 247 0
+ 15877 0088 0268     		ldrne	r2, [r0, #0]
+ 247:stm32f10x_can.c ****     }
+ 248:stm32f10x_can.c **** 
+ 249:stm32f10x_can.c ****     /* Set the receive FIFO locked mode */
+ 250:stm32f10x_can.c ****     if (CAN_InitStruct->CAN_RFLM == ENABLE)
+ 15878              		.loc 1 251 0
+ 15879 008a 91F80AC0 		ldrb	ip, [r1, #10]	@ zero_extendqisi2
+ 243:stm32f10x_can.c ****     }
+ 15880              		.loc 1 243 0
+ 15881 008e 0CBF     		ite	eq
+ 15882 0090 42F01002 		orreq	r2, r2, #16
+ 247:stm32f10x_can.c ****     }
+ 15883              		.loc 1 247 0
+ 15884 0094 22F01002 		bicne	r2, r2, #16
+ 15885 0098 0260     		str	r2, [r0, #0]
+ 15886              		.loc 1 251 0
+ 15887 009a BCF1010F 		cmp	ip, #1
+ 251:stm32f10x_can.c ****     {
+ 252:stm32f10x_can.c ****       CANx->MCR |= MCR_RFLM;
+ 15888              		.loc 1 253 0
+ 15889 009e 0CBF     		ite	eq
+ 15890 00a0 D0F800C0 		ldreq	ip, [r0, #0]
+ 253:stm32f10x_can.c ****     }
+ 254:stm32f10x_can.c ****     else
+ 255:stm32f10x_can.c ****     {
+ 256:stm32f10x_can.c ****       CANx->MCR &= ~MCR_RFLM;
+ 15891              		.loc 1 257 0
+ 15892 00a4 D0F800C0 		ldrne	ip, [r0, #0]
+ 257:stm32f10x_can.c ****     }
+ 258:stm32f10x_can.c **** 
+ 259:stm32f10x_can.c ****     /* Set the transmit FIFO priority */
+ 260:stm32f10x_can.c ****     if (CAN_InitStruct->CAN_TXFP == ENABLE)
+ 15893              		.loc 1 261 0
+ 15894 00a8 CB7A     		ldrb	r3, [r1, #11]	@ zero_extendqisi2
+ 253:stm32f10x_can.c ****     }
+ 15895              		.loc 1 253 0
+ 15896 00aa 0CBF     		ite	eq
+ 15897 00ac 4CF0080C 		orreq	ip, ip, #8
+ 257:stm32f10x_can.c ****     }
+ 15898              		.loc 1 257 0
+ 15899 00b0 2CF0080C 		bicne	ip, ip, #8
+ 15900 00b4 C0F800C0 		str	ip, [r0, #0]
+ 15901              		.loc 1 261 0
+ 15902 00b8 012B     		cmp	r3, #1
+ 261:stm32f10x_can.c ****     {
+ 262:stm32f10x_can.c ****       CANx->MCR |= MCR_TXFP;
+ 15903              		.loc 1 263 0
+ 15904 00ba 0BBF     		itete	eq
+ 15905 00bc 0368     		ldreq	r3, [r0, #0]
+ 263:stm32f10x_can.c ****     }
+ 264:stm32f10x_can.c ****     else
+ 265:stm32f10x_can.c ****     {
+ 266:stm32f10x_can.c ****       CANx->MCR &= ~MCR_TXFP;
+ 15906              		.loc 1 267 0
+ 15907 00be 0368     		ldrne	r3, [r0, #0]
+ 263:stm32f10x_can.c ****     }
+ 15908              		.loc 1 263 0
+ 15909 00c0 43F00403 		orreq	r3, r3, #4
+ 15910              		.loc 1 267 0
+ 15911 00c4 23F00403 		bicne	r3, r3, #4
+ 15912 00c8 0360     		str	r3, [r0, #0]
+ 267:stm32f10x_can.c ****     }
+ 268:stm32f10x_can.c **** 
+ 269:stm32f10x_can.c ****     /* Set the bit timing register */
+ 270:stm32f10x_can.c ****     CANx->BTR = (uint32_t)((uint32_t)CAN_InitStruct->CAN_Mode << 30) | ((uint32_t)CAN_InitStruct->C
+ 15913              		.loc 1 271 0
+ 15914 00ca 8A78     		ldrb	r2, [r1, #2]	@ zero_extendqisi2
+ 15915 00cc 91F803C0 		ldrb	ip, [r1, #3]	@ zero_extendqisi2
+ 15916 00d0 9307     		lsls	r3, r2, #30
+ 271:stm32f10x_can.c ****                ((uint32_t)CAN_InitStruct->CAN_BS1 << 16) | ((uint32_t)CAN_InitStruct->CAN_BS2 << 20
+ 15917              		.loc 1 272 0
+ 15918 00d2 0A79     		ldrb	r2, [r1, #4]	@ zero_extendqisi2
+ 271:stm32f10x_can.c ****                ((uint32_t)CAN_InitStruct->CAN_BS1 << 16) | ((uint32_t)CAN_InitStruct->CAN_BS2 << 20
+ 15919              		.loc 1 271 0
+ 15920 00d4 43EA0C6C 		orr	ip, r3, ip, lsl #24
+ 15921              		.loc 1 272 0
+ 15922 00d8 4B79     		ldrb	r3, [r1, #5]	@ zero_extendqisi2
+ 272:stm32f10x_can.c ****                ((uint32_t)CAN_InitStruct->CAN_Prescaler - 1);
+ 15923              		.loc 1 273 0
+ 15924 00da 0988     		ldrh	r1, [r1, #0]
+ 15925              	.LVL15:
+ 272:stm32f10x_can.c ****                ((uint32_t)CAN_InitStruct->CAN_Prescaler - 1);
+ 15926              		.loc 1 272 0
+ 15927 00dc 4CEA024C 		orr	ip, ip, r2, lsl #16
+ 15928 00e0 4CEA0353 		orr	r3, ip, r3, lsl #20
+ 15929              		.loc 1 273 0
+ 15930 00e4 4A1E     		subs	r2, r1, #1
+ 15931 00e6 1343     		orrs	r3, r3, r2
+ 271:stm32f10x_can.c ****                ((uint32_t)CAN_InitStruct->CAN_BS1 << 16) | ((uint32_t)CAN_InitStruct->CAN_BS2 << 20
+ 15932              		.loc 1 271 0
+ 15933 00e8 C361     		str	r3, [r0, #28]
+ 273:stm32f10x_can.c **** 
+ 274:stm32f10x_can.c ****     /* Request leave initialisation */
+ 275:stm32f10x_can.c ****     CANx->MCR &= ~MCR_INRQ;
+ 15934              		.loc 1 276 0
+ 15935 00ea D0F800C0 		ldr	ip, [r0, #0]
+ 276:stm32f10x_can.c **** 
+ 277:stm32f10x_can.c ****    /* Wait the acknowledge */
+ 278:stm32f10x_can.c ****    wait_ack = 0x00;
+ 15936              		.loc 1 279 0
+ 15937 00ee 0023     		movs	r3, #0
+ 276:stm32f10x_can.c **** 
+ 15938              		.loc 1 276 0
+ 15939 00f0 2CF00101 		bic	r1, ip, #1
+ 15940 00f4 0160     		str	r1, [r0, #0]
+ 15941              	.LVL16:
+ 279:stm32f10x_can.c **** 
+ 280:stm32f10x_can.c ****    while (((CANx->MSR & MSR_INAK) == MSR_INAK) && (wait_ack != INAK_TimeOut))
+ 15942              		.loc 1 281 0
+ 15943 00f6 4FF6FF72 		movw	r2, #65535
+ 15944 00fa 00E0     		b	.L25
+ 15945              	.LVL17:
+ 15946              	.L27:
+ 281:stm32f10x_can.c ****    {
+ 282:stm32f10x_can.c ****      wait_ack++;
+ 15947              		.loc 1 283 0
+ 15948 00fc 0133     		adds	r3, r3, #1
+ 15949              	.LVL18:
+ 15950              	.L25:
+ 281:stm32f10x_can.c ****    {
+ 15951              		.loc 1 281 0 discriminator 1
+ 15952 00fe 4168     		ldr	r1, [r0, #4]
+ 15953 0100 11F0010F 		tst	r1, #1
+ 15954 0104 01D0     		beq	.L26
+ 15955              	.LVL19:
+ 281:stm32f10x_can.c ****    {
+ 15956              		.loc 1 281 0 is_stmt 0 discriminator 2
+ 15957 0106 9342     		cmp	r3, r2
+ 15958 0108 F8D1     		bne	.L27
+ 15959              	.LVL20:
+ 15960              	.L26:
+ 283:stm32f10x_can.c ****    }
+ 284:stm32f10x_can.c **** 
+ 285:stm32f10x_can.c ****     /* ...and check acknowledged */
+ 286:stm32f10x_can.c ****     if ((CANx->MSR & MSR_INAK) == MSR_INAK)
+ 15961              		.loc 1 287 0 is_stmt 1
+ 15962 010a 4068     		ldr	r0, [r0, #4]
+ 206:stm32f10x_can.c ****     InitStatus = CANINITFAILED;
+ 15963              		.loc 1 206 0
+ 15964 010c 10F0010F 		tst	r0, #1
+ 15965 0110 14BF     		ite	ne
+ 15966 0112 0020     		movne	r0, #0
+ 15967 0114 0120     		moveq	r0, #1
+ 15968              	.LVL21:
+ 15969              	.L12:
+ 15970              	.LVL22:
+ 287:stm32f10x_can.c ****     {
+ 288:stm32f10x_can.c ****       InitStatus = CANINITFAILED;
+ 289:stm32f10x_can.c ****     }
+ 290:stm32f10x_can.c ****     else
+ 291:stm32f10x_can.c ****     {
+ 292:stm32f10x_can.c ****       InitStatus = CANINITOK ;
+ 293:stm32f10x_can.c ****     }
+ 294:stm32f10x_can.c ****   }
+ 295:stm32f10x_can.c **** 
+ 296:stm32f10x_can.c ****   /* At this step, return the status of initialization */
+ 297:stm32f10x_can.c ****   return InitStatus;
+ 298:stm32f10x_can.c **** }
+ 15971              		.loc 1 299 0
+ 15972 0116 7047     		bx	lr
+ 15973              	.LFE28:
+ 15975              		.section	.text.CAN_FilterInit,"ax",%progbits
+ 15976              		.align	1
+ 15977              		.global	CAN_FilterInit
+ 15978              		.thumb
+ 15979              		.thumb_func
+ 15981              	CAN_FilterInit:
+ 15982              	.LFB29:
+ 299:stm32f10x_can.c **** 
+ 300:stm32f10x_can.c **** /**
+ 301:stm32f10x_can.c ****   * @brief  Initializes the CAN peripheral according to the specified
+ 302:stm32f10x_can.c ****   *   parameters in the CAN_FilterInitStruct.
+ 303:stm32f10x_can.c ****   * @param  CAN_FilterInitStruct: pointer to a CAN_FilterInitTypeDef
+ 304:stm32f10x_can.c ****   *   structure that contains the configuration information.
+ 305:stm32f10x_can.c ****   * @retval None.
+ 306:stm32f10x_can.c ****   */
+ 307:stm32f10x_can.c **** void CAN_FilterInit(CAN_FilterInitTypeDef* CAN_FilterInitStruct)
+ 308:stm32f10x_can.c **** {
+ 15983              		.loc 1 309 0
+ 15984              		@ args = 0, pretend = 0, frame = 0
+ 15985              		@ frame_needed = 0, uses_anonymous_args = 0
+ 15986              	.LVL23:
+ 15987 0000 30B5     		push	{r4, r5, lr}
+ 15988              	.LCFI1:
+ 15989              	.LVL24:
+ 309:stm32f10x_can.c ****   uint32_t filter_number_bit_pos = 0;
+ 310:stm32f10x_can.c ****   /* Check the parameters */
+ 311:stm32f10x_can.c ****   assert_param(IS_CAN_FILTER_NUMBER(CAN_FilterInitStruct->CAN_FilterNumber));
+ 312:stm32f10x_can.c ****   assert_param(IS_CAN_FILTER_MODE(CAN_FilterInitStruct->CAN_FilterMode));
+ 313:stm32f10x_can.c ****   assert_param(IS_CAN_FILTER_SCALE(CAN_FilterInitStruct->CAN_FilterScale));
+ 314:stm32f10x_can.c ****   assert_param(IS_CAN_FILTER_FIFO(CAN_FilterInitStruct->CAN_FilterFIFOAssignment));
+ 315:stm32f10x_can.c ****   assert_param(IS_FUNCTIONAL_STATE(CAN_FilterInitStruct->CAN_FilterActivation));
+ 316:stm32f10x_can.c **** 
+ 317:stm32f10x_can.c ****   filter_number_bit_pos = ((uint32_t)0x00000001) << CAN_FilterInitStruct->CAN_FilterNumber;
+ 15990              		.loc 1 318 0
+ 15991 0002 90F80AC0 		ldrb	ip, [r0, #10]	@ zero_extendqisi2
+ 15992 0006 0122     		movs	r2, #1
+ 15993 0008 02FA0CF2 		lsl	r2, r2, ip
+ 15994              	.LVL25:
+ 318:stm32f10x_can.c **** 
+ 319:stm32f10x_can.c ****   /* Initialisation mode for the filter */
+ 320:stm32f10x_can.c ****   CAN1->FMR |= FMR_FINIT;
+ 15995              		.loc 1 321 0
+ 15996 000c 3C4B     		ldr	r3, .L45
+ 15997 000e D3F80042 		ldr	r4, [r3, #512]
+ 15998 0012 44F00101 		orr	r1, r4, #1
+ 15999 0016 C3F80012 		str	r1, [r3, #512]
+ 321:stm32f10x_can.c **** 
+ 322:stm32f10x_can.c ****   /* Filter Deactivation */
+ 323:stm32f10x_can.c ****   CAN1->FA1R &= ~(uint32_t)filter_number_bit_pos;
+ 16000              		.loc 1 324 0
+ 16001 001a D3F81C42 		ldr	r4, [r3, #540]
+ 16002 001e D143     		mvns	r1, r2
+ 16003 0020 01EA0404 		and	r4, r1, r4
+ 16004 0024 C3F81C42 		str	r4, [r3, #540]
+ 324:stm32f10x_can.c **** 
+ 325:stm32f10x_can.c ****   /* Filter Scale */
+ 326:stm32f10x_can.c ****   if (CAN_FilterInitStruct->CAN_FilterScale == CAN_FilterScale_16bit)
+ 16005              		.loc 1 327 0
+ 16006 0028 047B     		ldrb	r4, [r0, #12]	@ zero_extendqisi2
+ 16007 002a D4B9     		cbnz	r4, .L36
+ 16008              	.LVL26:
+ 327:stm32f10x_can.c ****   {
+ 328:stm32f10x_can.c ****     /* 16-bit scale for the filter */
+ 329:stm32f10x_can.c ****     CAN1->FS1R &= ~(uint32_t)filter_number_bit_pos;
+ 16009              		.loc 1 330 0
+ 16010 002c D3F80C42 		ldr	r4, [r3, #524]
+ 330:stm32f10x_can.c **** 
+ 331:stm32f10x_can.c ****     /* First 16-bit identifier and First 16-bit mask */
+ 332:stm32f10x_can.c ****     /* Or First 16-bit identifier and Second 16-bit identifier */
+ 333:stm32f10x_can.c ****     CAN1->sFilterRegister[CAN_FilterInitStruct->CAN_FilterNumber].FR1 = 
+ 16011              		.loc 1 334 0
+ 16012 0030 0CF1480C 		add	ip, ip, #72
+ 330:stm32f10x_can.c **** 
+ 16013              		.loc 1 330 0
+ 16014 0034 01EA0405 		and	r5, r1, r4
+ 16015 0038 C3F80C52 		str	r5, [r3, #524]
+ 16016              	.LVL27:
+ 334:stm32f10x_can.c ****     ((0x0000FFFF & (uint32_t)CAN_FilterInitStruct->CAN_FilterMaskIdLow) << 16) |
+ 335:stm32f10x_can.c ****         (0x0000FFFF & (uint32_t)CAN_FilterInitStruct->CAN_FilterIdLow);
+ 16017              		.loc 1 336 0
+ 16018 003c 4488     		ldrh	r4, [r0, #2]
+ 335:stm32f10x_can.c ****         (0x0000FFFF & (uint32_t)CAN_FilterInitStruct->CAN_FilterIdLow);
+ 16019              		.loc 1 335 0
+ 16020 003e C588     		ldrh	r5, [r0, #6]
+ 16021              		.loc 1 336 0
+ 16022 0040 44EA0544 		orr	r4, r4, r5, lsl #16
+ 334:stm32f10x_can.c ****     ((0x0000FFFF & (uint32_t)CAN_FilterInitStruct->CAN_FilterMaskIdLow) << 16) |
+ 16023              		.loc 1 334 0
+ 16024 0044 43F83C40 		str	r4, [r3, ip, lsl #3]
+ 336:stm32f10x_can.c **** 
+ 337:stm32f10x_can.c ****     /* Second 16-bit identifier and Second 16-bit mask */
+ 338:stm32f10x_can.c ****     /* Or Third 16-bit identifier and Fourth 16-bit identifier */
+ 339:stm32f10x_can.c ****     CAN1->sFilterRegister[CAN_FilterInitStruct->CAN_FilterNumber].FR2 = 
+ 340:stm32f10x_can.c ****     ((0x0000FFFF & (uint32_t)CAN_FilterInitStruct->CAN_FilterMaskIdHigh) << 16) |
+ 16025              		.loc 1 341 0
+ 16026 0048 8488     		ldrh	r4, [r0, #4]
+ 341:stm32f10x_can.c ****         (0x0000FFFF & (uint32_t)CAN_FilterInitStruct->CAN_FilterIdHigh);
+ 16027              		.loc 1 342 0
+ 16028 004a 0388     		ldrh	r3, [r0, #0]
+ 340:stm32f10x_can.c ****     CAN1->sFilterRegister[CAN_FilterInitStruct->CAN_FilterNumber].FR2 = 
+ 16029              		.loc 1 340 0
+ 16030 004c 4FEACC0C 		lsl	ip, ip, #3
+ 16031 0050 0CF1804C 		add	ip, ip, #1073741824
+ 16032              		.loc 1 342 0
+ 16033 0054 43EA0443 		orr	r3, r3, r4, lsl #16
+ 340:stm32f10x_can.c ****     CAN1->sFilterRegister[CAN_FilterInitStruct->CAN_FilterNumber].FR2 = 
+ 16034              		.loc 1 340 0
+ 16035 0058 0CF5C84C 		add	ip, ip, #25600
+ 16036 005c CCF80430 		str	r3, [ip, #4]
+ 16037 0060 1BE0     		b	.L37
+ 16038              	.LVL28:
+ 16039              	.L36:
+ 342:stm32f10x_can.c ****   }
+ 343:stm32f10x_can.c **** 
+ 344:stm32f10x_can.c ****   if (CAN_FilterInitStruct->CAN_FilterScale == CAN_FilterScale_32bit)
+ 16040              		.loc 1 345 0
+ 16041 0062 012C     		cmp	r4, #1
+ 16042 0064 19D1     		bne	.L37
+ 345:stm32f10x_can.c ****   {
+ 346:stm32f10x_can.c ****     /* 32-bit scale for the filter */
+ 347:stm32f10x_can.c ****     CAN1->FS1R |= filter_number_bit_pos;
+ 16043              		.loc 1 348 0
+ 16044 0066 D3F80C42 		ldr	r4, [r3, #524]
+ 348:stm32f10x_can.c ****     /* 32-bit identifier or First 32-bit identifier */
+ 349:stm32f10x_can.c ****     CAN1->sFilterRegister[CAN_FilterInitStruct->CAN_FilterNumber].FR1 = 
+ 16045              		.loc 1 350 0
+ 16046 006a 0CF1480C 		add	ip, ip, #72
+ 16047              	.LVL29:
+ 348:stm32f10x_can.c ****     /* 32-bit identifier or First 32-bit identifier */
+ 16048              		.loc 1 348 0
+ 16049 006e 42EA0405 		orr	r5, r2, r4
+ 16050 0072 C3F80C52 		str	r5, [r3, #524]
+ 16051              	.LVL30:
+ 350:stm32f10x_can.c ****     ((0x0000FFFF & (uint32_t)CAN_FilterInitStruct->CAN_FilterIdHigh) << 16) |
+ 351:stm32f10x_can.c ****         (0x0000FFFF & (uint32_t)CAN_FilterInitStruct->CAN_FilterIdLow);
+ 16052              		.loc 1 352 0
+ 16053 0076 4488     		ldrh	r4, [r0, #2]
+ 351:stm32f10x_can.c ****         (0x0000FFFF & (uint32_t)CAN_FilterInitStruct->CAN_FilterIdLow);
+ 16054              		.loc 1 351 0
+ 16055 0078 0588     		ldrh	r5, [r0, #0]
+ 16056              		.loc 1 352 0
+ 16057 007a 44EA0544 		orr	r4, r4, r5, lsl #16
+ 350:stm32f10x_can.c ****     ((0x0000FFFF & (uint32_t)CAN_FilterInitStruct->CAN_FilterIdHigh) << 16) |
+ 16058              		.loc 1 350 0
+ 16059 007e 43F83C40 		str	r4, [r3, ip, lsl #3]
+ 352:stm32f10x_can.c ****     /* 32-bit mask or Second 32-bit identifier */
+ 353:stm32f10x_can.c ****     CAN1->sFilterRegister[CAN_FilterInitStruct->CAN_FilterNumber].FR2 = 
+ 354:stm32f10x_can.c ****     ((0x0000FFFF & (uint32_t)CAN_FilterInitStruct->CAN_FilterMaskIdHigh) << 16) |
+ 355:stm32f10x_can.c ****         (0x0000FFFF & (uint32_t)CAN_FilterInitStruct->CAN_FilterMaskIdLow);
+ 16060              		.loc 1 356 0
+ 16061 0082 C388     		ldrh	r3, [r0, #6]
+ 355:stm32f10x_can.c ****         (0x0000FFFF & (uint32_t)CAN_FilterInitStruct->CAN_FilterMaskIdLow);
+ 16062              		.loc 1 355 0
+ 16063 0084 8488     		ldrh	r4, [r0, #4]
+ 354:stm32f10x_can.c ****     CAN1->sFilterRegister[CAN_FilterInitStruct->CAN_FilterNumber].FR2 = 
+ 16064              		.loc 1 354 0
+ 16065 0086 4FEACC0C 		lsl	ip, ip, #3
+ 16066              		.loc 1 356 0
+ 16067 008a 43EA0444 		orr	r4, r3, r4, lsl #16
+ 354:stm32f10x_can.c ****     CAN1->sFilterRegister[CAN_FilterInitStruct->CAN_FilterNumber].FR2 = 
+ 16068              		.loc 1 354 0
+ 16069 008e 0CF18043 		add	r3, ip, #1073741824
+ 16070 0092 03F5C84C 		add	ip, r3, #25600
+ 16071 0096 CCF80440 		str	r4, [ip, #4]
+ 16072              	.LVL31:
+ 16073              	.L37:
+ 356:stm32f10x_can.c ****   }
+ 357:stm32f10x_can.c **** 
+ 358:stm32f10x_can.c ****   /* Filter Mode */
+ 359:stm32f10x_can.c ****   if (CAN_FilterInitStruct->CAN_FilterMode == CAN_FilterMode_IdMask)
+ 16074              		.loc 1 360 0
+ 16075 009a C37A     		ldrb	r3, [r0, #11]	@ zero_extendqisi2
+ 16076 009c 2BB9     		cbnz	r3, .L38
+ 360:stm32f10x_can.c ****   {
+ 361:stm32f10x_can.c ****     /*Id/Mask mode for the filter*/
+ 362:stm32f10x_can.c ****     CAN1->FM1R &= ~(uint32_t)filter_number_bit_pos;
+ 16077              		.loc 1 363 0
+ 16078 009e 184B     		ldr	r3, .L45
+ 16079 00a0 D3F804C2 		ldr	ip, [r3, #516]
+ 16080 00a4 01EA0C0C 		and	ip, r1, ip
+ 16081 00a8 04E0     		b	.L43
+ 16082              	.L38:
+ 363:stm32f10x_can.c ****   }
+ 364:stm32f10x_can.c ****   else /* CAN_FilterInitStruct->CAN_FilterMode == CAN_FilterMode_IdList */
+ 365:stm32f10x_can.c ****   {
+ 366:stm32f10x_can.c ****     /*Identifier list mode for the filter*/
+ 367:stm32f10x_can.c ****     CAN1->FM1R |= (uint32_t)filter_number_bit_pos;
+ 16083              		.loc 1 368 0
+ 16084 00aa 154B     		ldr	r3, .L45
+ 16085 00ac D3F804C2 		ldr	ip, [r3, #516]
+ 16086              	.LVL32:
+ 16087 00b0 42EA0C0C 		orr	ip, r2, ip
+ 16088              	.LVL33:
+ 16089              	.L43:
+ 16090 00b4 C3F804C2 		str	ip, [r3, #516]
+ 16091              	.LVL34:
+ 368:stm32f10x_can.c ****   }
+ 369:stm32f10x_can.c **** 
+ 370:stm32f10x_can.c ****   /* Filter FIFO assignment */
+ 371:stm32f10x_can.c ****   if (CAN_FilterInitStruct->CAN_FilterFIFOAssignment == CAN_FilterFIFO0)
+ 16092              		.loc 1 372 0
+ 16093 00b8 0389     		ldrh	r3, [r0, #8]
+ 16094 00ba 2BB9     		cbnz	r3, .L40
+ 372:stm32f10x_can.c ****   {
+ 373:stm32f10x_can.c ****     /* FIFO 0 assignation for the filter */
+ 374:stm32f10x_can.c ****     CAN1->FFA1R &= ~(uint32_t)filter_number_bit_pos;
+ 16095              		.loc 1 375 0
+ 16096 00bc 104B     		ldr	r3, .L45
+ 16097 00be D3F814C2 		ldr	ip, [r3, #532]
+ 16098 00c2 01EA0C01 		and	r1, r1, ip
+ 16099 00c6 06E0     		b	.L44
+ 16100              	.L40:
+ 375:stm32f10x_can.c ****   }
+ 376:stm32f10x_can.c **** 
+ 377:stm32f10x_can.c ****   if (CAN_FilterInitStruct->CAN_FilterFIFOAssignment == CAN_FilterFIFO1)
+ 16101              		.loc 1 378 0
+ 16102 00c8 012B     		cmp	r3, #1
+ 16103 00ca 06D1     		bne	.L41
+ 378:stm32f10x_can.c ****   {
+ 379:stm32f10x_can.c ****     /* FIFO 1 assignation for the filter */
+ 380:stm32f10x_can.c ****     CAN1->FFA1R |= (uint32_t)filter_number_bit_pos;
+ 16104              		.loc 1 381 0
+ 16105 00cc 0C4B     		ldr	r3, .L45
+ 16106 00ce D3F81412 		ldr	r1, [r3, #532]
+ 16107              	.LVL35:
+ 16108 00d2 42EA0101 		orr	r1, r2, r1
+ 16109              	.LVL36:
+ 16110              	.L44:
+ 16111 00d6 C3F81412 		str	r1, [r3, #532]
+ 16112              	.L41:
+ 16113              	.LVL37:
+ 381:stm32f10x_can.c ****   }
+ 382:stm32f10x_can.c ****   
+ 383:stm32f10x_can.c ****   /* Filter activation */
+ 384:stm32f10x_can.c ****   if (CAN_FilterInitStruct->CAN_FilterActivation == ENABLE)
+ 16114              		.loc 1 385 0
+ 16115 00da 407B     		ldrb	r0, [r0, #13]	@ zero_extendqisi2
+ 16116              	.LVL38:
+ 16117 00dc 0128     		cmp	r0, #1
+ 16118 00de 05D1     		bne	.L42
+ 385:stm32f10x_can.c ****   {
+ 386:stm32f10x_can.c ****     CAN1->FA1R |= filter_number_bit_pos;
+ 16119              		.loc 1 387 0
+ 16120 00e0 074B     		ldr	r3, .L45
+ 16121 00e2 D3F81C12 		ldr	r1, [r3, #540]
+ 16122              	.LVL39:
+ 16123 00e6 0A43     		orrs	r2, r2, r1
+ 16124              	.LVL40:
+ 16125 00e8 C3F81C22 		str	r2, [r3, #540]
+ 16126              	.LVL41:
+ 16127              	.L42:
+ 387:stm32f10x_can.c ****   }
+ 388:stm32f10x_can.c **** 
+ 389:stm32f10x_can.c ****   /* Leave the initialisation mode for the filter */
+ 390:stm32f10x_can.c ****   CAN1->FMR &= ~FMR_FINIT;
+ 16128              		.loc 1 391 0
+ 16129 00ec DFF810C0 		ldr	ip, .L45
+ 16130 00f0 DCF80002 		ldr	r0, [ip, #512]
+ 16131 00f4 20F00102 		bic	r2, r0, #1
+ 16132 00f8 CCF80022 		str	r2, [ip, #512]
+ 391:stm32f10x_can.c **** }
+ 16133              		.loc 1 392 0
+ 16134 00fc 30BD     		pop	{r4, r5, pc}
+ 16135              	.L46:
+ 16136 00fe 00BF     		.align	2
+ 16137              	.L45:
+ 16138 0100 00640040 		.word	1073767424
+ 16139              	.LFE29:
+ 16141              		.section	.text.CAN_StructInit,"ax",%progbits
+ 16142              		.align	1
+ 16143              		.global	CAN_StructInit
+ 16144              		.thumb
+ 16145              		.thumb_func
+ 16147              	CAN_StructInit:
+ 16148              	.LFB30:
+ 392:stm32f10x_can.c **** 
+ 393:stm32f10x_can.c **** /**
+ 394:stm32f10x_can.c ****   * @brief  Fills each CAN_InitStruct member with its default value.
+ 395:stm32f10x_can.c ****   * @param  CAN_InitStruct: pointer to a CAN_InitTypeDef structure which
+ 396:stm32f10x_can.c ****   *   will be initialized.
+ 397:stm32f10x_can.c ****   * @retval None.
+ 398:stm32f10x_can.c ****   */
+ 399:stm32f10x_can.c **** void CAN_StructInit(CAN_InitTypeDef* CAN_InitStruct)
+ 400:stm32f10x_can.c **** {
+ 16149              		.loc 1 401 0
+ 16150              		@ args = 0, pretend = 0, frame = 0
+ 16151              		@ frame_needed = 0, uses_anonymous_args = 0
+ 16152              		@ link register save eliminated.
+ 16153              	.LVL42:
+ 401:stm32f10x_can.c ****   /* Reset CAN init structure parameters values */
+ 402:stm32f10x_can.c ****   /* Initialize the time triggered communication mode */
+ 403:stm32f10x_can.c ****   CAN_InitStruct->CAN_TTCM = DISABLE;
+ 16154              		.loc 1 404 0
+ 16155 0000 0023     		movs	r3, #0
+ 404:stm32f10x_can.c ****   /* Initialize the automatic bus-off management */
+ 405:stm32f10x_can.c ****   CAN_InitStruct->CAN_ABOM = DISABLE;
+ 406:stm32f10x_can.c ****   /* Initialize the automatic wake-up mode */
+ 407:stm32f10x_can.c ****   CAN_InitStruct->CAN_AWUM = DISABLE;
+ 408:stm32f10x_can.c ****   /* Initialize the no automatic retransmission */
+ 409:stm32f10x_can.c ****   CAN_InitStruct->CAN_NART = DISABLE;
+ 410:stm32f10x_can.c ****   /* Initialize the receive FIFO locked mode */
+ 411:stm32f10x_can.c ****   CAN_InitStruct->CAN_RFLM = DISABLE;
+ 412:stm32f10x_can.c ****   /* Initialize the transmit FIFO priority */
+ 413:stm32f10x_can.c ****   CAN_InitStruct->CAN_TXFP = DISABLE;
+ 414:stm32f10x_can.c ****   /* Initialize the CAN_Mode member */
+ 415:stm32f10x_can.c ****   CAN_InitStruct->CAN_Mode = CAN_Mode_Normal;
+ 416:stm32f10x_can.c ****   /* Initialize the CAN_SJW member */
+ 417:stm32f10x_can.c ****   CAN_InitStruct->CAN_SJW = CAN_SJW_1tq;
+ 418:stm32f10x_can.c ****   /* Initialize the CAN_BS1 member */
+ 419:stm32f10x_can.c ****   CAN_InitStruct->CAN_BS1 = CAN_BS1_4tq;
+ 16156              		.loc 1 420 0
+ 16157 0002 DA1C     		adds	r2, r3, #3
+ 16158              	.LVL43:
+ 404:stm32f10x_can.c ****   /* Initialize the automatic bus-off management */
+ 16159              		.loc 1 404 0
+ 16160 0004 8371     		strb	r3, [r0, #6]
+ 406:stm32f10x_can.c ****   CAN_InitStruct->CAN_ABOM = DISABLE;
+ 16161              		.loc 1 406 0
+ 16162 0006 C371     		strb	r3, [r0, #7]
+ 408:stm32f10x_can.c ****   CAN_InitStruct->CAN_AWUM = DISABLE;
+ 16163              		.loc 1 408 0
+ 16164 0008 0372     		strb	r3, [r0, #8]
+ 410:stm32f10x_can.c ****   CAN_InitStruct->CAN_NART = DISABLE;
+ 16165              		.loc 1 410 0
+ 16166 000a 4372     		strb	r3, [r0, #9]
+ 412:stm32f10x_can.c ****   CAN_InitStruct->CAN_RFLM = DISABLE;
+ 16167              		.loc 1 412 0
+ 16168 000c 8372     		strb	r3, [r0, #10]
+ 414:stm32f10x_can.c ****   CAN_InitStruct->CAN_TXFP = DISABLE;
+ 16169              		.loc 1 414 0
+ 16170 000e C372     		strb	r3, [r0, #11]
+ 416:stm32f10x_can.c ****   CAN_InitStruct->CAN_Mode = CAN_Mode_Normal;
+ 16171              		.loc 1 416 0
+ 16172 0010 8370     		strb	r3, [r0, #2]
+ 418:stm32f10x_can.c ****   CAN_InitStruct->CAN_SJW = CAN_SJW_1tq;
+ 16173              		.loc 1 418 0
+ 16174 0012 C370     		strb	r3, [r0, #3]
+ 420:stm32f10x_can.c ****   /* Initialize the CAN_BS2 member */
+ 421:stm32f10x_can.c ****   CAN_InitStruct->CAN_BS2 = CAN_BS2_3tq;
+ 16175              		.loc 1 422 0
+ 16176 0014 511E     		subs	r1, r2, #1
+ 422:stm32f10x_can.c ****   /* Initialize the CAN_Prescaler member */
+ 423:stm32f10x_can.c ****   CAN_InitStruct->CAN_Prescaler = 1;
+ 16177              		.loc 1 424 0
+ 16178 0016 0123     		movs	r3, #1
+ 420:stm32f10x_can.c ****   /* Initialize the CAN_BS2 member */
+ 16179              		.loc 1 420 0
+ 16180 0018 0271     		strb	r2, [r0, #4]
+ 422:stm32f10x_can.c ****   /* Initialize the CAN_Prescaler member */
+ 16181              		.loc 1 422 0
+ 16182 001a 4171     		strb	r1, [r0, #5]
+ 16183              		.loc 1 424 0
+ 16184 001c 0380     		strh	r3, [r0, #0]	@ movhi
+ 424:stm32f10x_can.c **** }
+ 16185              		.loc 1 425 0
+ 16186 001e 7047     		bx	lr
+ 16187              	.LFE30:
+ 16189              		.section	.text.CAN_SlaveStartBank,"ax",%progbits
+ 16190              		.align	1
+ 16191              		.global	CAN_SlaveStartBank
+ 16192              		.thumb
+ 16193              		.thumb_func
+ 16195              	CAN_SlaveStartBank:
+ 16196              	.LFB31:
+ 425:stm32f10x_can.c **** 
+ 426:stm32f10x_can.c **** /**
+ 427:stm32f10x_can.c ****   * @brief  Select the start bank filter for slave CAN.
+ 428:stm32f10x_can.c ****   * @note   This function applies only to STM32 Connectivity line devices.
+ 429:stm32f10x_can.c ****   * @param  CAN_BankNumber: Select the start slave bank filter from 1..27.
+ 430:stm32f10x_can.c ****   * @retval None.
+ 431:stm32f10x_can.c ****   */
+ 432:stm32f10x_can.c **** void CAN_SlaveStartBank(uint8_t CAN_BankNumber) 
+ 433:stm32f10x_can.c **** {
+ 16197              		.loc 1 434 0
+ 16198              		@ args = 0, pretend = 0, frame = 0
+ 16199              		@ frame_needed = 0, uses_anonymous_args = 0
+ 16200              		@ link register save eliminated.
+ 16201              	.LVL44:
+ 434:stm32f10x_can.c ****   /* Check the parameters */
+ 435:stm32f10x_can.c ****   assert_param(IS_CAN_BANKNUMBER(CAN_BankNumber));
+ 436:stm32f10x_can.c ****   /* enter Initialisation mode for the filter */
+ 437:stm32f10x_can.c ****   CAN1->FMR |= FMR_FINIT;
+ 16202              		.loc 1 438 0
+ 16203 0000 0D4B     		ldr	r3, .L49
+ 16204 0002 D3F80012 		ldr	r1, [r3, #512]
+ 16205 0006 41F00102 		orr	r2, r1, #1
+ 16206 000a C3F80022 		str	r2, [r3, #512]
+ 438:stm32f10x_can.c ****   /* Select the start slave bank */
+ 439:stm32f10x_can.c ****   CAN1->FMR &= (uint32_t)0xFFFFC0F1 ;
+ 16207              		.loc 1 440 0
+ 16208 000e D3F800C2 		ldr	ip, [r3, #512]
+ 16209 0012 2CF47C51 		bic	r1, ip, #16128
+ 16210 0016 21F00E02 		bic	r2, r1, #14
+ 16211 001a C3F80022 		str	r2, [r3, #512]
+ 440:stm32f10x_can.c ****   CAN1->FMR |= (uint32_t)(CAN_BankNumber)<<8;
+ 16212              		.loc 1 441 0
+ 16213 001e D3F800C2 		ldr	ip, [r3, #512]
+ 16214 0022 4CEA0021 		orr	r1, ip, r0, lsl #8
+ 16215 0026 C3F80012 		str	r1, [r3, #512]
+ 441:stm32f10x_can.c ****   /* Leave Initialisation mode for the filter */
+ 442:stm32f10x_can.c ****   CAN1->FMR &= ~FMR_FINIT;
+ 16216              		.loc 1 443 0
+ 16217 002a D3F80002 		ldr	r0, [r3, #512]
+ 16218              	.LVL45:
+ 16219 002e 20F00102 		bic	r2, r0, #1
+ 16220 0032 C3F80022 		str	r2, [r3, #512]
+ 443:stm32f10x_can.c **** }
+ 16221              		.loc 1 444 0
+ 16222 0036 7047     		bx	lr
+ 16223              	.L50:
+ 16224              		.align	2
+ 16225              	.L49:
+ 16226 0038 00640040 		.word	1073767424
+ 16227              	.LFE31:
+ 16229              		.section	.text.CAN_ITConfig,"ax",%progbits
+ 16230              		.align	1
+ 16231              		.global	CAN_ITConfig
+ 16232              		.thumb
+ 16233              		.thumb_func
+ 16235              	CAN_ITConfig:
+ 16236              	.LFB32:
+ 444:stm32f10x_can.c **** 
+ 445:stm32f10x_can.c **** /**
+ 446:stm32f10x_can.c ****   * @brief  Enables or disables the specified CAN interrupts.
+ 447:stm32f10x_can.c ****   * @param  CANx: where x can be 1 or 2 to to select the CAN peripheral.
+ 448:stm32f10x_can.c ****   * @param  CAN_IT: specifies the CAN interrupt sources to be enabled or disabled.
+ 449:stm32f10x_can.c ****   *   This parameter can be: CAN_IT_TME, CAN_IT_FMP0, CAN_IT_FF0,
+ 450:stm32f10x_can.c ****   *   CAN_IT_FOV0, CAN_IT_FMP1, CAN_IT_FF1,
+ 451:stm32f10x_can.c ****   *   CAN_IT_FOV1, CAN_IT_EWG, CAN_IT_EPV,
+ 452:stm32f10x_can.c ****   *   CAN_IT_LEC, CAN_IT_ERR, CAN_IT_WKU or
+ 453:stm32f10x_can.c ****   *   CAN_IT_SLK.
+ 454:stm32f10x_can.c ****   * @param  NewState: new state of the CAN interrupts.
+ 455:stm32f10x_can.c ****   *   This parameter can be: ENABLE or DISABLE.
+ 456:stm32f10x_can.c ****   * @retval None.
+ 457:stm32f10x_can.c ****   */
+ 458:stm32f10x_can.c **** void CAN_ITConfig(CAN_TypeDef* CANx, uint32_t CAN_IT, FunctionalState NewState)
+ 459:stm32f10x_can.c **** {
+ 16237              		.loc 1 460 0
+ 16238              		@ args = 0, pretend = 0, frame = 0
+ 16239              		@ frame_needed = 0, uses_anonymous_args = 0
+ 16240              		@ link register save eliminated.
+ 16241              	.LVL46:
+ 460:stm32f10x_can.c ****   /* Check the parameters */
+ 461:stm32f10x_can.c ****   assert_param(IS_CAN_ALL_PERIPH(CANx));
+ 462:stm32f10x_can.c ****   assert_param(IS_CAN_ITConfig(CAN_IT));
+ 463:stm32f10x_can.c ****   assert_param(IS_FUNCTIONAL_STATE(NewState));
+ 464:stm32f10x_can.c **** 
+ 465:stm32f10x_can.c ****   if (NewState != DISABLE)
+ 16242              		.loc 1 466 0
+ 16243 0000 12B1     		cbz	r2, .L52
+ 466:stm32f10x_can.c ****   {
+ 467:stm32f10x_can.c ****     /* Enable the selected CAN interrupt */
+ 468:stm32f10x_can.c ****     CANx->IER |= CAN_IT;
+ 16244              		.loc 1 469 0
+ 16245 0002 4369     		ldr	r3, [r0, #20]
+ 16246              	.LVL47:
+ 16247 0004 1943     		orrs	r1, r1, r3
+ 16248              	.LVL48:
+ 16249 0006 02E0     		b	.L54
+ 16250              	.LVL49:
+ 16251              	.L52:
+ 469:stm32f10x_can.c ****   }
+ 470:stm32f10x_can.c ****   else
+ 471:stm32f10x_can.c ****   {
+ 472:stm32f10x_can.c ****     /* Disable the selected CAN interrupt */
+ 473:stm32f10x_can.c ****     CANx->IER &= ~CAN_IT;
+ 16252              		.loc 1 474 0
+ 16253 0008 4269     		ldr	r2, [r0, #20]
+ 16254              	.LVL50:
+ 16255 000a 22EA0101 		bic	r1, r2, r1
+ 16256              	.LVL51:
+ 16257              	.L54:
+ 16258 000e 4161     		str	r1, [r0, #20]
+ 474:stm32f10x_can.c ****   }
+ 475:stm32f10x_can.c **** }
+ 16259              		.loc 1 476 0
+ 16260 0010 7047     		bx	lr
+ 16261              	.LFE32:
+ 16263              		.section	.text.CAN_Transmit,"ax",%progbits
+ 16264              		.align	1
+ 16265              		.global	CAN_Transmit
+ 16266              		.thumb
+ 16267              		.thumb_func
+ 16269              	CAN_Transmit:
+ 16270              	.LFB33:
+ 476:stm32f10x_can.c **** 
+ 477:stm32f10x_can.c **** /**
+ 478:stm32f10x_can.c ****   * @brief  Initiates the transmission of a message.
+ 479:stm32f10x_can.c ****   * @param  CANx: where x can be 1 or 2 to to select the CAN peripheral.
+ 480:stm32f10x_can.c ****   * @param  TxMessage: pointer to a structure which contains CAN Id, CAN
+ 481:stm32f10x_can.c ****   *   DLC and CAN datas.
+ 482:stm32f10x_can.c ****   * @retval The number of the mailbox that is used for transmission
+ 483:stm32f10x_can.c ****   *   or CAN_NO_MB if there is no empty mailbox.
+ 484:stm32f10x_can.c ****   */
+ 485:stm32f10x_can.c **** uint8_t CAN_Transmit(CAN_TypeDef* CANx, CanTxMsg* TxMessage)
+ 486:stm32f10x_can.c **** {
+ 16271              		.loc 1 487 0
+ 16272              		@ args = 0, pretend = 0, frame = 0
+ 16273              		@ frame_needed = 0, uses_anonymous_args = 0
+ 16274              	.LVL52:
+ 487:stm32f10x_can.c ****   uint8_t transmit_mailbox = 0;
+ 488:stm32f10x_can.c ****   /* Check the parameters */
+ 489:stm32f10x_can.c ****   assert_param(IS_CAN_ALL_PERIPH(CANx));
+ 490:stm32f10x_can.c ****   assert_param(IS_CAN_IDTYPE(TxMessage->IDE));
+ 491:stm32f10x_can.c ****   assert_param(IS_CAN_RTR(TxMessage->RTR));
+ 492:stm32f10x_can.c ****   assert_param(IS_CAN_DLC(TxMessage->DLC));
+ 493:stm32f10x_can.c **** 
+ 494:stm32f10x_can.c ****   /* Select one empty transmit mailbox */
+ 495:stm32f10x_can.c ****   if ((CANx->TSR&TSR_TME0) == TSR_TME0)
+ 16275              		.loc 1 496 0
+ 16276 0000 8268     		ldr	r2, [r0, #8]
+ 487:stm32f10x_can.c ****   uint8_t transmit_mailbox = 0;
+ 16277              		.loc 1 487 0
+ 16278 0002 70B5     		push	{r4, r5, r6, lr}
+ 16279              	.LCFI2:
+ 16280              		.loc 1 496 0
+ 16281 0004 12F0806F 		tst	r2, #67108864
+ 16282              	.LVL53:
+ 487:stm32f10x_can.c ****   uint8_t transmit_mailbox = 0;
+ 16283              		.loc 1 487 0
+ 16284 0008 0346     		mov	r3, r0
+ 16285              		.loc 1 496 0
+ 16286 000a 0AD1     		bne	.L60
+ 16287              	.LVL54:
+ 496:stm32f10x_can.c ****   {
+ 497:stm32f10x_can.c ****     transmit_mailbox = 0;
+ 498:stm32f10x_can.c ****   }
+ 499:stm32f10x_can.c ****   else if ((CANx->TSR&TSR_TME1) == TSR_TME1)
+ 16288              		.loc 1 500 0
+ 16289 000c 8068     		ldr	r0, [r0, #8]
+ 16290              	.LVL55:
+ 16291 000e 10F0006F 		tst	r0, #134217728
+ 16292 0012 08D1     		bne	.L61
+ 500:stm32f10x_can.c ****   {
+ 501:stm32f10x_can.c ****     transmit_mailbox = 1;
+ 502:stm32f10x_can.c ****   }
+ 503:stm32f10x_can.c ****   else if ((CANx->TSR&TSR_TME2) == TSR_TME2)
+ 16293              		.loc 1 504 0
+ 16294 0014 D3F808C0 		ldr	ip, [r3, #8]
+ 16295 0018 1CF0805F 		tst	ip, #268435456
+ 16296 001c 4ED0     		beq	.L62
+ 504:stm32f10x_can.c ****   {
+ 505:stm32f10x_can.c ****     transmit_mailbox = 2;
+ 16297              		.loc 1 506 0
+ 16298 001e 0220     		movs	r0, #2
+ 16299 0020 02E0     		b	.L56
+ 16300              	.LVL56:
+ 16301              	.L60:
+ 498:stm32f10x_can.c ****     transmit_mailbox = 0;
+ 16302              		.loc 1 498 0
+ 16303 0022 0020     		movs	r0, #0
+ 16304              	.LVL57:
+ 16305 0024 00E0     		b	.L56
+ 16306              	.L61:
+ 502:stm32f10x_can.c ****     transmit_mailbox = 1;
+ 16307              		.loc 1 502 0
+ 16308 0026 0120     		movs	r0, #1
+ 16309              	.L56:
+ 16310              	.LVL58:
+ 506:stm32f10x_can.c ****   }
+ 507:stm32f10x_can.c ****   else
+ 508:stm32f10x_can.c ****   {
+ 509:stm32f10x_can.c ****     transmit_mailbox = CAN_NO_MB;
+ 510:stm32f10x_can.c ****   }
+ 511:stm32f10x_can.c **** 
+ 512:stm32f10x_can.c ****   if (transmit_mailbox != CAN_NO_MB)
+ 513:stm32f10x_can.c ****   {
+ 514:stm32f10x_can.c ****     /* Set up the Id */
+ 515:stm32f10x_can.c ****     CANx->sTxMailBox[transmit_mailbox].TIR &= TMIDxR_TXRQ;
+ 16311              		.loc 1 516 0
+ 16312 0028 00F11802 		add	r2, r0, #24
+ 16313 002c 1201     		lsls	r2, r2, #4
+ 16314 002e 9D58     		ldr	r5, [r3, r2]
+ 16315              	.LVL59:
+ 16316 0030 91F809C0 		ldrb	ip, [r1, #9]	@ zero_extendqisi2
+ 16317 0034 05F00104 		and	r4, r5, #1
+ 16318              	.LVL60:
+ 16319 0038 9C50     		str	r4, [r3, r2]
+ 516:stm32f10x_can.c ****     if (TxMessage->IDE == CAN_ID_STD)
+ 16320              		.loc 1 517 0
+ 16321 003a 0C7A     		ldrb	r4, [r1, #8]	@ zero_extendqisi2
+ 16322 003c 24B9     		cbnz	r4, .L58
+ 16323              	.LVL61:
+ 517:stm32f10x_can.c ****     {
+ 518:stm32f10x_can.c ****       assert_param(IS_CAN_STDID(TxMessage->StdId));  
+ 519:stm32f10x_can.c ****       CANx->sTxMailBox[transmit_mailbox].TIR |= ((TxMessage->StdId << 21) | TxMessage->RTR);
+ 16324              		.loc 1 520 0
+ 16325 003e 0D68     		ldr	r5, [r1, #0]
+ 16326 0040 9C58     		ldr	r4, [r3, r2]
+ 16327 0042 4CEA455C 		orr	ip, ip, r5, lsl #21
+ 16328 0046 04E0     		b	.L63
+ 16329              	.LVL62:
+ 16330              	.L58:
+ 520:stm32f10x_can.c ****     }
+ 521:stm32f10x_can.c ****     else
+ 522:stm32f10x_can.c ****     {
+ 523:stm32f10x_can.c ****       assert_param(IS_CAN_EXTID(TxMessage->ExtId));
+ 524:stm32f10x_can.c ****       CANx->sTxMailBox[transmit_mailbox].TIR |= ((TxMessage->ExtId<<3) | TxMessage->IDE | 
+ 16331              		.loc 1 525 0
+ 16332 0048 4E68     		ldr	r6, [r1, #4]
+ 16333 004a 9D58     		ldr	r5, [r3, r2]
+ 16334 004c 44EAC604 		orr	r4, r4, r6, lsl #3
+ 16335 0050 2C43     		orrs	r4, r4, r5
+ 16336              	.LVL63:
+ 16337              	.L63:
+ 525:stm32f10x_can.c ****                                                TxMessage->RTR);
+ 16338              		.loc 1 526 0
+ 16339 0052 44EA0C04 		orr	r4, r4, ip
+ 16340              	.LVL64:
+ 525:stm32f10x_can.c ****                                                TxMessage->RTR);
+ 16341              		.loc 1 525 0
+ 16342 0056 9C50     		str	r4, [r3, r2]
+ 16343              	.LVL65:
+ 526:stm32f10x_can.c ****     }
+ 527:stm32f10x_can.c ****     
+ 528:stm32f10x_can.c **** 
+ 529:stm32f10x_can.c ****     /* Set up the DLC */
+ 530:stm32f10x_can.c ****     TxMessage->DLC &= (uint8_t)0x0000000F;
+ 16344              		.loc 1 531 0
+ 16345 0058 8A7A     		ldrb	r2, [r1, #10]	@ zero_extendqisi2
+ 16346              	.LVL66:
+ 531:stm32f10x_can.c ****     CANx->sTxMailBox[transmit_mailbox].TDTR &= (uint32_t)0xFFFFFFF0;
+ 16347              		.loc 1 532 0
+ 16348 005a 00F1180C 		add	ip, r0, #24
+ 531:stm32f10x_can.c ****     CANx->sTxMailBox[transmit_mailbox].TDTR &= (uint32_t)0xFFFFFFF0;
+ 16349              		.loc 1 531 0
+ 16350 005e 02F00F04 		and	r4, r2, #15
+ 16351              		.loc 1 532 0
+ 16352 0062 4FEA0C1C 		lsl	ip, ip, #4
+ 531:stm32f10x_can.c ****     CANx->sTxMailBox[transmit_mailbox].TDTR &= (uint32_t)0xFFFFFFF0;
+ 16353              		.loc 1 531 0
+ 16354 0066 8C72     		strb	r4, [r1, #10]
+ 16355              		.loc 1 532 0
+ 16356 0068 03EB0C02 		add	r2, r3, ip
+ 16357 006c 5568     		ldr	r5, [r2, #4]
+ 16358 006e 25F00F05 		bic	r5, r5, #15
+ 16359 0072 5560     		str	r5, [r2, #4]
+ 532:stm32f10x_can.c ****     CANx->sTxMailBox[transmit_mailbox].TDTR |= TxMessage->DLC;
+ 16360              		.loc 1 533 0
+ 16361 0074 5568     		ldr	r5, [r2, #4]
+ 16362 0076 2C43     		orrs	r4, r4, r5
+ 533:stm32f10x_can.c **** 
+ 534:stm32f10x_can.c ****     /* Set up the data field */
+ 535:stm32f10x_can.c ****     CANx->sTxMailBox[transmit_mailbox].TDLR = (((uint32_t)TxMessage->Data[3] << 24) | 
+ 536:stm32f10x_can.c ****                                              ((uint32_t)TxMessage->Data[2] << 16) |
+ 16363              		.loc 1 537 0
+ 16364 0078 4D7B     		ldrb	r5, [r1, #13]	@ zero_extendqisi2
+ 533:stm32f10x_can.c **** 
+ 16365              		.loc 1 533 0
+ 16366 007a 5460     		str	r4, [r2, #4]
+ 536:stm32f10x_can.c ****                                              ((uint32_t)TxMessage->Data[2] << 16) |
+ 16367              		.loc 1 536 0
+ 16368 007c 8A7B     		ldrb	r2, [r1, #14]	@ zero_extendqisi2
+ 16369              		.loc 1 537 0
+ 16370 007e 2C04     		lsls	r4, r5, #16
+ 537:stm32f10x_can.c ****                                              ((uint32_t)TxMessage->Data[1] << 8) | 
+ 538:stm32f10x_can.c ****                                              ((uint32_t)TxMessage->Data[0]));
+ 16371              		.loc 1 539 0
+ 16372 0080 CD7A     		ldrb	r5, [r1, #11]	@ zero_extendqisi2
+ 537:stm32f10x_can.c ****                                              ((uint32_t)TxMessage->Data[1] << 8) | 
+ 16373              		.loc 1 537 0
+ 16374 0082 44EA0264 		orr	r4, r4, r2, lsl #24
+ 538:stm32f10x_can.c ****                                              ((uint32_t)TxMessage->Data[0]));
+ 16375              		.loc 1 538 0
+ 16376 0086 0A7B     		ldrb	r2, [r1, #12]	@ zero_extendqisi2
+ 16377              		.loc 1 539 0
+ 16378 0088 2C43     		orrs	r4, r4, r5
+ 538:stm32f10x_can.c ****                                              ((uint32_t)TxMessage->Data[0]));
+ 16379              		.loc 1 538 0
+ 16380 008a 44EA0225 		orr	r5, r4, r2, lsl #8
+ 539:stm32f10x_can.c ****     CANx->sTxMailBox[transmit_mailbox].TDHR = (((uint32_t)TxMessage->Data[7] << 24) | 
+ 540:stm32f10x_can.c ****                                              ((uint32_t)TxMessage->Data[6] << 16) |
+ 16381              		.loc 1 541 0
+ 16382 008e 4C7C     		ldrb	r4, [r1, #17]	@ zero_extendqisi2
+ 536:stm32f10x_can.c ****     CANx->sTxMailBox[transmit_mailbox].TDLR = (((uint32_t)TxMessage->Data[3] << 24) | 
+ 16383              		.loc 1 536 0
+ 16384 0090 03EB0012 		add	r2, r3, r0, lsl #4
+ 16385 0094 C2F88851 		str	r5, [r2, #392]
+ 540:stm32f10x_can.c ****     CANx->sTxMailBox[transmit_mailbox].TDHR = (((uint32_t)TxMessage->Data[7] << 24) | 
+ 16386              		.loc 1 540 0
+ 16387 0098 8D7C     		ldrb	r5, [r1, #18]	@ zero_extendqisi2
+ 16388              		.loc 1 541 0
+ 16389 009a 2404     		lsls	r4, r4, #16
+ 16390 009c 44EA0564 		orr	r4, r4, r5, lsl #24
+ 541:stm32f10x_can.c ****                                              ((uint32_t)TxMessage->Data[5] << 8) |
+ 542:stm32f10x_can.c ****                                              ((uint32_t)TxMessage->Data[4]));
+ 16391              		.loc 1 543 0
+ 16392 00a0 CD7B     		ldrb	r5, [r1, #15]	@ zero_extendqisi2
+ 542:stm32f10x_can.c ****                                              ((uint32_t)TxMessage->Data[4]));
+ 16393              		.loc 1 542 0
+ 16394 00a2 097C     		ldrb	r1, [r1, #16]	@ zero_extendqisi2
+ 16395              	.LVL67:
+ 16396              		.loc 1 543 0
+ 16397 00a4 2C43     		orrs	r4, r4, r5
+ 542:stm32f10x_can.c ****                                              ((uint32_t)TxMessage->Data[4]));
+ 16398              		.loc 1 542 0
+ 16399 00a6 44EA0121 		orr	r1, r4, r1, lsl #8
+ 540:stm32f10x_can.c ****     CANx->sTxMailBox[transmit_mailbox].TDHR = (((uint32_t)TxMessage->Data[7] << 24) | 
+ 16400              		.loc 1 540 0
+ 16401 00aa C2F88C11 		str	r1, [r2, #396]
+ 543:stm32f10x_can.c ****     /* Request transmission */
+ 544:stm32f10x_can.c ****     CANx->sTxMailBox[transmit_mailbox].TIR |= TMIDxR_TXRQ;
+ 16402              		.loc 1 545 0
+ 16403 00ae 53F80C20 		ldr	r2, [r3, ip]
+ 16404 00b2 42F00101 		orr	r1, r2, #1
+ 16405 00b6 43F80C10 		str	r1, [r3, ip]
+ 16406 00ba 00E0     		b	.L57
+ 16407              	.LVL68:
+ 16408              	.L62:
+ 510:stm32f10x_can.c ****     transmit_mailbox = CAN_NO_MB;
+ 16409              		.loc 1 510 0
+ 16410 00bc 0420     		movs	r0, #4
+ 16411              	.LVL69:
+ 16412              	.L57:
+ 545:stm32f10x_can.c ****   }
+ 546:stm32f10x_can.c ****   return transmit_mailbox;
+ 547:stm32f10x_can.c **** }
+ 16413              		.loc 1 548 0
+ 16414 00be 70BD     		pop	{r4, r5, r6, pc}
+ 16415              	.LFE33:
+ 16417              		.section	.text.CAN_TransmitStatus,"ax",%progbits
+ 16418              		.align	1
+ 16419              		.global	CAN_TransmitStatus
+ 16420              		.thumb
+ 16421              		.thumb_func
+ 16423              	CAN_TransmitStatus:
+ 16424              	.LFB34:
+ 548:stm32f10x_can.c **** 
+ 549:stm32f10x_can.c **** /**
+ 550:stm32f10x_can.c ****   * @brief  Checks the transmission of a message.
+ 551:stm32f10x_can.c ****   * @param  CANx: where x can be 1 or 2 to to select the CAN peripheral.
+ 552:stm32f10x_can.c ****   * @param  TransmitMailbox: the number of the mailbox that is used for transmission.
+ 553:stm32f10x_can.c ****   * @retval CANTXOK if the CAN driver transmits the message, CANTXFAILED in an other case.
+ 554:stm32f10x_can.c ****   */
+ 555:stm32f10x_can.c **** uint8_t CAN_TransmitStatus(CAN_TypeDef* CANx, uint8_t TransmitMailbox)
+ 556:stm32f10x_can.c **** {
+ 16425              		.loc 1 557 0
+ 16426              		@ args = 0, pretend = 0, frame = 0
+ 16427              		@ frame_needed = 0, uses_anonymous_args = 0
+ 16428              		@ link register save eliminated.
+ 16429              	.LVL70:
+ 557:stm32f10x_can.c ****   /* RQCP, TXOK and TME bits */
+ 558:stm32f10x_can.c ****   uint8_t state = 0;
+ 559:stm32f10x_can.c ****   /* Check the parameters */
+ 560:stm32f10x_can.c ****   assert_param(IS_CAN_ALL_PERIPH(CANx));
+ 561:stm32f10x_can.c ****   assert_param(IS_CAN_TRANSMITMAILBOX(TransmitMailbox));
+ 562:stm32f10x_can.c ****   switch (TransmitMailbox)
+ 16430              		.loc 1 563 0
+ 16431 0000 0129     		cmp	r1, #1
+ 16432 0002 10D0     		beq	.L67
+ 16433 0004 02D3     		bcc	.L66
+ 16434 0006 0229     		cmp	r1, #2
+ 16435 0008 2CD1     		bne	.L72
+ 16436 000a 1AE0     		b	.L75
+ 16437              	.L66:
+ 563:stm32f10x_can.c ****   {
+ 564:stm32f10x_can.c ****     case (0): state |= (uint8_t)((CANx->TSR & TSR_RQCP0) << 2);
+ 16438              		.loc 1 565 0
+ 16439 000c 8268     		ldr	r2, [r0, #8]
+ 16440              	.LVL71:
+ 565:stm32f10x_can.c ****       state |= (uint8_t)((CANx->TSR & TSR_TXOK0) >> 0);
+ 16441              		.loc 1 566 0
+ 16442 000e D0F808C0 		ldr	ip, [r0, #8]
+ 16443 0012 02F00101 		and	r1, r2, #1
+ 16444              	.LVL72:
+ 566:stm32f10x_can.c ****       state |= (uint8_t)((CANx->TSR & TSR_TME0) >> 26);
+ 16445              		.loc 1 567 0
+ 16446 0016 8268     		ldr	r2, [r0, #8]
+ 566:stm32f10x_can.c ****       state |= (uint8_t)((CANx->TSR & TSR_TME0) >> 26);
+ 16447              		.loc 1 566 0
+ 16448 0018 0CF00203 		and	r3, ip, #2
+ 16449 001c 43EA8103 		orr	r3, r3, r1, lsl #2
+ 16450              	.LVL73:
+ 16451              		.loc 1 567 0
+ 16452 0020 C2F38062 		ubfx	r2, r2, #26, #1
+ 16453 0024 1AE0     		b	.L73
+ 16454              	.LVL74:
+ 16455              	.L67:
+ 567:stm32f10x_can.c ****       break;
+ 568:stm32f10x_can.c ****     case (1): state |= (uint8_t)((CANx->TSR & TSR_RQCP1) >> 6);
+ 16456              		.loc 1 569 0
+ 16457 0026 D0F808C0 		ldr	ip, [r0, #8]
+ 16458              	.LVL75:
+ 569:stm32f10x_can.c ****       state |= (uint8_t)((CANx->TSR & TSR_TXOK1) >> 8);
+ 16459              		.loc 1 570 0
+ 16460 002a 8368     		ldr	r3, [r0, #8]
+ 16461 002c 0CF48072 		and	r2, ip, #256
+ 570:stm32f10x_can.c ****       state |= (uint8_t)((CANx->TSR & TSR_TME1) >> 27);
+ 16462              		.loc 1 571 0
+ 16463 0030 8068     		ldr	r0, [r0, #8]
+ 16464              	.LVL76:
+ 570:stm32f10x_can.c ****       state |= (uint8_t)((CANx->TSR & TSR_TME1) >> 27);
+ 16465              		.loc 1 570 0
+ 16466 0032 03F40071 		and	r1, r3, #512
+ 16467              	.LVL77:
+ 16468 0036 9309     		lsrs	r3, r2, #6
+ 16469 0038 43EA1123 		orr	r3, r3, r1, lsr #8
+ 16470              	.LVL78:
+ 16471              		.loc 1 571 0
+ 16472 003c C0F3C062 		ubfx	r2, r0, #27, #1
+ 16473 0040 0CE0     		b	.L73
+ 16474              	.LVL79:
+ 16475              	.L75:
+ 571:stm32f10x_can.c ****       break;
+ 572:stm32f10x_can.c ****     case (2): state |= (uint8_t)((CANx->TSR & TSR_RQCP2) >> 14);
+ 16476              		.loc 1 573 0
+ 16477 0042 D0F808C0 		ldr	ip, [r0, #8]
+ 16478              	.LVL80:
+ 573:stm32f10x_can.c ****       state |= (uint8_t)((CANx->TSR & TSR_TXOK2) >> 16);
+ 16479              		.loc 1 574 0
+ 16480 0046 8168     		ldr	r1, [r0, #8]
+ 16481              	.LVL81:
+ 16482 0048 0CF48033 		and	r3, ip, #65536
+ 574:stm32f10x_can.c ****       state |= (uint8_t)((CANx->TSR & TSR_TME2) >> 28);
+ 16483              		.loc 1 575 0
+ 16484 004c 8068     		ldr	r0, [r0, #8]
+ 16485              	.LVL82:
+ 574:stm32f10x_can.c ****       state |= (uint8_t)((CANx->TSR & TSR_TME2) >> 28);
+ 16486              		.loc 1 574 0
+ 16487 004e 01F40032 		and	r2, r1, #131072
+ 16488 0052 990B     		lsrs	r1, r3, #14
+ 16489 0054 41EA1243 		orr	r3, r1, r2, lsr #16
+ 16490              	.LVL83:
+ 16491              		.loc 1 575 0
+ 16492 0058 C0F30072 		ubfx	r2, r0, #28, #1
+ 16493              	.LVL84:
+ 16494              	.L73:
+ 16495 005c 1343     		orrs	r3, r3, r2
+ 16496              	.LVL85:
+ 16497              	.L69:
+ 575:stm32f10x_can.c ****       break;
+ 16498              		.loc 1 576 0
+ 16499 005e 0248     		ldr	r0, .L76
+ 16500 0060 C05C     		ldrb	r0, [r0, r3]	@ zero_extendqisi2
+ 16501              	.LVL86:
+ 16502              	.LVL87:
+ 576:stm32f10x_can.c ****     default:
+ 577:stm32f10x_can.c ****       state = CANTXFAILED;
+ 578:stm32f10x_can.c ****       break;
+ 579:stm32f10x_can.c ****   }
+ 580:stm32f10x_can.c ****   switch (state)
+ 581:stm32f10x_can.c ****   {
+ 582:stm32f10x_can.c ****       /* transmit pending  */
+ 583:stm32f10x_can.c ****     case (0x0): state = CANTXPENDING;
+ 584:stm32f10x_can.c ****       break;
+ 585:stm32f10x_can.c ****       /* transmit failed  */
+ 586:stm32f10x_can.c ****     case (0x5): state = CANTXFAILED;
+ 587:stm32f10x_can.c ****       break;
+ 588:stm32f10x_can.c ****       /* transmit succedeed  */
+ 589:stm32f10x_can.c ****     case (0x7): state = CANTXOK;
+ 590:stm32f10x_can.c ****       break;
+ 591:stm32f10x_can.c ****     default:
+ 592:stm32f10x_can.c ****       state = CANTXFAILED;
+ 593:stm32f10x_can.c ****       break;
+ 594:stm32f10x_can.c ****   }
+ 595:stm32f10x_can.c ****   return state;
+ 596:stm32f10x_can.c **** }
+ 16503              		.loc 1 597 0
+ 16504 0062 7047     		bx	lr
+ 16505              	.LVL88:
+ 16506              	.L72:
+ 578:stm32f10x_can.c ****       state = CANTXFAILED;
+ 16507              		.loc 1 578 0
+ 16508 0064 0023     		movs	r3, #0
+ 16509              	.LVL89:
+ 16510 0066 FAE7     		b	.L69
+ 16511              	.L77:
+ 16512              		.align	2
+ 16513              	.L76:
+ 16514 0068 00000000 		.word	.LANCHOR0
+ 16515              	.LFE34:
+ 16517              		.section	.text.CAN_CancelTransmit,"ax",%progbits
+ 16518              		.align	1
+ 16519              		.global	CAN_CancelTransmit
+ 16520              		.thumb
+ 16521              		.thumb_func
+ 16523              	CAN_CancelTransmit:
+ 16524              	.LFB35:
+ 597:stm32f10x_can.c **** 
+ 598:stm32f10x_can.c **** /**
+ 599:stm32f10x_can.c ****   * @brief  Cancels a transmit request.
+ 600:stm32f10x_can.c ****   * @param  CANx: where x can be 1 or 2 to to select the CAN peripheral. 
+ 601:stm32f10x_can.c ****   * @param  Mailbox: Mailbox number.
+ 602:stm32f10x_can.c ****   * @retval None.
+ 603:stm32f10x_can.c ****   */
+ 604:stm32f10x_can.c **** void CAN_CancelTransmit(CAN_TypeDef* CANx, uint8_t Mailbox)
+ 605:stm32f10x_can.c **** {
+ 16525              		.loc 1 606 0
+ 16526              		@ args = 0, pretend = 0, frame = 0
+ 16527              		@ frame_needed = 0, uses_anonymous_args = 0
+ 16528              		@ link register save eliminated.
+ 16529              	.LVL90:
+ 606:stm32f10x_can.c ****   /* Check the parameters */
+ 607:stm32f10x_can.c ****   assert_param(IS_CAN_ALL_PERIPH(CANx));
+ 608:stm32f10x_can.c ****   assert_param(IS_CAN_TRANSMITMAILBOX(Mailbox));
+ 609:stm32f10x_can.c ****   /* abort transmission */
+ 610:stm32f10x_can.c ****   switch (Mailbox)
+ 16530              		.loc 1 611 0
+ 16531 0000 0129     		cmp	r1, #1
+ 16532 0002 07D0     		beq	.L81
+ 611:stm32f10x_can.c ****   {
+ 612:stm32f10x_can.c ****     case (0): CANx->TSR |= TSR_ABRQ0;
+ 16533              		.loc 1 613 0
+ 16534 0004 3CBF     		itt	cc
+ 16535 0006 8368     		ldrcc	r3, [r0, #8]
+ 16536 0008 43F08003 		orrcc	r3, r3, #128
+ 611:stm32f10x_can.c ****   {
+ 16537              		.loc 1 611 0
+ 16538 000c 09D3     		bcc	.L83
+ 16539 000e 0229     		cmp	r1, #2
+ 16540 0010 08D1     		bne	.L78
+ 16541 0012 03E0     		b	.L85
+ 16542              	.L81:
+ 613:stm32f10x_can.c ****       break;
+ 614:stm32f10x_can.c ****     case (1): CANx->TSR |= TSR_ABRQ1;
+ 16543              		.loc 1 615 0
+ 16544 0014 8368     		ldr	r3, [r0, #8]
+ 16545 0016 43F40043 		orr	r3, r3, #32768
+ 16546 001a 02E0     		b	.L83
+ 16547              	.L85:
+ 615:stm32f10x_can.c ****       break;
+ 616:stm32f10x_can.c ****     case (2): CANx->TSR |= TSR_ABRQ2;
+ 16548              		.loc 1 617 0
+ 16549 001c 8168     		ldr	r1, [r0, #8]
+ 16550              	.LVL91:
+ 16551 001e 41F40003 		orr	r3, r1, #8388608
+ 16552              	.L83:
+ 16553              	.LVL92:
+ 16554 0022 8360     		str	r3, [r0, #8]
+ 16555              	.LVL93:
+ 16556              	.L78:
+ 617:stm32f10x_can.c ****       break;
+ 618:stm32f10x_can.c ****     default:
+ 619:stm32f10x_can.c ****       break;
+ 620:stm32f10x_can.c ****   }
+ 621:stm32f10x_can.c **** }
+ 16557              		.loc 1 622 0
+ 16558 0024 7047     		bx	lr
+ 16559              	.LFE35:
+ 16561              		.section	.text.CAN_FIFORelease,"ax",%progbits
+ 16562              		.align	1
+ 16563              		.global	CAN_FIFORelease
+ 16564              		.thumb
+ 16565              		.thumb_func
+ 16567              	CAN_FIFORelease:
+ 16568              	.LFB36:
+ 622:stm32f10x_can.c **** 
+ 623:stm32f10x_can.c **** /**
+ 624:stm32f10x_can.c ****   * @brief  Releases a FIFO.
+ 625:stm32f10x_can.c ****   * @param  CANx: where x can be 1 or 2 to to select the CAN peripheral. 
+ 626:stm32f10x_can.c ****   * @param  FIFONumber: FIFO to release, CAN_FIFO0 or CAN_FIFO1.
+ 627:stm32f10x_can.c ****   * @retval None.
+ 628:stm32f10x_can.c ****   */
+ 629:stm32f10x_can.c **** void CAN_FIFORelease(CAN_TypeDef* CANx, uint8_t FIFONumber)
+ 630:stm32f10x_can.c **** {
+ 16569              		.loc 1 631 0
+ 16570              		@ args = 0, pretend = 0, frame = 0
+ 16571              		@ frame_needed = 0, uses_anonymous_args = 0
+ 16572              		@ link register save eliminated.
+ 16573              	.LVL94:
+ 631:stm32f10x_can.c ****   /* Check the parameters */
+ 632:stm32f10x_can.c ****   assert_param(IS_CAN_ALL_PERIPH(CANx));
+ 633:stm32f10x_can.c ****   assert_param(IS_CAN_FIFO(FIFONumber));
+ 634:stm32f10x_can.c ****   /* Release FIFO0 */
+ 635:stm32f10x_can.c ****   if (FIFONumber == CAN_FIFO0)
+ 16574              		.loc 1 636 0
+ 16575 0000 11B9     		cbnz	r1, .L87
+ 636:stm32f10x_can.c ****   {
+ 637:stm32f10x_can.c ****     CANx->RF0R = RF0R_RFOM0;
+ 16576              		.loc 1 638 0
+ 16577 0002 2023     		movs	r3, #32
+ 16578              	.LVL95:
+ 16579 0004 C360     		str	r3, [r0, #12]
+ 16580 0006 01E0     		b	.L86
+ 16581              	.LVL96:
+ 16582              	.L87:
+ 638:stm32f10x_can.c ****   }
+ 639:stm32f10x_can.c ****   /* Release FIFO1 */
+ 640:stm32f10x_can.c ****   else /* FIFONumber == CAN_FIFO1 */
+ 641:stm32f10x_can.c ****   {
+ 642:stm32f10x_can.c ****     CANx->RF1R = RF1R_RFOM1;
+ 16583              		.loc 1 643 0
+ 16584 0008 2021     		movs	r1, #32
+ 16585              	.LVL97:
+ 16586 000a 0161     		str	r1, [r0, #16]
+ 16587              	.LVL98:
+ 16588              	.L86:
+ 643:stm32f10x_can.c ****   }
+ 644:stm32f10x_can.c **** }
+ 16589              		.loc 1 645 0
+ 16590 000c 7047     		bx	lr
+ 16591              	.LFE36:
+ 16593              		.section	.text.CAN_MessagePending,"ax",%progbits
+ 16594              		.align	1
+ 16595              		.global	CAN_MessagePending
+ 16596              		.thumb
+ 16597              		.thumb_func
+ 16599              	CAN_MessagePending:
+ 16600              	.LFB37:
+ 645:stm32f10x_can.c **** 
+ 646:stm32f10x_can.c **** /**
+ 647:stm32f10x_can.c ****   * @brief  Returns the number of pending messages.
+ 648:stm32f10x_can.c ****   * @param  CANx: where x can be 1 or 2 to to select the CAN peripheral.
+ 649:stm32f10x_can.c ****   * @param  FIFONumber: Receive FIFO number, CAN_FIFO0 or CAN_FIFO1.
+ 650:stm32f10x_can.c ****   * @retval NbMessage which is the number of pending message.
+ 651:stm32f10x_can.c ****   */
+ 652:stm32f10x_can.c **** uint8_t CAN_MessagePending(CAN_TypeDef* CANx, uint8_t FIFONumber)
+ 653:stm32f10x_can.c **** {
+ 16601              		.loc 1 654 0
+ 16602              		@ args = 0, pretend = 0, frame = 0
+ 16603              		@ frame_needed = 0, uses_anonymous_args = 0
+ 16604              		@ link register save eliminated.
+ 16605              	.LVL99:
+ 654:stm32f10x_can.c ****   uint8_t message_pending=0;
+ 655:stm32f10x_can.c ****   /* Check the parameters */
+ 656:stm32f10x_can.c ****   assert_param(IS_CAN_ALL_PERIPH(CANx));
+ 657:stm32f10x_can.c ****   assert_param(IS_CAN_FIFO(FIFONumber));
+ 658:stm32f10x_can.c ****   if (FIFONumber == CAN_FIFO0)
+ 16606              		.loc 1 659 0
+ 16607 0000 09B9     		cbnz	r1, .L90
+ 659:stm32f10x_can.c ****   {
+ 660:stm32f10x_can.c ****     message_pending = (uint8_t)(CANx->RF0R&(uint32_t)0x03);
+ 16608              		.loc 1 661 0
+ 16609 0002 C068     		ldr	r0, [r0, #12]
+ 16610              	.LVL100:
+ 16611 0004 02E0     		b	.L93
+ 16612              	.LVL101:
+ 16613              	.L90:
+ 661:stm32f10x_can.c ****   }
+ 662:stm32f10x_can.c ****   else if (FIFONumber == CAN_FIFO1)
+ 16614              		.loc 1 663 0
+ 16615 0006 0129     		cmp	r1, #1
+ 16616 0008 03D1     		bne	.L92
+ 663:stm32f10x_can.c ****   {
+ 664:stm32f10x_can.c ****     message_pending = (uint8_t)(CANx->RF1R&(uint32_t)0x03);
+ 16617              		.loc 1 665 0
+ 16618 000a 0069     		ldr	r0, [r0, #16]
+ 16619              	.LVL102:
+ 16620              	.L93:
+ 16621 000c 00F00300 		and	r0, r0, #3
+ 16622              	.LVL103:
+ 16623 0010 00E0     		b	.L91
+ 16624              	.LVL104:
+ 16625              	.L92:
+ 665:stm32f10x_can.c ****   }
+ 666:stm32f10x_can.c ****   else
+ 667:stm32f10x_can.c ****   {
+ 668:stm32f10x_can.c ****     message_pending = 0;
+ 16626              		.loc 1 669 0
+ 16627 0012 0020     		movs	r0, #0
+ 16628              	.LVL105:
+ 16629              	.L91:
+ 16630              	.LVL106:
+ 669:stm32f10x_can.c ****   }
+ 670:stm32f10x_can.c ****   return message_pending;
+ 671:stm32f10x_can.c **** }
+ 16631              		.loc 1 672 0
+ 16632 0014 7047     		bx	lr
+ 16633              	.LFE37:
+ 16635              		.section	.text.CAN_Receive,"ax",%progbits
+ 16636              		.align	1
+ 16637              		.global	CAN_Receive
+ 16638              		.thumb
+ 16639              		.thumb_func
+ 16641              	CAN_Receive:
+ 16642              	.LFB38:
+ 672:stm32f10x_can.c **** 
+ 673:stm32f10x_can.c **** /**
+ 674:stm32f10x_can.c ****   * @brief  Receives a message.
+ 675:stm32f10x_can.c ****   * @param  CANx: where x can be 1 or 2 to to select the CAN peripheral.
+ 676:stm32f10x_can.c ****   * @param  FIFONumber: Receive FIFO number, CAN_FIFO0 or CAN_FIFO1.
+ 677:stm32f10x_can.c ****   * @param  RxMessage: pointer to a structure receive message which 
+ 678:stm32f10x_can.c ****   *   contains CAN Id, CAN DLC, CAN datas and FMI number.
+ 679:stm32f10x_can.c ****   * @retval None.
+ 680:stm32f10x_can.c ****   */
+ 681:stm32f10x_can.c **** void CAN_Receive(CAN_TypeDef* CANx, uint8_t FIFONumber, CanRxMsg* RxMessage)
+ 682:stm32f10x_can.c **** {
+ 16643              		.loc 1 683 0
+ 16644              		@ args = 0, pretend = 0, frame = 0
+ 16645              		@ frame_needed = 0, uses_anonymous_args = 0
+ 16646              	.LVL107:
+ 683:stm32f10x_can.c ****   /* Check the parameters */
+ 684:stm32f10x_can.c ****   assert_param(IS_CAN_ALL_PERIPH(CANx));
+ 685:stm32f10x_can.c ****   assert_param(IS_CAN_FIFO(FIFONumber));
+ 686:stm32f10x_can.c ****   /* Get the Id */
+ 687:stm32f10x_can.c ****   RxMessage->IDE = (uint8_t)0x04 & CANx->sFIFOMailBox[FIFONumber].RIR;
+ 16647              		.loc 1 688 0
+ 16648 0000 01F11B03 		add	r3, r1, #27
+ 16649 0004 1B01     		lsls	r3, r3, #4
+ 16650 0006 50F803C0 		ldr	ip, [r0, r3]
+ 683:stm32f10x_can.c ****   /* Check the parameters */
+ 16651              		.loc 1 683 0
+ 16652 000a 10B5     		push	{r4, lr}
+ 16653              	.LCFI3:
+ 16654              		.loc 1 688 0
+ 16655 000c 0CF00404 		and	r4, ip, #4
+ 16656 0010 E4B2     		uxtb	r4, r4
+ 16657              	.LVL108:
+ 16658 0012 1472     		strb	r4, [r2, #8]
+ 688:stm32f10x_can.c ****   if (RxMessage->IDE == CAN_ID_STD)
+ 16659              		.loc 1 689 0
+ 16660 0014 1CB9     		cbnz	r4, .L95
+ 16661              	.LVL109:
+ 689:stm32f10x_can.c ****   {
+ 690:stm32f10x_can.c ****     RxMessage->StdId = (uint32_t)0x000007FF & (CANx->sFIFOMailBox[FIFONumber].RIR >> 21);
+ 16662              		.loc 1 691 0
+ 16663 0016 C358     		ldr	r3, [r0, r3]
+ 16664 0018 5B0D     		lsrs	r3, r3, #21
+ 16665              	.LVL110:
+ 16666 001a 1360     		str	r3, [r2, #0]
+ 16667 001c 02E0     		b	.L96
+ 16668              	.LVL111:
+ 16669              	.L95:
+ 691:stm32f10x_can.c ****   }
+ 692:stm32f10x_can.c ****   else
+ 693:stm32f10x_can.c ****   {
+ 694:stm32f10x_can.c ****     RxMessage->ExtId = (uint32_t)0x1FFFFFFF & (CANx->sFIFOMailBox[FIFONumber].RIR >> 3);
+ 16670              		.loc 1 695 0
+ 16671 001e C358     		ldr	r3, [r0, r3]
+ 16672 0020 DB08     		lsrs	r3, r3, #3
+ 16673              	.LVL112:
+ 16674 0022 5360     		str	r3, [r2, #4]
+ 16675              	.LVL113:
+ 16676              	.L96:
+ 695:stm32f10x_can.c ****   }
+ 696:stm32f10x_can.c ****   
+ 697:stm32f10x_can.c ****   RxMessage->RTR = (uint8_t)0x02 & CANx->sFIFOMailBox[FIFONumber].RIR;
+ 16677              		.loc 1 698 0
+ 16678 0024 01F11B03 		add	r3, r1, #27
+ 16679 0028 4FEA031C 		lsl	ip, r3, #4
+ 16680              	.LVL114:
+ 16681 002c 00EB0C03 		add	r3, r0, ip
+ 16682 0030 50F80CC0 		ldr	ip, [r0, ip]
+ 16683 0034 0CF0020C 		and	ip, ip, #2
+ 16684              	.LVL115:
+ 16685 0038 82F809C0 		strb	ip, [r2, #9]
+ 698:stm32f10x_can.c ****   /* Get the DLC */
+ 699:stm32f10x_can.c ****   RxMessage->DLC = (uint8_t)0x0F & CANx->sFIFOMailBox[FIFONumber].RDTR;
+ 16686              		.loc 1 700 0
+ 16687 003c D3F804C0 		ldr	ip, [r3, #4]
+ 16688 0040 0CF00F0C 		and	ip, ip, #15
+ 16689 0044 82F80AC0 		strb	ip, [r2, #10]
+ 700:stm32f10x_can.c ****   /* Get the FMI */
+ 701:stm32f10x_can.c ****   RxMessage->FMI = (uint8_t)0xFF & (CANx->sFIFOMailBox[FIFONumber].RDTR >> 8);
+ 16690              		.loc 1 702 0
+ 16691 0048 5B68     		ldr	r3, [r3, #4]
+ 16692 004a 1B0A     		lsrs	r3, r3, #8
+ 16693 004c D374     		strb	r3, [r2, #19]
+ 702:stm32f10x_can.c ****   /* Get the data field */
+ 703:stm32f10x_can.c ****   RxMessage->Data[0] = (uint8_t)0xFF & CANx->sFIFOMailBox[FIFONumber].RDLR;
+ 16694              		.loc 1 704 0
+ 16695 004e 00EB0113 		add	r3, r0, r1, lsl #4
+ 16696 0052 D3F8B8C1 		ldr	ip, [r3, #440]
+ 16697 0056 82F80BC0 		strb	ip, [r2, #11]
+ 704:stm32f10x_can.c ****   RxMessage->Data[1] = (uint8_t)0xFF & (CANx->sFIFOMailBox[FIFONumber].RDLR >> 8);
+ 16698              		.loc 1 705 0
+ 16699 005a D3F8B8C1 		ldr	ip, [r3, #440]
+ 16700 005e 4FEA1C2C 		lsr	ip, ip, #8
+ 16701 0062 82F80CC0 		strb	ip, [r2, #12]
+ 705:stm32f10x_can.c ****   RxMessage->Data[2] = (uint8_t)0xFF & (CANx->sFIFOMailBox[FIFONumber].RDLR >> 16);
+ 16702              		.loc 1 706 0
+ 16703 0066 D3F8B8C1 		ldr	ip, [r3, #440]
+ 16704 006a 4FEA1C4C 		lsr	ip, ip, #16
+ 16705 006e 82F80DC0 		strb	ip, [r2, #13]
+ 706:stm32f10x_can.c ****   RxMessage->Data[3] = (uint8_t)0xFF & (CANx->sFIFOMailBox[FIFONumber].RDLR >> 24);
+ 16706              		.loc 1 707 0
+ 16707 0072 D3F8B8C1 		ldr	ip, [r3, #440]
+ 16708 0076 4FEA1C6C 		lsr	ip, ip, #24
+ 16709 007a 82F80EC0 		strb	ip, [r2, #14]
+ 707:stm32f10x_can.c ****   RxMessage->Data[4] = (uint8_t)0xFF & CANx->sFIFOMailBox[FIFONumber].RDHR;
+ 16710              		.loc 1 708 0
+ 16711 007e D3F8BCC1 		ldr	ip, [r3, #444]
+ 16712 0082 82F80FC0 		strb	ip, [r2, #15]
+ 708:stm32f10x_can.c ****   RxMessage->Data[5] = (uint8_t)0xFF & (CANx->sFIFOMailBox[FIFONumber].RDHR >> 8);
+ 16713              		.loc 1 709 0
+ 16714 0086 D3F8BCC1 		ldr	ip, [r3, #444]
+ 16715 008a 4FEA1C2C 		lsr	ip, ip, #8
+ 16716 008e 82F810C0 		strb	ip, [r2, #16]
+ 709:stm32f10x_can.c ****   RxMessage->Data[6] = (uint8_t)0xFF & (CANx->sFIFOMailBox[FIFONumber].RDHR >> 16);
+ 16717              		.loc 1 710 0
+ 16718 0092 D3F8BCC1 		ldr	ip, [r3, #444]
+ 16719 0096 4FEA1C4C 		lsr	ip, ip, #16
+ 16720 009a 82F811C0 		strb	ip, [r2, #17]
+ 710:stm32f10x_can.c ****   RxMessage->Data[7] = (uint8_t)0xFF & (CANx->sFIFOMailBox[FIFONumber].RDHR >> 24);
+ 16721              		.loc 1 711 0
+ 16722 009e D3F8BC31 		ldr	r3, [r3, #444]
+ 16723 00a2 1B0E     		lsrs	r3, r3, #24
+ 16724 00a4 9374     		strb	r3, [r2, #18]
+ 16725              	.LVL116:
+ 16726              	.LBB28:
+ 16727              	.LBB29:
+ 636:stm32f10x_can.c ****   if (FIFONumber == CAN_FIFO0)
+ 16728              		.loc 1 636 0
+ 16729 00a6 11B9     		cbnz	r1, .L97
+ 16730              	.LVL117:
+ 638:stm32f10x_can.c ****     CANx->RF0R = RF0R_RFOM0;
+ 16731              		.loc 1 638 0
+ 16732 00a8 2021     		movs	r1, #32
+ 16733              	.LVL118:
+ 16734 00aa C160     		str	r1, [r0, #12]
+ 16735 00ac 01E0     		b	.L94
+ 16736              	.LVL119:
+ 16737              	.L97:
+ 643:stm32f10x_can.c ****     CANx->RF1R = RF1R_RFOM1;
+ 16738              		.loc 1 643 0
+ 16739 00ae 2022     		movs	r2, #32
+ 16740              	.LVL120:
+ 16741 00b0 0261     		str	r2, [r0, #16]
+ 16742              	.LVL121:
+ 16743              	.L94:
+ 16744              	.LBE29:
+ 16745              	.LBE28:
+ 711:stm32f10x_can.c ****   /* Release the FIFO */
+ 712:stm32f10x_can.c ****   CAN_FIFORelease(CANx, FIFONumber);
+ 713:stm32f10x_can.c **** }
+ 16746              		.loc 1 714 0
+ 16747 00b2 10BD     		pop	{r4, pc}
+ 16748              	.LFE38:
+ 16750              		.section	.text.CAN_DBGFreeze,"ax",%progbits
+ 16751              		.align	1
+ 16752              		.global	CAN_DBGFreeze
+ 16753              		.thumb
+ 16754              		.thumb_func
+ 16756              	CAN_DBGFreeze:
+ 16757              	.LFB39:
+ 714:stm32f10x_can.c **** 
+ 715:stm32f10x_can.c **** /**
+ 716:stm32f10x_can.c ****   * @brief  Enables or disables the DBG Freeze for CAN.
+ 717:stm32f10x_can.c ****   * @param  CANx: where x can be 1 or 2 to to select the CAN peripheral.
+ 718:stm32f10x_can.c ****   * @param  NewState: new state of the CAN peripheral.
+ 719:stm32f10x_can.c ****   *   This parameter can be: ENABLE or DISABLE.
+ 720:stm32f10x_can.c ****   * @retval None.
+ 721:stm32f10x_can.c ****   */
+ 722:stm32f10x_can.c **** void CAN_DBGFreeze(CAN_TypeDef* CANx, FunctionalState NewState)
+ 723:stm32f10x_can.c **** {
+ 16758              		.loc 1 724 0
+ 16759              		@ args = 0, pretend = 0, frame = 0
+ 16760              		@ frame_needed = 0, uses_anonymous_args = 0
+ 16761              		@ link register save eliminated.
+ 16762              	.LVL122:
+ 724:stm32f10x_can.c ****   /* Check the parameters */
+ 725:stm32f10x_can.c ****   assert_param(IS_CAN_ALL_PERIPH(CANx));
+ 726:stm32f10x_can.c ****   assert_param(IS_FUNCTIONAL_STATE(NewState));
+ 727:stm32f10x_can.c ****   
+ 728:stm32f10x_can.c ****   if (NewState != DISABLE)
+ 16763              		.loc 1 729 0
+ 16764 0000 19B1     		cbz	r1, .L100
+ 729:stm32f10x_can.c ****   {
+ 730:stm32f10x_can.c ****     /* Enable Debug Freeze  */
+ 731:stm32f10x_can.c ****     CANx->MCR |= MCR_DBF;
+ 16765              		.loc 1 732 0
+ 16766 0002 0368     		ldr	r3, [r0, #0]
+ 16767 0004 43F48033 		orr	r3, r3, #65536
+ 16768 0008 02E0     		b	.L102
+ 16769              	.L100:
+ 732:stm32f10x_can.c ****   }
+ 733:stm32f10x_can.c ****   else
+ 734:stm32f10x_can.c ****   {
+ 735:stm32f10x_can.c ****     /* Disable Debug Freeze */
+ 736:stm32f10x_can.c ****     CANx->MCR &= ~MCR_DBF;
+ 16770              		.loc 1 737 0
+ 16771 000a 0168     		ldr	r1, [r0, #0]
+ 16772              	.LVL123:
+ 16773 000c 21F48033 		bic	r3, r1, #65536
+ 16774              	.L102:
+ 16775              	.LVL124:
+ 16776 0010 0360     		str	r3, [r0, #0]
+ 737:stm32f10x_can.c ****   }
+ 738:stm32f10x_can.c **** }
+ 16777              		.loc 1 739 0
+ 16778 0012 7047     		bx	lr
+ 16779              	.LFE39:
+ 16781              		.section	.text.CAN_Sleep,"ax",%progbits
+ 16782              		.align	1
+ 16783              		.global	CAN_Sleep
+ 16784              		.thumb
+ 16785              		.thumb_func
+ 16787              	CAN_Sleep:
+ 16788              	.LFB40:
+ 739:stm32f10x_can.c **** 
+ 740:stm32f10x_can.c **** /**
+ 741:stm32f10x_can.c ****   * @brief  Enters the low power mode.
+ 742:stm32f10x_can.c ****   * @param  CANx: where x can be 1 or 2 to to select the CAN peripheral.
+ 743:stm32f10x_can.c ****   * @retval CANSLEEPOK if sleep entered, CANSLEEPFAILED in an other case.
+ 744:stm32f10x_can.c ****   */
+ 745:stm32f10x_can.c **** uint8_t CAN_Sleep(CAN_TypeDef* CANx)
+ 746:stm32f10x_can.c **** {
+ 16789              		.loc 1 747 0
+ 16790              		@ args = 0, pretend = 0, frame = 0
+ 16791              		@ frame_needed = 0, uses_anonymous_args = 0
+ 16792              		@ link register save eliminated.
+ 16793              	.LVL125:
+ 747:stm32f10x_can.c ****   uint8_t sleepstatus = CANSLEEPFAILED;
+ 748:stm32f10x_can.c ****   
+ 749:stm32f10x_can.c ****   /* Check the parameters */
+ 750:stm32f10x_can.c ****   assert_param(IS_CAN_ALL_PERIPH(CANx));
+ 751:stm32f10x_can.c ****     
+ 752:stm32f10x_can.c ****   /* Request Sleep mode */
+ 753:stm32f10x_can.c ****    CANx->MCR = (((CANx->MCR) & (uint32_t)(~MCR_INRQ)) | MCR_SLEEP);
+ 16794              		.loc 1 754 0
+ 16795 0000 D0F800C0 		ldr	ip, [r0, #0]
+ 16796 0004 2CF00302 		bic	r2, ip, #3
+ 16797 0008 42F00203 		orr	r3, r2, #2
+ 16798              	.LVL126:
+ 16799 000c 0360     		str	r3, [r0, #0]
+ 754:stm32f10x_can.c ****    
+ 755:stm32f10x_can.c ****   /* Sleep mode status */
+ 756:stm32f10x_can.c ****   if ((CANx->MSR & (CAN_MSR_SLAK|CAN_MSR_INAK)) == CAN_MSR_SLAK)
+ 16800              		.loc 1 757 0
+ 16801 000e 4168     		ldr	r1, [r0, #4]
+ 16802              	.LVL127:
+ 16803 0010 01F00300 		and	r0, r1, #3
+ 16804              	.LVL128:
+ 16805 0014 0228     		cmp	r0, #2
+ 16806 0016 14BF     		ite	ne
+ 16807 0018 0020     		movne	r0, #0
+ 16808 001a 0120     		moveq	r0, #1
+ 757:stm32f10x_can.c ****   {
+ 758:stm32f10x_can.c ****     /* Sleep mode not entered */
+ 759:stm32f10x_can.c ****     sleepstatus =  CANSLEEPOK;
+ 760:stm32f10x_can.c ****   }
+ 761:stm32f10x_can.c ****   /* At this step, sleep mode status */
+ 762:stm32f10x_can.c ****    return (uint8_t)sleepstatus;
+ 763:stm32f10x_can.c **** }
+ 16809              		.loc 1 764 0
+ 16810 001c 7047     		bx	lr
+ 16811              	.LFE40:
+ 16813              		.section	.text.CAN_WakeUp,"ax",%progbits
+ 16814              		.align	1
+ 16815              		.global	CAN_WakeUp
+ 16816              		.thumb
+ 16817              		.thumb_func
+ 16819              	CAN_WakeUp:
+ 16820              	.LFB41:
+ 764:stm32f10x_can.c **** 
+ 765:stm32f10x_can.c **** /**
+ 766:stm32f10x_can.c ****   * @brief  Wakes the CAN up.
+ 767:stm32f10x_can.c ****   * @param  CANx: where x can be 1 or 2 to to select the CAN peripheral.
+ 768:stm32f10x_can.c ****   * @retval CANWAKEUPOK if sleep mode left, CANWAKEUPFAILED in an other case.
+ 769:stm32f10x_can.c ****   */
+ 770:stm32f10x_can.c **** uint8_t CAN_WakeUp(CAN_TypeDef* CANx)
+ 771:stm32f10x_can.c **** {
+ 16821              		.loc 1 772 0
+ 16822              		@ args = 0, pretend = 0, frame = 0
+ 16823              		@ frame_needed = 0, uses_anonymous_args = 0
+ 16824              		@ link register save eliminated.
+ 16825              	.LVL129:
+ 772:stm32f10x_can.c ****   uint32_t wait_slak = SLAK_TimeOut	;
+ 773:stm32f10x_can.c ****   uint8_t wakeupstatus = CANWAKEUPFAILED;
+ 774:stm32f10x_can.c ****   
+ 775:stm32f10x_can.c ****   /* Check the parameters */
+ 776:stm32f10x_can.c ****   assert_param(IS_CAN_ALL_PERIPH(CANx));
+ 777:stm32f10x_can.c ****     
+ 778:stm32f10x_can.c ****   /* Wake up request */
+ 779:stm32f10x_can.c ****   CANx->MCR &= ~MCR_SLEEP;
+ 16826              		.loc 1 780 0
+ 16827 0000 0168     		ldr	r1, [r0, #0]
+ 16828 0002 21F00203 		bic	r3, r1, #2
+ 16829              	.LVL130:
+ 16830 0006 0360     		str	r3, [r0, #0]
+ 773:stm32f10x_can.c ****   uint32_t wait_slak = SLAK_TimeOut	;
+ 16831              		.loc 1 773 0
+ 16832 0008 4FF6FF73 		movw	r3, #65535
+ 780:stm32f10x_can.c ****     
+ 781:stm32f10x_can.c ****   /* Sleep mode status */
+ 782:stm32f10x_can.c ****   while(((CANx->MSR & CAN_MSR_SLAK) == CAN_MSR_SLAK)&&(wait_slak!=0x00))
+ 16833              		.loc 1 783 0
+ 16834 000c 00E0     		b	.L105
+ 16835              	.LVL131:
+ 16836              	.L107:
+ 783:stm32f10x_can.c ****   {
+ 784:stm32f10x_can.c ****    wait_slak--;
+ 16837              		.loc 1 785 0
+ 16838 000e 013B     		subs	r3, r3, #1
+ 16839              	.LVL132:
+ 16840              	.L105:
+ 783:stm32f10x_can.c ****   {
+ 16841              		.loc 1 783 0 discriminator 1
+ 16842 0010 4268     		ldr	r2, [r0, #4]
+ 16843 0012 12F0020F 		tst	r2, #2
+ 16844 0016 01D0     		beq	.L106
+ 16845              	.LVL133:
+ 783:stm32f10x_can.c ****   {
+ 16846              		.loc 1 783 0 is_stmt 0 discriminator 2
+ 16847 0018 002B     		cmp	r3, #0
+ 16848 001a F8D1     		bne	.L107
+ 16849              	.L106:
+ 785:stm32f10x_can.c ****   }
+ 786:stm32f10x_can.c ****   if((CANx->MSR & CAN_MSR_SLAK) != CAN_MSR_SLAK)
+ 16850              		.loc 1 787 0 is_stmt 1
+ 16851 001c 4068     		ldr	r0, [r0, #4]
+ 16852              	.LVL134:
+ 16853 001e 10F0020F 		tst	r0, #2
+ 16854 0022 14BF     		ite	ne
+ 16855 0024 0020     		movne	r0, #0
+ 16856 0026 0120     		moveq	r0, #1
+ 787:stm32f10x_can.c ****   {
+ 788:stm32f10x_can.c ****    /* Sleep mode exited */
+ 789:stm32f10x_can.c ****     wakeupstatus = CANWAKEUPOK;
+ 790:stm32f10x_can.c ****   }
+ 791:stm32f10x_can.c ****   /* At this step, sleep mode status */
+ 792:stm32f10x_can.c ****   return (uint8_t)wakeupstatus;
+ 793:stm32f10x_can.c **** }
+ 16857              		.loc 1 794 0
+ 16858 0028 7047     		bx	lr
+ 16859              	.LFE41:
+ 16861              		.section	.text.CAN_GetFlagStatus,"ax",%progbits
+ 16862              		.align	1
+ 16863              		.global	CAN_GetFlagStatus
+ 16864              		.thumb
+ 16865              		.thumb_func
+ 16867              	CAN_GetFlagStatus:
+ 16868              	.LFB42:
+ 794:stm32f10x_can.c **** 
+ 795:stm32f10x_can.c **** /**
+ 796:stm32f10x_can.c ****   * @brief  Checks whether the specified CAN flag is set or not.
+ 797:stm32f10x_can.c ****   * @param  CANx: where x can be 1 or 2 to to select the CAN peripheral.
+ 798:stm32f10x_can.c ****   * @param  CAN_FLAG: specifies the flag to check.
+ 799:stm32f10x_can.c ****   *   This parameter can be: CAN_FLAG_EWG, CAN_FLAG_EPV or CAN_FLAG_BOF.
+ 800:stm32f10x_can.c ****   * @retval The new state of CAN_FLAG (SET or RESET).
+ 801:stm32f10x_can.c ****   */
+ 802:stm32f10x_can.c **** FlagStatus CAN_GetFlagStatus(CAN_TypeDef* CANx, uint32_t CAN_FLAG)
+ 803:stm32f10x_can.c **** {
+ 16869              		.loc 1 804 0
+ 16870              		@ args = 0, pretend = 0, frame = 0
+ 16871              		@ frame_needed = 0, uses_anonymous_args = 0
+ 16872              		@ link register save eliminated.
+ 16873              	.LVL135:
+ 804:stm32f10x_can.c ****   FlagStatus bitstatus = RESET;
+ 805:stm32f10x_can.c ****   /* Check the parameters */
+ 806:stm32f10x_can.c ****   assert_param(IS_CAN_ALL_PERIPH(CANx));
+ 807:stm32f10x_can.c ****   assert_param(IS_CAN_FLAG(CAN_FLAG));
+ 808:stm32f10x_can.c ****   /* Check the status of the specified CAN flag */
+ 809:stm32f10x_can.c ****   if ((CANx->ESR & CAN_FLAG) != (uint32_t)RESET)
+ 16874              		.loc 1 810 0
+ 16875 0000 8369     		ldr	r3, [r0, #24]
+ 16876              	.LVL136:
+ 16877 0002 1942     		tst	r1, r3
+ 16878 0004 0CBF     		ite	eq
+ 16879 0006 0020     		moveq	r0, #0
+ 16880 0008 0120     		movne	r0, #1
+ 16881              	.LVL137:
+ 810:stm32f10x_can.c ****   {
+ 811:stm32f10x_can.c ****     /* CAN_FLAG is set */
+ 812:stm32f10x_can.c ****     bitstatus = SET;
+ 813:stm32f10x_can.c ****   }
+ 814:stm32f10x_can.c ****   else
+ 815:stm32f10x_can.c ****   {
+ 816:stm32f10x_can.c ****     /* CAN_FLAG is reset */
+ 817:stm32f10x_can.c ****     bitstatus = RESET;
+ 818:stm32f10x_can.c ****   }
+ 819:stm32f10x_can.c ****   /* Return the CAN_FLAG status */
+ 820:stm32f10x_can.c ****   return  bitstatus;
+ 821:stm32f10x_can.c **** }
+ 16882              		.loc 1 822 0
+ 16883 000a 7047     		bx	lr
+ 16884              	.LFE42:
+ 16886              		.section	.text.CAN_ClearFlag,"ax",%progbits
+ 16887              		.align	1
+ 16888              		.global	CAN_ClearFlag
+ 16889              		.thumb
+ 16890              		.thumb_func
+ 16892              	CAN_ClearFlag:
+ 16893              	.LFB43:
+ 822:stm32f10x_can.c **** 
+ 823:stm32f10x_can.c **** /**
+ 824:stm32f10x_can.c ****   * @brief  Clears the CAN's pending flags.
+ 825:stm32f10x_can.c ****   * @param  CANx: where x can be 1 or 2 to to select the CAN peripheral.
+ 826:stm32f10x_can.c ****   * @param  CAN_FLAG: specifies the flag to clear.
+ 827:stm32f10x_can.c ****   * @retval None.
+ 828:stm32f10x_can.c ****   */
+ 829:stm32f10x_can.c **** void CAN_ClearFlag(CAN_TypeDef* CANx, uint32_t CAN_FLAG)
+ 830:stm32f10x_can.c **** {
+ 16894              		.loc 1 831 0
+ 16895              		@ args = 0, pretend = 0, frame = 0
+ 16896              		@ frame_needed = 0, uses_anonymous_args = 0
+ 16897              		@ link register save eliminated.
+ 16898              	.LVL138:
+ 831:stm32f10x_can.c ****   /* Check the parameters */
+ 832:stm32f10x_can.c ****   assert_param(IS_CAN_ALL_PERIPH(CANx));
+ 833:stm32f10x_can.c ****   assert_param(IS_CAN_FLAG(CAN_FLAG));
+ 834:stm32f10x_can.c ****   /* Clear the selected CAN flags */
+ 835:stm32f10x_can.c ****   CANx->ESR &= ~CAN_FLAG;
+ 16899              		.loc 1 836 0
+ 16900 0000 8369     		ldr	r3, [r0, #24]
+ 16901              	.LVL139:
+ 16902 0002 23EA0101 		bic	r1, r3, r1
+ 16903              	.LVL140:
+ 16904 0006 8161     		str	r1, [r0, #24]
+ 836:stm32f10x_can.c **** }
+ 16905              		.loc 1 837 0
+ 16906 0008 7047     		bx	lr
+ 16907              	.LFE43:
+ 16909              		.section	.text.CAN_GetITStatus,"ax",%progbits
+ 16910              		.align	1
+ 16911              		.global	CAN_GetITStatus
+ 16912              		.thumb
+ 16913              		.thumb_func
+ 16915              	CAN_GetITStatus:
+ 16916              	.LFB44:
+ 837:stm32f10x_can.c **** 
+ 838:stm32f10x_can.c **** /**
+ 839:stm32f10x_can.c ****   * @brief  Checks whether the specified CAN interrupt has occurred or not.
+ 840:stm32f10x_can.c ****   * @param  CANx: where x can be 1 or 2 to to select the CAN peripheral.
+ 841:stm32f10x_can.c ****   * @param  CAN_IT: specifies the CAN interrupt source to check.
+ 842:stm32f10x_can.c ****   *   This parameter can be: CAN_IT_RQCP0, CAN_IT_RQCP1, CAN_IT_RQCP2,
+ 843:stm32f10x_can.c ****   *   CAN_IT_FF0, CAN_IT_FOV0, CAN_IT_FF1,
+ 844:stm32f10x_can.c ****   *   CAN_IT_FOV1, CAN_IT_EWG, CAN_IT_EPV, 
+ 845:stm32f10x_can.c ****   *   CAN_IT_BOF, CAN_IT_WKU or CAN_IT_SLK.
+ 846:stm32f10x_can.c ****   * @retval The new state of CAN_IT (SET or RESET).
+ 847:stm32f10x_can.c ****   */
+ 848:stm32f10x_can.c **** ITStatus CAN_GetITStatus(CAN_TypeDef* CANx, uint32_t CAN_IT)
+ 849:stm32f10x_can.c **** {
+ 16917              		.loc 1 850 0
+ 16918              		@ args = 0, pretend = 0, frame = 0
+ 16919              		@ frame_needed = 0, uses_anonymous_args = 0
+ 16920              		@ link register save eliminated.
+ 16921              	.LVL141:
+ 850:stm32f10x_can.c ****   ITStatus pendingbitstatus = RESET;
+ 851:stm32f10x_can.c ****   /* Check the parameters */
+ 852:stm32f10x_can.c ****   assert_param(IS_CAN_ALL_PERIPH(CANx));
+ 853:stm32f10x_can.c ****   assert_param(IS_CAN_ITStatus(CAN_IT));
+ 854:stm32f10x_can.c ****   switch (CAN_IT)
+ 16922              		.loc 1 855 0
+ 16923 0000 2029     		cmp	r1, #32
+ 16924 0002 33D0     		beq	.L117
+ 16925              	.LVL142:
+ 16926 0004 14D8     		bhi	.L124
+ 16927              	.LVL143:
+ 16928 0006 0629     		cmp	r1, #6
+ 16929              	.LVL144:
+ 855:stm32f10x_can.c ****   {
+ 856:stm32f10x_can.c ****     case CAN_IT_RQCP0:
+ 857:stm32f10x_can.c ****       pendingbitstatus = CheckITStatus(CANx->TSR, TSR_RQCP0);
+ 858:stm32f10x_can.c ****       break;
+ 859:stm32f10x_can.c ****     case CAN_IT_RQCP1:
+ 860:stm32f10x_can.c ****       pendingbitstatus = CheckITStatus(CANx->TSR, TSR_RQCP1);
+ 16930              		.loc 1 861 0
+ 16931 0008 04BF     		itt	eq
+ 16932 000a 8068     		ldreq	r0, [r0, #8]
+ 16933              	.LVL145:
+ 861:stm32f10x_can.c ****       break;
+ 862:stm32f10x_can.c ****     case CAN_IT_RQCP2:
+ 863:stm32f10x_can.c ****       pendingbitstatus = CheckITStatus(CANx->TSR, TSR_RQCP2);
+ 864:stm32f10x_can.c ****       break;
+ 865:stm32f10x_can.c ****     case CAN_IT_FF0:
+ 866:stm32f10x_can.c ****       pendingbitstatus = CheckITStatus(CANx->RF0R, RF0R_FULL0);
+ 867:stm32f10x_can.c ****       break;
+ 868:stm32f10x_can.c ****     case CAN_IT_FOV0:
+ 869:stm32f10x_can.c ****       pendingbitstatus = CheckITStatus(CANx->RF0R, RF0R_FOVR0);
+ 870:stm32f10x_can.c ****       break;
+ 871:stm32f10x_can.c ****     case CAN_IT_FF1:
+ 872:stm32f10x_can.c ****       pendingbitstatus = CheckITStatus(CANx->RF1R, RF1R_FULL1);
+ 873:stm32f10x_can.c ****       break;
+ 874:stm32f10x_can.c ****     case CAN_IT_FOV1:
+ 875:stm32f10x_can.c ****       pendingbitstatus = CheckITStatus(CANx->RF1R, RF1R_FOVR1);
+ 876:stm32f10x_can.c ****       break;
+ 877:stm32f10x_can.c ****     case CAN_IT_EWG:
+ 878:stm32f10x_can.c ****       pendingbitstatus = CheckITStatus(CANx->ESR, ESR_EWGF);
+ 879:stm32f10x_can.c ****       break;
+ 880:stm32f10x_can.c ****     case CAN_IT_EPV:
+ 881:stm32f10x_can.c ****       pendingbitstatus = CheckITStatus(CANx->ESR, ESR_EPVF);
+ 882:stm32f10x_can.c ****       break;
+ 883:stm32f10x_can.c ****     case CAN_IT_BOF:
+ 884:stm32f10x_can.c ****       pendingbitstatus = CheckITStatus(CANx->ESR, ESR_BOFF);
+ 885:stm32f10x_can.c ****       break;
+ 886:stm32f10x_can.c ****     case CAN_IT_SLK:
+ 887:stm32f10x_can.c ****       pendingbitstatus = CheckITStatus(CANx->MSR, MSR_SLAKI);
+ 888:stm32f10x_can.c ****       break;
+ 889:stm32f10x_can.c ****     case CAN_IT_WKU:
+ 890:stm32f10x_can.c ****       pendingbitstatus = CheckITStatus(CANx->MSR, MSR_WKUI);
+ 891:stm32f10x_can.c ****       break;
+ 892:stm32f10x_can.c ****     default :
+ 893:stm32f10x_can.c ****       pendingbitstatus = RESET;
+ 894:stm32f10x_can.c ****       break;
+ 895:stm32f10x_can.c ****   }
+ 896:stm32f10x_can.c ****   /* Return the CAN_IT status */
+ 897:stm32f10x_can.c ****   return  pendingbitstatus;
+ 898:stm32f10x_can.c **** }
+ 899:stm32f10x_can.c **** 
+ 900:stm32f10x_can.c **** /**
+ 901:stm32f10x_can.c ****   * @brief  Clears the CAN’s interrupt pending bits.
+ 902:stm32f10x_can.c ****   * @param  CANx: where x can be 1 or 2 to to select the CAN peripheral.
+ 903:stm32f10x_can.c ****   * @param  CAN_IT: specifies the interrupt pending bit to clear.
+ 904:stm32f10x_can.c ****   * @retval None.
+ 905:stm32f10x_can.c ****   */
+ 906:stm32f10x_can.c **** void CAN_ClearITPendingBit(CAN_TypeDef* CANx, uint32_t CAN_IT)
+ 907:stm32f10x_can.c **** {
+ 908:stm32f10x_can.c ****   /* Check the parameters */
+ 909:stm32f10x_can.c ****   assert_param(IS_CAN_ALL_PERIPH(CANx));
+ 910:stm32f10x_can.c ****   assert_param(IS_CAN_ITStatus(CAN_IT));
+ 911:stm32f10x_can.c ****   switch (CAN_IT)
+ 912:stm32f10x_can.c ****   {
+ 913:stm32f10x_can.c ****     case CAN_IT_RQCP0:
+ 914:stm32f10x_can.c ****       CANx->TSR = TSR_RQCP0; /* rc_w1*/
+ 915:stm32f10x_can.c ****       break;
+ 916:stm32f10x_can.c ****     case CAN_IT_RQCP1:
+ 917:stm32f10x_can.c ****       CANx->TSR = TSR_RQCP1; /* rc_w1*/
+ 918:stm32f10x_can.c ****       break;
+ 919:stm32f10x_can.c ****     case CAN_IT_RQCP2:
+ 920:stm32f10x_can.c ****       CANx->TSR = TSR_RQCP2; /* rc_w1*/
+ 921:stm32f10x_can.c ****       break;
+ 922:stm32f10x_can.c ****     case CAN_IT_FF0:
+ 923:stm32f10x_can.c ****       CANx->RF0R = RF0R_FULL0; /* rc_w1*/
+ 924:stm32f10x_can.c ****       break;
+ 925:stm32f10x_can.c ****     case CAN_IT_FOV0:
+ 926:stm32f10x_can.c ****       CANx->RF0R = RF0R_FOVR0; /* rc_w1*/
+ 927:stm32f10x_can.c ****       break;
+ 928:stm32f10x_can.c ****     case CAN_IT_FF1:
+ 929:stm32f10x_can.c ****       CANx->RF1R = RF1R_FULL1; /* rc_w1*/
+ 930:stm32f10x_can.c ****       break;
+ 931:stm32f10x_can.c ****     case CAN_IT_FOV1:
+ 932:stm32f10x_can.c ****       CANx->RF1R = RF1R_FOVR1; /* rc_w1*/
+ 933:stm32f10x_can.c ****       break;
+ 934:stm32f10x_can.c ****     case CAN_IT_EWG:
+ 935:stm32f10x_can.c ****       CANx->ESR &= ~ ESR_EWGF; /* rw */
+ 936:stm32f10x_can.c ****       break;
+ 937:stm32f10x_can.c ****     case CAN_IT_EPV:
+ 938:stm32f10x_can.c ****       CANx->ESR &= ~ ESR_EPVF; /* rw */
+ 939:stm32f10x_can.c ****       break;
+ 940:stm32f10x_can.c ****     case CAN_IT_BOF:
+ 941:stm32f10x_can.c ****       CANx->ESR &= ~ ESR_BOFF; /* rw */
+ 942:stm32f10x_can.c ****       break;
+ 943:stm32f10x_can.c ****     case CAN_IT_WKU:
+ 944:stm32f10x_can.c ****       CANx->MSR = MSR_WKUI;  /* rc_w1*/
+ 945:stm32f10x_can.c ****       break;
+ 946:stm32f10x_can.c ****     case CAN_IT_SLK:
+ 947:stm32f10x_can.c ****       CANx->MSR = MSR_SLAKI;  /* rc_w1*/
+ 948:stm32f10x_can.c ****       break;
+ 949:stm32f10x_can.c ****     default :
+ 950:stm32f10x_can.c ****       break;
+ 951:stm32f10x_can.c ****   }
+ 952:stm32f10x_can.c **** }
+ 953:stm32f10x_can.c **** 
+ 954:stm32f10x_can.c **** /**
+ 955:stm32f10x_can.c ****   * @brief  Checks whether the CAN interrupt has occurred or not.
+ 956:stm32f10x_can.c ****   * @param  CAN_Reg: specifies the CAN interrupt register to check.
+ 957:stm32f10x_can.c ****   * @param  It_Bit: specifies the interrupt source bit to check.
+ 958:stm32f10x_can.c ****   * @retval The new state of the CAN Interrupt (SET or RESET).
+ 959:stm32f10x_can.c ****   */
+ 960:stm32f10x_can.c **** static ITStatus CheckITStatus(uint32_t CAN_Reg, uint32_t It_Bit)
+ 961:stm32f10x_can.c **** {
+ 962:stm32f10x_can.c ****   ITStatus pendingbitstatus = RESET;
+ 963:stm32f10x_can.c ****   
+ 964:stm32f10x_can.c ****   if ((CAN_Reg & It_Bit) != (uint32_t)RESET)
+ 965:stm32f10x_can.c ****   {
+ 966:stm32f10x_can.c ****     /* CAN_IT is set */
+ 967:stm32f10x_can.c ****     pendingbitstatus = SET;
+ 968:stm32f10x_can.c ****   }
+ 969:stm32f10x_can.c ****   else
+ 970:stm32f10x_can.c ****   {
+ 971:stm32f10x_can.c ****     /* CAN_IT is reset */
+ 972:stm32f10x_can.c ****     pendingbitstatus = RESET;
+ 16934              		.loc 1 973 0
+ 16935 000c C0F30020 		ubfxeq	r0, r0, #8, #1
+ 16936              	.LVL146:
+ 855:stm32f10x_can.c ****   {
+ 16937              		.loc 1 855 0
+ 16938 0010 41D0     		beq	.L111
+ 16939 0012 04D8     		bhi	.L125
+ 16940              	.LVL147:
+ 16941 0014 0429     		cmp	r1, #4
+ 16942 0016 25D0     		beq	.L112
+ 16943              	.LVL148:
+ 16944 0018 0529     		cmp	r1, #5
+ 16945 001a 3BD1     		bne	.L127
+ 16946 001c 20E0     		b	.L135
+ 16947              	.LVL149:
+ 16948              	.L125:
+ 16949 001e 0729     		cmp	r1, #7
+ 864:stm32f10x_can.c ****       pendingbitstatus = CheckITStatus(CANx->TSR, TSR_RQCP2);
+ 16950              		.loc 1 864 0
+ 16951 0020 04BF     		itt	eq
+ 16952 0022 8068     		ldreq	r0, [r0, #8]
+ 16953              	.LVL150:
+ 16954              		.loc 1 973 0
+ 16955 0024 C0F30040 		ubfxeq	r0, r0, #16, #1
+ 16956              	.LVL151:
+ 855:stm32f10x_can.c ****   {
+ 16957              		.loc 1 855 0
+ 16958 0028 35D0     		beq	.L111
+ 16959              	.LVL152:
+ 16960 002a 0829     		cmp	r1, #8
+ 16961 002c 32D1     		bne	.L127
+ 16962 002e 1BE0     		b	.L136
+ 16963              	.LVL153:
+ 16964              	.L124:
+ 16965 0030 B1F5007F 		cmp	r1, #512
+ 16966              	.LVL154:
+ 882:stm32f10x_can.c ****       pendingbitstatus = CheckITStatus(CANx->ESR, ESR_EPVF);
+ 16967              		.loc 1 882 0
+ 16968 0034 04BF     		itt	eq
+ 16969 0036 8069     		ldreq	r0, [r0, #24]
+ 16970              	.LVL155:
+ 16971              		.loc 1 973 0
+ 16972 0038 C0F34000 		ubfxeq	r0, r0, #1, #1
+ 16973              	.LVL156:
+ 855:stm32f10x_can.c ****   switch (CAN_IT)
+ 16974              		.loc 1 855 0
+ 16975 003c 2BD0     		beq	.L111
+ 16976 003e 05D8     		bhi	.L126
+ 16977              	.LVL157:
+ 16978 0040 4029     		cmp	r1, #64
+ 16979 0042 15D0     		beq	.L118
+ 16980              	.LVL158:
+ 16981 0044 B1F5807F 		cmp	r1, #256
+ 16982 0048 24D1     		bne	.L127
+ 16983 004a 13E0     		b	.L137
+ 16984              	.LVL159:
+ 16985              	.L126:
+ 16986 004c B1F5803F 		cmp	r1, #65536
+ 16987 0050 1CD0     		beq	.L122
+ 16988              	.LVL160:
+ 16989 0052 B1F5003F 		cmp	r1, #131072
+ 16990 0056 15D0     		beq	.L123
+ 16991              	.LVL161:
+ 16992 0058 B1F5806F 		cmp	r1, #1024
+ 16993 005c 1AD1     		bne	.L127
+ 16994 005e 0DE0     		b	.L138
+ 16995              	.LVL162:
+ 16996              	.L135:
+ 858:stm32f10x_can.c ****       pendingbitstatus = CheckITStatus(CANx->TSR, TSR_RQCP0);
+ 16997              		.loc 1 858 0
+ 16998 0060 8068     		ldr	r0, [r0, #8]
+ 16999              	.LVL163:
+ 17000 0062 08E0     		b	.L130
+ 17001              	.LVL164:
+ 17002              	.L112:
+ 867:stm32f10x_can.c ****       pendingbitstatus = CheckITStatus(CANx->RF0R, RF0R_FULL0);
+ 17003              		.loc 1 867 0
+ 17004 0064 C068     		ldr	r0, [r0, #12]
+ 17005              	.LVL165:
+ 17006 0066 12E0     		b	.L129
+ 17007              	.LVL166:
+ 17008              	.L136:
+ 870:stm32f10x_can.c ****       pendingbitstatus = CheckITStatus(CANx->RF0R, RF0R_FOVR0);
+ 17009              		.loc 1 870 0
+ 17010 0068 C068     		ldr	r0, [r0, #12]
+ 17011              	.LVL167:
+ 17012 006a 0CE0     		b	.L128
+ 17013              	.LVL168:
+ 17014              	.L117:
+ 873:stm32f10x_can.c ****       pendingbitstatus = CheckITStatus(CANx->RF1R, RF1R_FULL1);
+ 17015              		.loc 1 873 0
+ 17016 006c 0069     		ldr	r0, [r0, #16]
+ 17017              	.LVL169:
+ 17018 006e 0EE0     		b	.L129
+ 17019              	.LVL170:
+ 17020              	.L118:
+ 876:stm32f10x_can.c ****       pendingbitstatus = CheckITStatus(CANx->RF1R, RF1R_FOVR1);
+ 17021              		.loc 1 876 0
+ 17022 0070 0069     		ldr	r0, [r0, #16]
+ 17023              	.LVL171:
+ 17024 0072 08E0     		b	.L128
+ 17025              	.LVL172:
+ 17026              	.L137:
+ 879:stm32f10x_can.c ****       pendingbitstatus = CheckITStatus(CANx->ESR, ESR_EWGF);
+ 17027              		.loc 1 879 0
+ 17028 0074 8069     		ldr	r0, [r0, #24]
+ 17029              	.LVL173:
+ 17030              	.L130:
+ 17031              		.loc 1 973 0
+ 17032 0076 00F00100 		and	r0, r0, #1
+ 17033              	.LVL174:
+ 17034 007a 0CE0     		b	.L111
+ 17035              	.LVL175:
+ 17036              	.L138:
+ 885:stm32f10x_can.c ****       pendingbitstatus = CheckITStatus(CANx->ESR, ESR_BOFF);
+ 17037              		.loc 1 885 0
+ 17038 007c 8069     		ldr	r0, [r0, #24]
+ 17039              	.LVL176:
+ 17040              		.loc 1 973 0
+ 17041 007e C0F38000 		ubfx	r0, r0, #2, #1
+ 17042              	.LVL177:
+ 17043 0082 08E0     		b	.L111
+ 17044              	.LVL178:
+ 17045              	.L123:
+ 888:stm32f10x_can.c ****       pendingbitstatus = CheckITStatus(CANx->MSR, MSR_SLAKI);
+ 17046              		.loc 1 888 0
+ 17047 0084 4068     		ldr	r0, [r0, #4]
+ 17048              	.LVL179:
+ 17049              	.L128:
+ 17050              		.loc 1 973 0
+ 17051 0086 C0F30010 		ubfx	r0, r0, #4, #1
+ 17052              	.LVL180:
+ 17053 008a 04E0     		b	.L111
+ 17054              	.LVL181:
+ 17055              	.L122:
+ 891:stm32f10x_can.c ****       pendingbitstatus = CheckITStatus(CANx->MSR, MSR_WKUI);
+ 17056              		.loc 1 891 0
+ 17057 008c 4068     		ldr	r0, [r0, #4]
+ 17058              	.LVL182:
+ 17059              	.L129:
+ 17060              		.loc 1 973 0
+ 17061 008e C0F3C000 		ubfx	r0, r0, #3, #1
+ 17062              	.LVL183:
+ 17063 0092 00E0     		b	.L111
+ 17064              	.LVL184:
+ 17065              	.L127:
+ 894:stm32f10x_can.c ****       pendingbitstatus = RESET;
+ 17066              		.loc 1 894 0
+ 17067 0094 0020     		movs	r0, #0
+ 17068              	.L111:
+ 17069              	.LVL185:
+ 17070              	.LVL186:
+ 899:stm32f10x_can.c **** }
+ 17071              		.loc 1 899 0
+ 17072 0096 7047     		bx	lr
+ 17073              	.LFE44:
+ 17075              		.section	.text.CAN_ClearITPendingBit,"ax",%progbits
+ 17076              		.align	1
+ 17077              		.global	CAN_ClearITPendingBit
+ 17078              		.thumb
+ 17079              		.thumb_func
+ 17081              	CAN_ClearITPendingBit:
+ 17082              	.LFB45:
+ 908:stm32f10x_can.c **** {
+ 17083              		.loc 1 908 0
+ 17084              		@ args = 0, pretend = 0, frame = 0
+ 17085              		@ frame_needed = 0, uses_anonymous_args = 0
+ 17086              		@ link register save eliminated.
+ 17087              	.LVL187:
+ 912:stm32f10x_can.c ****   switch (CAN_IT)
+ 17088              		.loc 1 912 0
+ 17089 0000 2029     		cmp	r1, #32
+ 17090 0002 2FD0     		beq	.L146
+ 17091              	.LVL188:
+ 17092 0004 0CD8     		bhi	.L153
+ 17093              	.LVL189:
+ 17094 0006 0629     		cmp	r1, #6
+ 17095 0008 20D0     		beq	.L143
+ 17096 000a 04D8     		bhi	.L154
+ 17097              	.LVL190:
+ 17098 000c 0429     		cmp	r1, #4
+ 17099 000e 24D0     		beq	.L141
+ 17100              	.LVL191:
+ 17101 0010 0529     		cmp	r1, #5
+ 17102 0012 3DD1     		bne	.L139
+ 17103 0014 18E0     		b	.L165
+ 17104              	.LVL192:
+ 17105              	.L154:
+ 17106 0016 0729     		cmp	r1, #7
+ 17107 0018 1CD0     		beq	.L144
+ 17108              	.LVL193:
+ 17109 001a 0829     		cmp	r1, #8
+ 17110 001c 38D1     		bne	.L139
+ 17111 001e 1EE0     		b	.L166
+ 17112              	.LVL194:
+ 17113              	.L153:
+ 17114 0020 B1F5007F 		cmp	r1, #512
+ 17115 0024 27D0     		beq	.L149
+ 17116 0026 05D8     		bhi	.L155
+ 17117              	.LVL195:
+ 17118 0028 4029     		cmp	r1, #64
+ 17119 002a 1DD0     		beq	.L147
+ 17120              	.LVL196:
+ 17121 002c B1F5807F 		cmp	r1, #256
+ 17122 0030 2ED1     		bne	.L139
+ 17123 0032 1CE0     		b	.L167
+ 17124              	.LVL197:
+ 17125              	.L155:
+ 17126 0034 B1F5803F 		cmp	r1, #65536
+ 17127 0038 26D0     		beq	.L151
+ 17128              	.LVL198:
+ 17129 003a B1F5003F 		cmp	r1, #131072
+ 17130 003e 25D0     		beq	.L152
+ 17131              	.LVL199:
+ 17132 0040 B1F5806F 		cmp	r1, #1024
+ 17133 0044 24D1     		bne	.L139
+ 17134 0046 1AE0     		b	.L168
+ 17135              	.LVL200:
+ 17136              	.L165:
+ 915:stm32f10x_can.c ****       CANx->TSR = TSR_RQCP0; /* rc_w1*/
+ 17137              		.loc 1 915 0
+ 17138 0048 0123     		movs	r3, #1
+ 17139 004a 01E0     		b	.L156
+ 17140              	.LVL201:
+ 17141              	.L143:
+ 918:stm32f10x_can.c ****       CANx->TSR = TSR_RQCP1; /* rc_w1*/
+ 17142              		.loc 1 918 0
+ 17143 004c 4FF48073 		mov	r3, #256
+ 17144              	.L156:
+ 17145              	.LVL202:
+ 17146 0050 8360     		str	r3, [r0, #8]
+ 919:stm32f10x_can.c ****       break;
+ 17147              		.loc 1 919 0
+ 17148 0052 1DE0     		b	.L139
+ 17149              	.LVL203:
+ 17150              	.L144:
+ 921:stm32f10x_can.c ****       CANx->TSR = TSR_RQCP2; /* rc_w1*/
+ 17151              		.loc 1 921 0
+ 17152 0054 4FF48033 		mov	r3, #65536
+ 17153 0058 FAE7     		b	.L156
+ 17154              	.LVL204:
+ 17155              	.L141:
+ 924:stm32f10x_can.c ****       CANx->RF0R = RF0R_FULL0; /* rc_w1*/
+ 17156              		.loc 1 924 0
+ 17157 005a 0823     		movs	r3, #8
+ 17158 005c 00E0     		b	.L160
+ 17159              	.LVL205:
+ 17160              	.L166:
+ 927:stm32f10x_can.c ****       CANx->RF0R = RF0R_FOVR0; /* rc_w1*/
+ 17161              		.loc 1 927 0
+ 17162 005e 1023     		movs	r3, #16
+ 17163              	.LVL206:
+ 17164              	.L160:
+ 17165 0060 C360     		str	r3, [r0, #12]
+ 928:stm32f10x_can.c ****       break;
+ 17166              		.loc 1 928 0
+ 17167 0062 15E0     		b	.L139
+ 17168              	.LVL207:
+ 17169              	.L146:
+ 930:stm32f10x_can.c ****       CANx->RF1R = RF1R_FULL1; /* rc_w1*/
+ 17170              		.loc 1 930 0
+ 17171 0064 0823     		movs	r3, #8
+ 17172 0066 00E0     		b	.L159
+ 17173              	.LVL208:
+ 17174              	.L147:
+ 933:stm32f10x_can.c ****       CANx->RF1R = RF1R_FOVR1; /* rc_w1*/
+ 17175              		.loc 1 933 0
+ 17176 0068 1023     		movs	r3, #16
+ 17177              	.LVL209:
+ 17178              	.L159:
+ 17179 006a 0361     		str	r3, [r0, #16]
+ 934:stm32f10x_can.c ****       break;
+ 17180              		.loc 1 934 0
+ 17181 006c 10E0     		b	.L139
+ 17182              	.LVL210:
+ 17183              	.L167:
+ 936:stm32f10x_can.c ****       CANx->ESR &= ~ ESR_EWGF; /* rw */
+ 17184              		.loc 1 936 0
+ 17185 006e 8369     		ldr	r3, [r0, #24]
+ 17186 0070 23F00103 		bic	r3, r3, #1
+ 17187 0074 06E0     		b	.L158
+ 17188              	.LVL211:
+ 17189              	.L149:
+ 939:stm32f10x_can.c ****       CANx->ESR &= ~ ESR_EPVF; /* rw */
+ 17190              		.loc 1 939 0
+ 17191 0076 8169     		ldr	r1, [r0, #24]
+ 17192              	.LVL212:
+ 17193 0078 21F00203 		bic	r3, r1, #2
+ 17194 007c 02E0     		b	.L158
+ 17195              	.LVL213:
+ 17196              	.L168:
+ 942:stm32f10x_can.c ****       CANx->ESR &= ~ ESR_BOFF; /* rw */
+ 17197              		.loc 1 942 0
+ 17198 007e 8269     		ldr	r2, [r0, #24]
+ 17199 0080 22F00403 		bic	r3, r2, #4
+ 17200              	.LVL214:
+ 17201              	.L158:
+ 17202 0084 8361     		str	r3, [r0, #24]
+ 943:stm32f10x_can.c ****       break;
+ 17203              		.loc 1 943 0
+ 17204 0086 03E0     		b	.L139
+ 17205              	.LVL215:
+ 17206              	.L151:
+ 945:stm32f10x_can.c ****       CANx->MSR = MSR_WKUI;  /* rc_w1*/
+ 17207              		.loc 1 945 0
+ 17208 0088 0823     		movs	r3, #8
+ 17209 008a 00E0     		b	.L157
+ 17210              	.LVL216:
+ 17211              	.L152:
+ 948:stm32f10x_can.c ****       CANx->MSR = MSR_SLAKI;  /* rc_w1*/
+ 17212              		.loc 1 948 0
+ 17213 008c 1023     		movs	r3, #16
+ 17214              	.LVL217:
+ 17215              	.L157:
+ 17216 008e 4360     		str	r3, [r0, #4]
+ 17217              	.LVL218:
+ 17218              	.L139:
+ 953:stm32f10x_can.c **** }
+ 17219              		.loc 1 953 0
+ 17220 0090 7047     		bx	lr
+ 17221              	.LFE45:
+ 17223              		.section	.rodata.CSWTCH.2,"a",%progbits
+ 17224              		.align	2
+ 17225              		.set	.LANCHOR0,. + 0
+ 17228              	CSWTCH.2:
+ 17229 0000 02       		.byte	2
+ 17230 0001 00       		.byte	0
+ 17231 0002 00       		.byte	0
+ 17232 0003 00       		.byte	0
+ 17233 0004 00       		.byte	0
+ 17234 0005 00       		.byte	0
+ 17235 0006 00       		.byte	0
+ 17236 0007 01       		.byte	1
+ 17443              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 stm32f10x_can.c
+C:\Users\ts\AppData\Local\Temp\cc4SvWhC.s:15723  .text.CAN_DeInit:00000000 $t
+C:\Users\ts\AppData\Local\Temp\cc4SvWhC.s:15728  .text.CAN_DeInit:00000000 CAN_DeInit
+C:\Users\ts\AppData\Local\Temp\cc4SvWhC.s:15767  .text.CAN_DeInit:00000030 $d
+C:\Users\ts\AppData\Local\Temp\cc4SvWhC.s:15771  .text.CAN_Init:00000000 $t
+C:\Users\ts\AppData\Local\Temp\cc4SvWhC.s:15776  .text.CAN_Init:00000000 CAN_Init
+C:\Users\ts\AppData\Local\Temp\cc4SvWhC.s:15976  .text.CAN_FilterInit:00000000 $t
+C:\Users\ts\AppData\Local\Temp\cc4SvWhC.s:15981  .text.CAN_FilterInit:00000000 CAN_FilterInit
+C:\Users\ts\AppData\Local\Temp\cc4SvWhC.s:16138  .text.CAN_FilterInit:00000100 $d
+C:\Users\ts\AppData\Local\Temp\cc4SvWhC.s:16142  .text.CAN_StructInit:00000000 $t
+C:\Users\ts\AppData\Local\Temp\cc4SvWhC.s:16147  .text.CAN_StructInit:00000000 CAN_StructInit
+C:\Users\ts\AppData\Local\Temp\cc4SvWhC.s:16190  .text.CAN_SlaveStartBank:00000000 $t
+C:\Users\ts\AppData\Local\Temp\cc4SvWhC.s:16195  .text.CAN_SlaveStartBank:00000000 CAN_SlaveStartBank
+C:\Users\ts\AppData\Local\Temp\cc4SvWhC.s:16226  .text.CAN_SlaveStartBank:00000038 $d
+C:\Users\ts\AppData\Local\Temp\cc4SvWhC.s:16230  .text.CAN_ITConfig:00000000 $t
+C:\Users\ts\AppData\Local\Temp\cc4SvWhC.s:16235  .text.CAN_ITConfig:00000000 CAN_ITConfig
+C:\Users\ts\AppData\Local\Temp\cc4SvWhC.s:16264  .text.CAN_Transmit:00000000 $t
+C:\Users\ts\AppData\Local\Temp\cc4SvWhC.s:16269  .text.CAN_Transmit:00000000 CAN_Transmit
+C:\Users\ts\AppData\Local\Temp\cc4SvWhC.s:16418  .text.CAN_TransmitStatus:00000000 $t
+C:\Users\ts\AppData\Local\Temp\cc4SvWhC.s:16423  .text.CAN_TransmitStatus:00000000 CAN_TransmitStatus
+C:\Users\ts\AppData\Local\Temp\cc4SvWhC.s:16514  .text.CAN_TransmitStatus:00000068 $d
+C:\Users\ts\AppData\Local\Temp\cc4SvWhC.s:16518  .text.CAN_CancelTransmit:00000000 $t
+C:\Users\ts\AppData\Local\Temp\cc4SvWhC.s:16523  .text.CAN_CancelTransmit:00000000 CAN_CancelTransmit
+C:\Users\ts\AppData\Local\Temp\cc4SvWhC.s:16562  .text.CAN_FIFORelease:00000000 $t
+C:\Users\ts\AppData\Local\Temp\cc4SvWhC.s:16567  .text.CAN_FIFORelease:00000000 CAN_FIFORelease
+C:\Users\ts\AppData\Local\Temp\cc4SvWhC.s:16594  .text.CAN_MessagePending:00000000 $t
+C:\Users\ts\AppData\Local\Temp\cc4SvWhC.s:16599  .text.CAN_MessagePending:00000000 CAN_MessagePending
+C:\Users\ts\AppData\Local\Temp\cc4SvWhC.s:16636  .text.CAN_Receive:00000000 $t
+C:\Users\ts\AppData\Local\Temp\cc4SvWhC.s:16641  .text.CAN_Receive:00000000 CAN_Receive
+C:\Users\ts\AppData\Local\Temp\cc4SvWhC.s:16751  .text.CAN_DBGFreeze:00000000 $t
+C:\Users\ts\AppData\Local\Temp\cc4SvWhC.s:16756  .text.CAN_DBGFreeze:00000000 CAN_DBGFreeze
+C:\Users\ts\AppData\Local\Temp\cc4SvWhC.s:16782  .text.CAN_Sleep:00000000 $t
+C:\Users\ts\AppData\Local\Temp\cc4SvWhC.s:16787  .text.CAN_Sleep:00000000 CAN_Sleep
+C:\Users\ts\AppData\Local\Temp\cc4SvWhC.s:16814  .text.CAN_WakeUp:00000000 $t
+C:\Users\ts\AppData\Local\Temp\cc4SvWhC.s:16819  .text.CAN_WakeUp:00000000 CAN_WakeUp
+C:\Users\ts\AppData\Local\Temp\cc4SvWhC.s:16862  .text.CAN_GetFlagStatus:00000000 $t
+C:\Users\ts\AppData\Local\Temp\cc4SvWhC.s:16867  .text.CAN_GetFlagStatus:00000000 CAN_GetFlagStatus
+C:\Users\ts\AppData\Local\Temp\cc4SvWhC.s:16887  .text.CAN_ClearFlag:00000000 $t
+C:\Users\ts\AppData\Local\Temp\cc4SvWhC.s:16892  .text.CAN_ClearFlag:00000000 CAN_ClearFlag
+C:\Users\ts\AppData\Local\Temp\cc4SvWhC.s:16910  .text.CAN_GetITStatus:00000000 $t
+C:\Users\ts\AppData\Local\Temp\cc4SvWhC.s:16915  .text.CAN_GetITStatus:00000000 CAN_GetITStatus
+C:\Users\ts\AppData\Local\Temp\cc4SvWhC.s:17076  .text.CAN_ClearITPendingBit:00000000 $t
+C:\Users\ts\AppData\Local\Temp\cc4SvWhC.s:17081  .text.CAN_ClearITPendingBit:00000000 CAN_ClearITPendingBit
+C:\Users\ts\AppData\Local\Temp\cc4SvWhC.s:17224  .rodata.CSWTCH.2:00000000 $d
+C:\Users\ts\AppData\Local\Temp\cc4SvWhC.s:17228  .rodata.CSWTCH.2:00000000 CSWTCH.2
+C:\Users\ts\AppData\Local\Temp\cc4SvWhC.s:17250  .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+RCC_APB1PeriphResetCmd

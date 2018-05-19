@@ -1,0 +1,348 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 4
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"stm32f10x_crc.c"
+  23              	.Ltext0:
+  24              		.file 1 "stm32f10x_crc.c"
+ 14842              		.align	1
+ 14843              		.global	CRC_ResetDR
+ 14844              		.thumb
+ 14845              		.thumb_func
+ 14847              	CRC_ResetDR:
+ 14848              	.LFB27:
+   0:stm32f10x_crc.c **** /**
+   1:stm32f10x_crc.c ****   ******************************************************************************
+   2:stm32f10x_crc.c ****   * @file    stm32f10x_crc.c
+   3:stm32f10x_crc.c ****   * @author  MCD Application Team
+   4:stm32f10x_crc.c ****   * @version V3.1.2
+   5:stm32f10x_crc.c ****   * @date    09/28/2009
+   6:stm32f10x_crc.c ****   * @brief   This file provides all the CRC firmware functions.
+   7:stm32f10x_crc.c ****   ******************************************************************************
+   8:stm32f10x_crc.c ****   * @copy
+   9:stm32f10x_crc.c ****   *
+  10:stm32f10x_crc.c ****   * THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
+  11:stm32f10x_crc.c ****   * WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE
+  12:stm32f10x_crc.c ****   * TIME. AS A RESULT, STMICROELECTRONICS SHALL NOT BE HELD LIABLE FOR ANY
+  13:stm32f10x_crc.c ****   * DIRECT, INDIRECT OR CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY CLAIMS ARISING
+  14:stm32f10x_crc.c ****   * FROM THE CONTENT OF SUCH FIRMWARE AND/OR THE USE MADE BY CUSTOMERS OF THE
+  15:stm32f10x_crc.c ****   * CODING INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
+  16:stm32f10x_crc.c ****   *
+  17:stm32f10x_crc.c ****   * <h2><center>&copy; COPYRIGHT 2009 STMicroelectronics</center></h2>
+  18:stm32f10x_crc.c ****   */ 
+  19:stm32f10x_crc.c **** 
+  20:stm32f10x_crc.c **** /* Includes ------------------------------------------------------------------*/
+  21:stm32f10x_crc.c **** #include "stm32f10x_crc.h"
+  22:stm32f10x_crc.c **** 
+  23:stm32f10x_crc.c **** /** @addtogroup STM32F10x_StdPeriph_Driver
+  24:stm32f10x_crc.c ****   * @{
+  25:stm32f10x_crc.c ****   */
+  26:stm32f10x_crc.c **** 
+  27:stm32f10x_crc.c **** /** @defgroup CRC 
+  28:stm32f10x_crc.c ****   * @brief CRC driver modules
+  29:stm32f10x_crc.c ****   * @{
+  30:stm32f10x_crc.c ****   */
+  31:stm32f10x_crc.c **** 
+  32:stm32f10x_crc.c **** /** @defgroup CRC_Private_TypesDefinitions
+  33:stm32f10x_crc.c ****   * @{
+  34:stm32f10x_crc.c ****   */
+  35:stm32f10x_crc.c **** 
+  36:stm32f10x_crc.c **** /**
+  37:stm32f10x_crc.c ****   * @}
+  38:stm32f10x_crc.c ****   */
+  39:stm32f10x_crc.c **** 
+  40:stm32f10x_crc.c **** /** @defgroup CRC_Private_Defines
+  41:stm32f10x_crc.c ****   * @{
+  42:stm32f10x_crc.c ****   */
+  43:stm32f10x_crc.c **** 
+  44:stm32f10x_crc.c **** /* CR register bit mask */
+  45:stm32f10x_crc.c **** 
+  46:stm32f10x_crc.c **** #define CR_RESET_Set    ((uint32_t)0x00000001)
+  47:stm32f10x_crc.c **** 
+  48:stm32f10x_crc.c **** /**
+  49:stm32f10x_crc.c ****   * @}
+  50:stm32f10x_crc.c ****   */
+  51:stm32f10x_crc.c **** 
+  52:stm32f10x_crc.c **** /** @defgroup CRC_Private_Macros
+  53:stm32f10x_crc.c ****   * @{
+  54:stm32f10x_crc.c ****   */
+  55:stm32f10x_crc.c **** 
+  56:stm32f10x_crc.c **** /**
+  57:stm32f10x_crc.c ****   * @}
+  58:stm32f10x_crc.c ****   */
+  59:stm32f10x_crc.c **** 
+  60:stm32f10x_crc.c **** /** @defgroup CRC_Private_Variables
+  61:stm32f10x_crc.c ****   * @{
+  62:stm32f10x_crc.c ****   */
+  63:stm32f10x_crc.c **** 
+  64:stm32f10x_crc.c **** /**
+  65:stm32f10x_crc.c ****   * @}
+  66:stm32f10x_crc.c ****   */
+  67:stm32f10x_crc.c **** 
+  68:stm32f10x_crc.c **** /** @defgroup CRC_Private_FunctionPrototypes
+  69:stm32f10x_crc.c ****   * @{
+  70:stm32f10x_crc.c ****   */
+  71:stm32f10x_crc.c **** 
+  72:stm32f10x_crc.c **** /**
+  73:stm32f10x_crc.c ****   * @}
+  74:stm32f10x_crc.c ****   */
+  75:stm32f10x_crc.c **** 
+  76:stm32f10x_crc.c **** /** @defgroup CRC_Private_Functions
+  77:stm32f10x_crc.c ****   * @{
+  78:stm32f10x_crc.c ****   */
+  79:stm32f10x_crc.c **** 
+  80:stm32f10x_crc.c **** /**
+  81:stm32f10x_crc.c ****   * @brief  Resets the CRC Data register (DR).
+  82:stm32f10x_crc.c ****   * @param  None
+  83:stm32f10x_crc.c ****   * @retval None
+  84:stm32f10x_crc.c ****   */
+  85:stm32f10x_crc.c **** void CRC_ResetDR(void)
+  86:stm32f10x_crc.c **** {
+ 14849              		.loc 1 87 0
+ 14850              		@ args = 0, pretend = 0, frame = 0
+ 14851              		@ frame_needed = 0, uses_anonymous_args = 0
+ 14852              		@ link register save eliminated.
+  87:stm32f10x_crc.c ****   /* Reset CRC generator */
+  88:stm32f10x_crc.c ****   CRC->CR = CR_RESET_Set;
+ 14853              		.loc 1 89 0
+ 14854 0000 014B     		ldr	r3, .L2
+ 14855 0002 0122     		movs	r2, #1
+ 14856 0004 9A60     		str	r2, [r3, #8]
+  89:stm32f10x_crc.c **** }
+ 14857              		.loc 1 90 0
+ 14858 0006 7047     		bx	lr
+ 14859              	.L3:
+ 14860              		.align	2
+ 14861              	.L2:
+ 14862 0008 00300240 		.word	1073885184
+ 14863              	.LFE27:
+ 14865              		.section	.text.CRC_CalcCRC,"ax",%progbits
+ 14866              		.align	1
+ 14867              		.global	CRC_CalcCRC
+ 14868              		.thumb
+ 14869              		.thumb_func
+ 14871              	CRC_CalcCRC:
+ 14872              	.LFB28:
+  90:stm32f10x_crc.c **** 
+  91:stm32f10x_crc.c **** /**
+  92:stm32f10x_crc.c ****   * @brief  Computes the 32-bit CRC of a given data word(32-bit).
+  93:stm32f10x_crc.c ****   * @param  Data: data word(32-bit) to compute its CRC
+  94:stm32f10x_crc.c ****   * @retval 32-bit CRC
+  95:stm32f10x_crc.c ****   */
+  96:stm32f10x_crc.c **** uint32_t CRC_CalcCRC(uint32_t Data)
+  97:stm32f10x_crc.c **** {
+ 14873              		.loc 1 98 0
+ 14874              		@ args = 0, pretend = 0, frame = 0
+ 14875              		@ frame_needed = 0, uses_anonymous_args = 0
+ 14876              		@ link register save eliminated.
+ 14877              	.LVL0:
+  98:stm32f10x_crc.c ****   CRC->DR = Data;
+ 14878              		.loc 1 99 0
+ 14879 0000 014B     		ldr	r3, .L5
+ 14880              	.LVL1:
+ 14881 0002 1860     		str	r0, [r3, #0]
+  99:stm32f10x_crc.c ****   
+ 100:stm32f10x_crc.c ****   return (CRC->DR);
+ 14882              		.loc 1 101 0
+ 14883 0004 1868     		ldr	r0, [r3, #0]
+ 14884              	.LVL2:
+ 101:stm32f10x_crc.c **** }
+ 14885              		.loc 1 102 0
+ 14886 0006 7047     		bx	lr
+ 14887              	.L6:
+ 14888              		.align	2
+ 14889              	.L5:
+ 14890 0008 00300240 		.word	1073885184
+ 14891              	.LFE28:
+ 14893              		.section	.text.CRC_CalcBlockCRC,"ax",%progbits
+ 14894              		.align	1
+ 14895              		.global	CRC_CalcBlockCRC
+ 14896              		.thumb
+ 14897              		.thumb_func
+ 14899              	CRC_CalcBlockCRC:
+ 14900              	.LFB29:
+ 102:stm32f10x_crc.c **** 
+ 103:stm32f10x_crc.c **** /**
+ 104:stm32f10x_crc.c ****   * @brief  Computes the 32-bit CRC of a given buffer of data word(32-bit).
+ 105:stm32f10x_crc.c ****   * @param  pBuffer: pointer to the buffer containing the data to be computed
+ 106:stm32f10x_crc.c ****   * @param  BufferLength: length of the buffer to be computed					
+ 107:stm32f10x_crc.c ****   * @retval 32-bit CRC
+ 108:stm32f10x_crc.c ****   */
+ 109:stm32f10x_crc.c **** uint32_t CRC_CalcBlockCRC(uint32_t pBuffer[], uint32_t BufferLength)
+ 110:stm32f10x_crc.c **** {
+ 14901              		.loc 1 111 0
+ 14902              		@ args = 0, pretend = 0, frame = 0
+ 14903              		@ frame_needed = 0, uses_anonymous_args = 0
+ 14904              		@ link register save eliminated.
+ 14905              	.LVL3:
+ 111:stm32f10x_crc.c ****   uint32_t index = 0;
+ 112:stm32f10x_crc.c ****   
+ 113:stm32f10x_crc.c ****   for(index = 0; index < BufferLength; index++)
+ 14906              		.loc 1 114 0
+ 14907 0000 0023     		movs	r3, #0
+ 114:stm32f10x_crc.c ****   {
+ 115:stm32f10x_crc.c ****     CRC->DR = pBuffer[index];
+ 14908              		.loc 1 116 0
+ 14909 0002 064A     		ldr	r2, .L11
+ 114:stm32f10x_crc.c ****   {
+ 14910              		.loc 1 114 0
+ 14911 0004 04E0     		b	.L8
+ 14912              	.LVL4:
+ 14913              	.L9:
+ 14914              		.loc 1 116 0 discriminator 2
+ 14915 0006 50F804CB 		ldr	ip, [r0], #4
+ 14916              	.LVL5:
+ 114:stm32f10x_crc.c ****   {
+ 14917              		.loc 1 114 0 discriminator 2
+ 14918 000a 0133     		adds	r3, r3, #1
+ 14919              	.LVL6:
+ 14920              		.loc 1 116 0 discriminator 2
+ 14921 000c C2F800C0 		str	ip, [r2, #0]
+ 14922              	.LVL7:
+ 14923              	.L8:
+ 114:stm32f10x_crc.c ****   {
+ 14924              		.loc 1 114 0 discriminator 1
+ 14925 0010 8B42     		cmp	r3, r1
+ 14926 0012 F8D3     		bcc	.L9
+ 14927              	.LVL8:
+ 116:stm32f10x_crc.c ****   }
+ 117:stm32f10x_crc.c ****   return (CRC->DR);
+ 14928              		.loc 1 118 0
+ 14929 0014 014B     		ldr	r3, .L11
+ 14930              	.LVL9:
+ 14931 0016 1868     		ldr	r0, [r3, #0]
+ 118:stm32f10x_crc.c **** }
+ 14932              		.loc 1 119 0
+ 14933 0018 7047     		bx	lr
+ 14934              	.L12:
+ 14935 001a 00BF     		.align	2
+ 14936              	.L11:
+ 14937 001c 00300240 		.word	1073885184
+ 14938              	.LFE29:
+ 14940              		.section	.text.CRC_GetCRC,"ax",%progbits
+ 14941              		.align	1
+ 14942              		.global	CRC_GetCRC
+ 14943              		.thumb
+ 14944              		.thumb_func
+ 14946              	CRC_GetCRC:
+ 14947              	.LFB30:
+ 119:stm32f10x_crc.c **** 
+ 120:stm32f10x_crc.c **** /**
+ 121:stm32f10x_crc.c ****   * @brief  Returns the current CRC value.
+ 122:stm32f10x_crc.c ****   * @param  None
+ 123:stm32f10x_crc.c ****   * @retval 32-bit CRC
+ 124:stm32f10x_crc.c ****   */
+ 125:stm32f10x_crc.c **** uint32_t CRC_GetCRC(void)
+ 126:stm32f10x_crc.c **** {
+ 14948              		.loc 1 127 0
+ 14949              		@ args = 0, pretend = 0, frame = 0
+ 14950              		@ frame_needed = 0, uses_anonymous_args = 0
+ 14951              		@ link register save eliminated.
+ 127:stm32f10x_crc.c ****   return (CRC->DR);
+ 14952              		.loc 1 128 0
+ 14953 0000 014B     		ldr	r3, .L14
+ 14954 0002 1868     		ldr	r0, [r3, #0]
+ 128:stm32f10x_crc.c **** }
+ 14955              		.loc 1 129 0
+ 14956 0004 7047     		bx	lr
+ 14957              	.L15:
+ 14958 0006 00BF     		.align	2
+ 14959              	.L14:
+ 14960 0008 00300240 		.word	1073885184
+ 14961              	.LFE30:
+ 14963              		.section	.text.CRC_SetIDRegister,"ax",%progbits
+ 14964              		.align	1
+ 14965              		.global	CRC_SetIDRegister
+ 14966              		.thumb
+ 14967              		.thumb_func
+ 14969              	CRC_SetIDRegister:
+ 14970              	.LFB31:
+ 129:stm32f10x_crc.c **** 
+ 130:stm32f10x_crc.c **** /**
+ 131:stm32f10x_crc.c ****   * @brief  Stores a 8-bit data in the Independent Data(ID) register.
+ 132:stm32f10x_crc.c ****   * @param  IDValue: 8-bit value to be stored in the ID register 					
+ 133:stm32f10x_crc.c ****   * @retval None
+ 134:stm32f10x_crc.c ****   */
+ 135:stm32f10x_crc.c **** void CRC_SetIDRegister(uint8_t IDValue)
+ 136:stm32f10x_crc.c **** {
+ 14971              		.loc 1 137 0
+ 14972              		@ args = 0, pretend = 0, frame = 0
+ 14973              		@ frame_needed = 0, uses_anonymous_args = 0
+ 14974              		@ link register save eliminated.
+ 14975              	.LVL10:
+ 137:stm32f10x_crc.c ****   CRC->IDR = IDValue;
+ 14976              		.loc 1 138 0
+ 14977 0000 014B     		ldr	r3, .L17
+ 14978              	.LVL11:
+ 14979 0002 1871     		strb	r0, [r3, #4]
+ 138:stm32f10x_crc.c **** }
+ 14980              		.loc 1 139 0
+ 14981 0004 7047     		bx	lr
+ 14982              	.L18:
+ 14983 0006 00BF     		.align	2
+ 14984              	.L17:
+ 14985 0008 00300240 		.word	1073885184
+ 14986              	.LFE31:
+ 14988              		.section	.text.CRC_GetIDRegister,"ax",%progbits
+ 14989              		.align	1
+ 14990              		.global	CRC_GetIDRegister
+ 14991              		.thumb
+ 14992              		.thumb_func
+ 14994              	CRC_GetIDRegister:
+ 14995              	.LFB32:
+ 139:stm32f10x_crc.c **** 
+ 140:stm32f10x_crc.c **** /**
+ 141:stm32f10x_crc.c ****   * @brief  Returns the 8-bit data stored in the Independent Data(ID) register
+ 142:stm32f10x_crc.c ****   * @param  None
+ 143:stm32f10x_crc.c ****   * @retval 8-bit value of the ID register 
+ 144:stm32f10x_crc.c ****   */
+ 145:stm32f10x_crc.c **** uint8_t CRC_GetIDRegister(void)
+ 146:stm32f10x_crc.c **** {
+ 14996              		.loc 1 147 0
+ 14997              		@ args = 0, pretend = 0, frame = 0
+ 14998              		@ frame_needed = 0, uses_anonymous_args = 0
+ 14999              		@ link register save eliminated.
+ 147:stm32f10x_crc.c ****   return (CRC->IDR);
+ 15000              		.loc 1 148 0
+ 15001 0000 014B     		ldr	r3, .L20
+ 15002 0002 1879     		ldrb	r0, [r3, #4]	@ zero_extendqisi2
+ 148:stm32f10x_crc.c **** }
+ 15003              		.loc 1 149 0
+ 15004 0004 7047     		bx	lr
+ 15005              	.L21:
+ 15006 0006 00BF     		.align	2
+ 15007              	.L20:
+ 15008 0008 00300240 		.word	1073885184
+ 15009              	.LFE32:
+ 15075              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 stm32f10x_crc.c
+C:\Users\ts\AppData\Local\Temp\ccXw3SDv.s:14842  .text.CRC_ResetDR:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccXw3SDv.s:14847  .text.CRC_ResetDR:00000000 CRC_ResetDR
+C:\Users\ts\AppData\Local\Temp\ccXw3SDv.s:14862  .text.CRC_ResetDR:00000008 $d
+C:\Users\ts\AppData\Local\Temp\ccXw3SDv.s:14866  .text.CRC_CalcCRC:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccXw3SDv.s:14871  .text.CRC_CalcCRC:00000000 CRC_CalcCRC
+C:\Users\ts\AppData\Local\Temp\ccXw3SDv.s:14890  .text.CRC_CalcCRC:00000008 $d
+C:\Users\ts\AppData\Local\Temp\ccXw3SDv.s:14894  .text.CRC_CalcBlockCRC:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccXw3SDv.s:14899  .text.CRC_CalcBlockCRC:00000000 CRC_CalcBlockCRC
+C:\Users\ts\AppData\Local\Temp\ccXw3SDv.s:14937  .text.CRC_CalcBlockCRC:0000001c $d
+C:\Users\ts\AppData\Local\Temp\ccXw3SDv.s:14941  .text.CRC_GetCRC:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccXw3SDv.s:14946  .text.CRC_GetCRC:00000000 CRC_GetCRC
+C:\Users\ts\AppData\Local\Temp\ccXw3SDv.s:14960  .text.CRC_GetCRC:00000008 $d
+C:\Users\ts\AppData\Local\Temp\ccXw3SDv.s:14964  .text.CRC_SetIDRegister:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccXw3SDv.s:14969  .text.CRC_SetIDRegister:00000000 CRC_SetIDRegister
+C:\Users\ts\AppData\Local\Temp\ccXw3SDv.s:14985  .text.CRC_SetIDRegister:00000008 $d
+C:\Users\ts\AppData\Local\Temp\ccXw3SDv.s:14989  .text.CRC_GetIDRegister:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccXw3SDv.s:14994  .text.CRC_GetIDRegister:00000000 CRC_GetIDRegister
+C:\Users\ts\AppData\Local\Temp\ccXw3SDv.s:15008  .text.CRC_GetIDRegister:00000008 $d
+C:\Users\ts\AppData\Local\Temp\ccXw3SDv.s:15024  .debug_frame:00000010 $d
+
+NO UNDEFINED SYMBOLS
