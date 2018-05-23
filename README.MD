@@ -1,4 +1,5 @@
-3D scaner
+3D scanner. Android application + STM32F103C8T
+
 
 https://youtu.be/86_ZMUdhrN4
 
