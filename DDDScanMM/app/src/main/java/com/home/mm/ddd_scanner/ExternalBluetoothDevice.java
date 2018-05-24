@@ -17,7 +17,18 @@ import java.io.OutputStream;
 import java.util.Set;
 
 // ESP8266 snd..rcv loop = 80..140us (overage 100us)
-
+/* 180 ms = bluetooth 40 ms + getImage 50ms + fixAllocation 20ms + detect line 40ms + calc cloud 30ms
+394 ExternalBluetoothDevice: --- sndDoScanStep(false)
+434 ExternalBluetoothDevice: rcv data() ALL:02210000
+434 CameraFunc: getImage()
+484 CameraFunc: getImage() Allocation ready
+484 ImageProcessor: ImageProcessor.fixLaserAllocation
+504 ImageProcessor: detect laser Line. START:
+534 ImageProcessor: detect laser Line. END
+544 ImageProcessor: points cloud calc. END
+574 ImageProcessor: prepare outImage. END
+574 ExternalBluetoothDevice: --- sndDoScanStep(false)
+ */
 
 public class ExternalBluetoothDevice implements Runnable {
     private Handler mAppHandler;

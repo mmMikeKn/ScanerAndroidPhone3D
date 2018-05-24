@@ -40,7 +40,7 @@ public class ConfigDDD {
     //-----------------------------------------------------
     public static int notLaserStepDivider = 20;
     public static int laserDetectProbeWidth = 13;
-    public static int laserDetectThresholdLevel = 10000;
+    public static int laserDetectThresholdLevel = 300;
     public static int grayScaleFillCapSize = 8;
 
     // -------- camera view angle

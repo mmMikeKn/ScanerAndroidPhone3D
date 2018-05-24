@@ -569,7 +569,7 @@ class ImageProcessor {
         mScript.set_gColorMapImage(mOutputAllocation);
         mRS.finish();
         Log.v(LOG_TAG, "CALC color map calculation finish");
-        if (ConfigDDD.colorMapMode == ConfigDDD.MODE_COLORMAP_PNG) {
+        if (ConfigDDD.colorMapMode == ConfigDDD.MODE_COLORMAP_PNG || ConfigDDD.colorMapMode == ConfigDDD.MODE_COLORMAP_NONE) {
             Log.v(LOG_TAG, "CALC color map PNG calculation start");
             for (int i = 0; i < scanSteps; i++) {
                 mScript.forEach_setColorMapImage8(mGreenLaserPointsCloudAllocation[i]);
