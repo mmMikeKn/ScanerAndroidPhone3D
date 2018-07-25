@@ -1,7 +1,7 @@
 core_cm3.o: core_cm3.c \
- m:\myprivate\stm32_gcc\workspaces\3dscan_workspace\dddscanlaserctrlworkspace\bin\../lib/gcc/arm-kgp-eabi/4.5.0/include/stdint.h \
- m:\myprivate\stm32_gcc\workspaces\3dscan_workspace\dddscanlaserctrlworkspace\bin\../lib/gcc/arm-kgp-eabi/4.5.0/../../../../arm-kgp-eabi/include/stdint.h
+ m:\myprivate\stm32_gcc\workspaces\3dscan_workspace\scanerandroidphone3d\dddscanlaserctrlworkspace\bin\../lib/gcc/arm-kgp-eabi/4.5.0/include/stdint.h \
+ m:\myprivate\stm32_gcc\workspaces\3dscan_workspace\scanerandroidphone3d\dddscanlaserctrlworkspace\bin\../lib/gcc/arm-kgp-eabi/4.5.0/../../../../arm-kgp-eabi/include/stdint.h
 
-m:\myprivate\stm32_gcc\workspaces\3dscan_workspace\dddscanlaserctrlworkspace\bin\../lib/gcc/arm-kgp-eabi/4.5.0/include/stdint.h:
+m:\myprivate\stm32_gcc\workspaces\3dscan_workspace\scanerandroidphone3d\dddscanlaserctrlworkspace\bin\../lib/gcc/arm-kgp-eabi/4.5.0/include/stdint.h:
 
-m:\myprivate\stm32_gcc\workspaces\3dscan_workspace\dddscanlaserctrlworkspace\bin\../lib/gcc/arm-kgp-eabi/4.5.0/../../../../arm-kgp-eabi/include/stdint.h:
+m:\myprivate\stm32_gcc\workspaces\3dscan_workspace\scanerandroidphone3d\dddscanlaserctrlworkspace\bin\../lib/gcc/arm-kgp-eabi/4.5.0/../../../../arm-kgp-eabi/include/stdint.h:

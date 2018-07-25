@@ -236,15 +236,15 @@
  15025              	.Letext0:
 DEFINED SYMBOLS
                             *ABS*:00000000 stm32f10x_dbgmcu.c
-C:\Users\ts\AppData\Local\Temp\cco2KtuJ.s:14897  .text.DBGMCU_GetREVID:00000000 $t
-C:\Users\ts\AppData\Local\Temp\cco2KtuJ.s:14902  .text.DBGMCU_GetREVID:00000000 DBGMCU_GetREVID
-C:\Users\ts\AppData\Local\Temp\cco2KtuJ.s:14917  .text.DBGMCU_GetREVID:00000008 $d
-C:\Users\ts\AppData\Local\Temp\cco2KtuJ.s:14921  .text.DBGMCU_GetDEVID:00000000 $t
-C:\Users\ts\AppData\Local\Temp\cco2KtuJ.s:14926  .text.DBGMCU_GetDEVID:00000000 DBGMCU_GetDEVID
-C:\Users\ts\AppData\Local\Temp\cco2KtuJ.s:14942  .text.DBGMCU_GetDEVID:0000000c $d
-C:\Users\ts\AppData\Local\Temp\cco2KtuJ.s:14946  .text.DBGMCU_Config:00000000 $t
-C:\Users\ts\AppData\Local\Temp\cco2KtuJ.s:14951  .text.DBGMCU_Config:00000000 DBGMCU_Config
-C:\Users\ts\AppData\Local\Temp\cco2KtuJ.s:14982  .text.DBGMCU_Config:00000018 $d
-C:\Users\ts\AppData\Local\Temp\cco2KtuJ.s:14998  .debug_frame:00000010 $d
+C:\Users\ts\AppData\Local\Temp\ccVUCFmu.s:14897  .text.DBGMCU_GetREVID:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccVUCFmu.s:14902  .text.DBGMCU_GetREVID:00000000 DBGMCU_GetREVID
+C:\Users\ts\AppData\Local\Temp\ccVUCFmu.s:14917  .text.DBGMCU_GetREVID:00000008 $d
+C:\Users\ts\AppData\Local\Temp\ccVUCFmu.s:14921  .text.DBGMCU_GetDEVID:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccVUCFmu.s:14926  .text.DBGMCU_GetDEVID:00000000 DBGMCU_GetDEVID
+C:\Users\ts\AppData\Local\Temp\ccVUCFmu.s:14942  .text.DBGMCU_GetDEVID:0000000c $d
+C:\Users\ts\AppData\Local\Temp\ccVUCFmu.s:14946  .text.DBGMCU_Config:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccVUCFmu.s:14951  .text.DBGMCU_Config:00000000 DBGMCU_Config
+C:\Users\ts\AppData\Local\Temp\ccVUCFmu.s:14982  .text.DBGMCU_Config:00000018 $d
+C:\Users\ts\AppData\Local\Temp\ccVUCFmu.s:14998  .debug_frame:00000010 $d
 
 NO UNDEFINED SYMBOLS

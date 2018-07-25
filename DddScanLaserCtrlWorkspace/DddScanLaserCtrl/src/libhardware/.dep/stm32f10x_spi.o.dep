@@ -1,7 +1,7 @@
 stm32f10x_spi.o: stm32f10x_spi.c stm32f10x_spi.h ../libcmsis/stm32f10x.h \
  ../libcmsis/core_cm3.h \
- m:\myprivate\stm32_gcc\workspaces\3dscan_workspace\dddscanlaserctrlworkspace\bin\../lib/gcc/arm-kgp-eabi/4.5.0/include/stdint.h \
- m:\myprivate\stm32_gcc\workspaces\3dscan_workspace\dddscanlaserctrlworkspace\bin\../lib/gcc/arm-kgp-eabi/4.5.0/../../../../arm-kgp-eabi/include/stdint.h \
+ m:\myprivate\stm32_gcc\workspaces\3dscan_workspace\scanerandroidphone3d\dddscanlaserctrlworkspace\bin\../lib/gcc/arm-kgp-eabi/4.5.0/include/stdint.h \
+ m:\myprivate\stm32_gcc\workspaces\3dscan_workspace\scanerandroidphone3d\dddscanlaserctrlworkspace\bin\../lib/gcc/arm-kgp-eabi/4.5.0/../../../../arm-kgp-eabi/include/stdint.h \
  ../libcmsis/system_stm32f10x.h stm32f10x_rcc.h
 
 stm32f10x_spi.h:
@@ -10,9 +10,9 @@ stm32f10x_spi.h:
 
 ../libcmsis/core_cm3.h:
 
-m:\myprivate\stm32_gcc\workspaces\3dscan_workspace\dddscanlaserctrlworkspace\bin\../lib/gcc/arm-kgp-eabi/4.5.0/include/stdint.h:
+m:\myprivate\stm32_gcc\workspaces\3dscan_workspace\scanerandroidphone3d\dddscanlaserctrlworkspace\bin\../lib/gcc/arm-kgp-eabi/4.5.0/include/stdint.h:
 
-m:\myprivate\stm32_gcc\workspaces\3dscan_workspace\dddscanlaserctrlworkspace\bin\../lib/gcc/arm-kgp-eabi/4.5.0/../../../../arm-kgp-eabi/include/stdint.h:
+m:\myprivate\stm32_gcc\workspaces\3dscan_workspace\scanerandroidphone3d\dddscanlaserctrlworkspace\bin\../lib/gcc/arm-kgp-eabi/4.5.0/../../../../arm-kgp-eabi/include/stdint.h:
 
 ../libcmsis/system_stm32f10x.h:
 

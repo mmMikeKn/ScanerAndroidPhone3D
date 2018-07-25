@@ -909,41 +909,41 @@
  16148              	.Letext0:
 DEFINED SYMBOLS
                             *ABS*:00000000 stm32f10x_dac.c
-C:\Users\ts\AppData\Local\Temp\cc9YMZSd.s:15521  .text.DAC_DeInit:00000000 $t
-C:\Users\ts\AppData\Local\Temp\cc9YMZSd.s:15526  .text.DAC_DeInit:00000000 DAC_DeInit
-C:\Users\ts\AppData\Local\Temp\cc9YMZSd.s:15548  .text.DAC_Init:00000000 $t
-C:\Users\ts\AppData\Local\Temp\cc9YMZSd.s:15553  .text.DAC_Init:00000000 DAC_Init
-C:\Users\ts\AppData\Local\Temp\cc9YMZSd.s:15595  .text.DAC_Init:00000034 $d
-C:\Users\ts\AppData\Local\Temp\cc9YMZSd.s:15599  .text.DAC_StructInit:00000000 $t
-C:\Users\ts\AppData\Local\Temp\cc9YMZSd.s:15604  .text.DAC_StructInit:00000000 DAC_StructInit
-C:\Users\ts\AppData\Local\Temp\cc9YMZSd.s:15626  .text.DAC_Cmd:00000000 $t
-C:\Users\ts\AppData\Local\Temp\cc9YMZSd.s:15631  .text.DAC_Cmd:00000000 DAC_Cmd
-C:\Users\ts\AppData\Local\Temp\cc9YMZSd.s:15667  .text.DAC_Cmd:00000024 $d
-C:\Users\ts\AppData\Local\Temp\cc9YMZSd.s:15671  .text.DAC_DMACmd:00000000 $t
-C:\Users\ts\AppData\Local\Temp\cc9YMZSd.s:15676  .text.DAC_DMACmd:00000000 DAC_DMACmd
-C:\Users\ts\AppData\Local\Temp\cc9YMZSd.s:15712  .text.DAC_DMACmd:00000028 $d
-C:\Users\ts\AppData\Local\Temp\cc9YMZSd.s:15716  .text.DAC_SoftwareTriggerCmd:00000000 $t
-C:\Users\ts\AppData\Local\Temp\cc9YMZSd.s:15721  .text.DAC_SoftwareTriggerCmd:00000000 DAC_SoftwareTriggerCmd
-C:\Users\ts\AppData\Local\Temp\cc9YMZSd.s:15756  .text.DAC_SoftwareTriggerCmd:00000028 $d
-C:\Users\ts\AppData\Local\Temp\cc9YMZSd.s:15760  .text.DAC_DualSoftwareTriggerCmd:00000000 $t
-C:\Users\ts\AppData\Local\Temp\cc9YMZSd.s:15765  .text.DAC_DualSoftwareTriggerCmd:00000000 DAC_DualSoftwareTriggerCmd
-C:\Users\ts\AppData\Local\Temp\cc9YMZSd.s:15792  .text.DAC_DualSoftwareTriggerCmd:00000018 $d
-C:\Users\ts\AppData\Local\Temp\cc9YMZSd.s:15796  .text.DAC_WaveGenerationCmd:00000000 $t
-C:\Users\ts\AppData\Local\Temp\cc9YMZSd.s:15801  .text.DAC_WaveGenerationCmd:00000000 DAC_WaveGenerationCmd
-C:\Users\ts\AppData\Local\Temp\cc9YMZSd.s:15834  .text.DAC_WaveGenerationCmd:0000001c $d
-C:\Users\ts\AppData\Local\Temp\cc9YMZSd.s:15838  .text.DAC_SetChannel1Data:00000000 $t
-C:\Users\ts\AppData\Local\Temp\cc9YMZSd.s:15843  .text.DAC_SetChannel1Data:00000000 DAC_SetChannel1Data
-C:\Users\ts\AppData\Local\Temp\cc9YMZSd.s:15879  .text.DAC_SetChannel1Data:00000020 $d
-C:\Users\ts\AppData\Local\Temp\cc9YMZSd.s:15883  .text.DAC_SetChannel2Data:00000000 $t
-C:\Users\ts\AppData\Local\Temp\cc9YMZSd.s:15888  .text.DAC_SetChannel2Data:00000000 DAC_SetChannel2Data
-C:\Users\ts\AppData\Local\Temp\cc9YMZSd.s:15924  .text.DAC_SetChannel2Data:00000020 $d
-C:\Users\ts\AppData\Local\Temp\cc9YMZSd.s:15928  .text.DAC_SetDualChannelData:00000000 $t
-C:\Users\ts\AppData\Local\Temp\cc9YMZSd.s:15933  .text.DAC_SetDualChannelData:00000000 DAC_SetDualChannelData
-C:\Users\ts\AppData\Local\Temp\cc9YMZSd.s:15958  .text.DAC_SetDualChannelData:00000014 $d
-C:\Users\ts\AppData\Local\Temp\cc9YMZSd.s:15962  .text.DAC_GetDataOutputValue:00000000 $t
-C:\Users\ts\AppData\Local\Temp\cc9YMZSd.s:15967  .text.DAC_GetDataOutputValue:00000000 DAC_GetDataOutputValue
-C:\Users\ts\AppData\Local\Temp\cc9YMZSd.s:16005  .text.DAC_GetDataOutputValue:00000024 $d
-C:\Users\ts\AppData\Local\Temp\cc9YMZSd.s:16021  .debug_frame:00000010 $d
+C:\Users\ts\AppData\Local\Temp\ccSLAY3T.s:15521  .text.DAC_DeInit:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccSLAY3T.s:15526  .text.DAC_DeInit:00000000 DAC_DeInit
+C:\Users\ts\AppData\Local\Temp\ccSLAY3T.s:15548  .text.DAC_Init:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccSLAY3T.s:15553  .text.DAC_Init:00000000 DAC_Init
+C:\Users\ts\AppData\Local\Temp\ccSLAY3T.s:15595  .text.DAC_Init:00000034 $d
+C:\Users\ts\AppData\Local\Temp\ccSLAY3T.s:15599  .text.DAC_StructInit:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccSLAY3T.s:15604  .text.DAC_StructInit:00000000 DAC_StructInit
+C:\Users\ts\AppData\Local\Temp\ccSLAY3T.s:15626  .text.DAC_Cmd:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccSLAY3T.s:15631  .text.DAC_Cmd:00000000 DAC_Cmd
+C:\Users\ts\AppData\Local\Temp\ccSLAY3T.s:15667  .text.DAC_Cmd:00000024 $d
+C:\Users\ts\AppData\Local\Temp\ccSLAY3T.s:15671  .text.DAC_DMACmd:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccSLAY3T.s:15676  .text.DAC_DMACmd:00000000 DAC_DMACmd
+C:\Users\ts\AppData\Local\Temp\ccSLAY3T.s:15712  .text.DAC_DMACmd:00000028 $d
+C:\Users\ts\AppData\Local\Temp\ccSLAY3T.s:15716  .text.DAC_SoftwareTriggerCmd:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccSLAY3T.s:15721  .text.DAC_SoftwareTriggerCmd:00000000 DAC_SoftwareTriggerCmd
+C:\Users\ts\AppData\Local\Temp\ccSLAY3T.s:15756  .text.DAC_SoftwareTriggerCmd:00000028 $d
+C:\Users\ts\AppData\Local\Temp\ccSLAY3T.s:15760  .text.DAC_DualSoftwareTriggerCmd:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccSLAY3T.s:15765  .text.DAC_DualSoftwareTriggerCmd:00000000 DAC_DualSoftwareTriggerCmd
+C:\Users\ts\AppData\Local\Temp\ccSLAY3T.s:15792  .text.DAC_DualSoftwareTriggerCmd:00000018 $d
+C:\Users\ts\AppData\Local\Temp\ccSLAY3T.s:15796  .text.DAC_WaveGenerationCmd:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccSLAY3T.s:15801  .text.DAC_WaveGenerationCmd:00000000 DAC_WaveGenerationCmd
+C:\Users\ts\AppData\Local\Temp\ccSLAY3T.s:15834  .text.DAC_WaveGenerationCmd:0000001c $d
+C:\Users\ts\AppData\Local\Temp\ccSLAY3T.s:15838  .text.DAC_SetChannel1Data:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccSLAY3T.s:15843  .text.DAC_SetChannel1Data:00000000 DAC_SetChannel1Data
+C:\Users\ts\AppData\Local\Temp\ccSLAY3T.s:15879  .text.DAC_SetChannel1Data:00000020 $d
+C:\Users\ts\AppData\Local\Temp\ccSLAY3T.s:15883  .text.DAC_SetChannel2Data:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccSLAY3T.s:15888  .text.DAC_SetChannel2Data:00000000 DAC_SetChannel2Data
+C:\Users\ts\AppData\Local\Temp\ccSLAY3T.s:15924  .text.DAC_SetChannel2Data:00000020 $d
+C:\Users\ts\AppData\Local\Temp\ccSLAY3T.s:15928  .text.DAC_SetDualChannelData:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccSLAY3T.s:15933  .text.DAC_SetDualChannelData:00000000 DAC_SetDualChannelData
+C:\Users\ts\AppData\Local\Temp\ccSLAY3T.s:15958  .text.DAC_SetDualChannelData:00000014 $d
+C:\Users\ts\AppData\Local\Temp\ccSLAY3T.s:15962  .text.DAC_GetDataOutputValue:00000000 $t
+C:\Users\ts\AppData\Local\Temp\ccSLAY3T.s:15967  .text.DAC_GetDataOutputValue:00000000 DAC_GetDataOutputValue
+C:\Users\ts\AppData\Local\Temp\ccSLAY3T.s:16005  .text.DAC_GetDataOutputValue:00000024 $d
+C:\Users\ts\AppData\Local\Temp\ccSLAY3T.s:16021  .debug_frame:00000010 $d
 
 UNDEFINED SYMBOLS
 RCC_APB1PeriphResetCmd

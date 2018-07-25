@@ -2,6 +2,7 @@ package com.home.mm.ddd_scanner;
 
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
@@ -189,6 +190,7 @@ public class MainActivity extends Activity {
     }
 
     //================================================================================================
+    @SuppressLint("DefaultLocale")
     private String getTestModeDescription(int mode, int cnt) {
         switch (mode) {
             case TEST_MODE_GOTO_CENTER:
@@ -201,6 +203,7 @@ public class MainActivity extends Activity {
         return "";
     }
 
+    @SuppressLint("DefaultLocale")
     private void testExec(final Runnable r) {
         if (mCameraFunctions == null) return;
         if (mMode != MODE_TEST) {
@@ -222,7 +225,7 @@ public class MainActivity extends Activity {
         if (testModeRed == TEST_MODE_GOTO_CENTER) {
             testModeStepCntRed = centerPoint - pRed.point;
         }
-        if (Math.abs(testModeStepCntRed) < 3) testModeRed = TEST_MODE_NONE;
+        if (Math.abs(testModeStepCntRed) == 0) testModeRed = TEST_MODE_NONE;
         double daRed = ConfigDDD.stepMotorRedTestSteps * 360.0 / ConfigDDD.stepMotorStepsPer2PI;
         mTextViewTestInfoRedAdd.setText(String.format("[%d/%3.2f] a: %3.2f%s\n",
                 ConfigDDD.stepMotorRedTestSteps,
@@ -233,7 +236,7 @@ public class MainActivity extends Activity {
         if (testModeGreen == TEST_MODE_GOTO_CENTER) {
             testModeStepCntGreen = centerPoint - pGreen.point;
         }
-        if (Math.abs(testModeStepCntGreen) < 3) testModeGreen = TEST_MODE_NONE;
+        if (Math.abs(testModeStepCntGreen) == 0) testModeGreen = TEST_MODE_NONE;
         double daGreen = ConfigDDD.stepMotorGreenTestSteps * 360.0 / ConfigDDD.stepMotorStepsPer2PI;
         mTextViewTestInfoGreenAdd.setText(String.format("[%d/%3.2f] a: %3.2f%s",
                 ConfigDDD.stepMotorGreenTestSteps,

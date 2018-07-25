@@ -46,22 +46,22 @@ public class ConfigDDD {
     // -------- camera view angle
     public static double cameraViewTangent = 238.0/691.0;
     // --------
-    public static int scanDistanceThreshold = 1200;
+    public static int scanDistanceThreshold = 1000;
     public static int depthScanThreshold = 1000;
     public static int widthScanThreshold = 1300;
     public static int heightScanThreshold = 1300;
 
     //---------
-    public static float stepMotorStartAngleRed = 88.0f;
-    public static float stepMotorStartAngleGreen = 87.15f;
-    public static int stepMotorRedTestSteps = 500; //800*0.05625 = 45
-    public static int stepMotorGreenTestSteps = 500;
-    public static int stepMotorStepsPer2PI = 400*2*8; // (35BYGHM302-06LA 0.3A, 0.9°+ half step + pulley 15->120=x8) 0.05625
-    public static int stepMotorScanFromStepGreen = 650;
-    public static int stepMotorScanFromStepRed = 595;
+    public static float stepMotorStartAngleRed = 90.0f+(100* 360.0f/(400*2*8));
+    public static float stepMotorStartAngleGreen = 90.0f+((100* 360.0f/(400*2*8)));
+    public static int stepMotorRedTestSteps = 300; //n*0.05625
+    public static int stepMotorGreenTestSteps = 300;
+    public static int stepMotorStepsPer2PI = 400*2*8; // 35BYGHM302-06LA 0.3A, 0.9°+ half step + pulley 15->120=x8
+    public static int stepMotorScanFromStepGreen = 650+100;
+    public static int stepMotorScanFromStepRed = 695+100;
     // ---------
     public static float laserGreenL = 597;
-    public static float laserRedL = 594;
+    public static float laserRedL = 593;
     // ---------
     public static boolean isBinaryPLY = true;
     public static boolean isColorPLY = true;
